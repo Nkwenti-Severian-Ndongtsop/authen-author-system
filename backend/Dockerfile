@@ -1,14 +1,86 @@
-# Builder stage
-FROM rust:1.76-slim AS builder
-WORKDIR /app
+### Builder stage
+FROM rust:slim AS builder
+
+# Set the working directory
+WORKDIR /usr/src/backend
+
+# Install build dependencies
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends \
+    pkg-config \
+    libssl-dev \
+    curl \
+    ca-certificates && \
+    rm -rf /var/lib/apt/lists/*
+
+# Define build arguments
+ARG DATABASE_URL
+ARG FRONTEND_URL
+ARG PORT
+ARG JWT_SECRET
+ARG ADMIN_FIRSTNAME
+ARG ADMIN_LASTNAME
+ARG ADMIN_EMAIL
+ARG ADMIN_PASSWORD
+
+# Copy the migrations directory first
+COPY migrations ./migrations
+
+# Copy the entire backend directory
 COPY . .
+
+# Build the application
 RUN cargo build --release
 
-# Final stage
+### Runtime stage
 FROM debian:bookworm-slim
+
+# Install runtime dependencies
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends \
+    ca-certificates \
+    libssl3 && \
+    rm -rf /var/lib/apt/lists/*
+
+# Create a non-root user
+RUN useradd -m -U -s /bin/false app
+
 WORKDIR /app
-RUN apt-get update && apt-get install -y libssl3 && rm -rf /var/lib/apt/lists/*
-COPY --from=builder /app/target/release/auth_api .
-ENV RUST_LOG=info
-EXPOSE 8000
+
+# Copy the binary from builder
+COPY --from=builder /usr/src/backend/target/release/auth_api /app/auth_api
+
+# Copy migrations directory for runtime
+COPY --from=builder /usr/src/backend/migrations /app/migrations
+
+# Define runtime arguments
+ARG DATABASE_URL
+ARG FRONTEND_URL
+ARG PORT
+ARG JWT_SECRET
+ARG ADMIN_FIRSTNAME
+ARG ADMIN_LASTNAME
+ARG ADMIN_EMAIL
+ARG ADMIN_PASSWORD
+
+# Set runtime environment variables
+ENV DATABASE_URL=${DATABASE_URL}
+ENV FRONTEND_URL=${FRONTEND_URL}
+ENV PORT=${PORT}
+ENV JWT_SECRET=${JWT_SECRET}
+ENV ADMIN_FIRSTNAME=${ADMIN_FIRSTNAME}
+ENV ADMIN_LASTNAME=${ADMIN_LASTNAME}
+ENV ADMIN_EMAIL=${ADMIN_EMAIL}
+ENV ADMIN_PASSWORD=${ADMIN_PASSWORD}
+
+# Change ownership to non-root user
+RUN chown -R app:app /app
+
+# Switch to non-root user
+USER app
+
+# Expose the port
+EXPOSE ${PORT}
+
+# Run the app
 CMD ["./auth_api"] 
