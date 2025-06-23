@@ -6,15 +6,15 @@ WORKDIR /app
 
 # First, build the ts-client
 WORKDIR /app/ts-client
-# Copy all ts-client files first
-COPY ../ts-client/ ./
+# Copy ts-client files
+COPY ts-client/ .
 # Install ts-client dependencies and build
 RUN npm ci && npm run build
 
 # Now build the frontend
 WORKDIR /app/frontend
 # Copy frontend files
-COPY . .
+COPY frontend/ .
 # Install frontend dependencies
 RUN npm install
 # Link the local ts-client
