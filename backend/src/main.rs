@@ -55,7 +55,6 @@ async fn main() {
     init();
 
     // Get configuration
-    let port = get_port();
     let frontend_url = get_frontend_url();
     let database_url = get_database_url();
 
@@ -72,7 +71,7 @@ async fn main() {
             axum::http::Method::HEAD,
         ])
         // Allow specific origins during development
-        .allow_origin("http://localhost:5174".parse::<HeaderValue>().unwrap())
+        .allow_origin(frontend_url.parse::<HeaderValue>().unwrap())
         .allow_headers([
             axum::http::header::AUTHORIZATION,
             axum::http::header::CONTENT_TYPE,
