@@ -4,7 +4,7 @@ import './components/Profile';
 
 // Initialize API client
 const api = new AuthenticationApi(new Configuration({
-    basePath: 'http://localhost:8080',
+    basePath: 'http://localhost:8000',
     headers: {
         'Content-Type': 'application/json'
     }
@@ -157,7 +157,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const formData = new FormData(signupForm);
         
         try {
-            const response = await fetch('http://localhost:8080/auth/register', {
+            const response = await fetch('http://localhost:8000/auth/register', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
