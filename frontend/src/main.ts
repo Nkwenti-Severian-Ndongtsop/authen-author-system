@@ -124,13 +124,24 @@ document.addEventListener('DOMContentLoaded', function() {
         const formData = new FormData(loginForm);
         
         try {
-            const response = await api.authLoginPost({
-                email: formData.get('email') as string,
-                password: formData.get('password') as string
+            const response = await fetch('http://localhost:8080/auth/login', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    email: formData.get('email'),
+                    password: formData.get('password')
+                })
             });
-            
-            if (response.data.token) {
-                localStorage.setItem('token', response.data.token);
+
+            if (!response.ok) {
+                throw new Error('Login failed');
+            }
+
+            const data = await response.json();
+            if (data.token) {
+                localStorage.setItem('token', data.token);
                 window.location.href = '/';
             } else {
                 throw new Error('No token received');
@@ -146,14 +157,24 @@ document.addEventListener('DOMContentLoaded', function() {
         const formData = new FormData(signupForm);
         
         try {
-            const response = await api.authRegisterPost({
-                email: formData.get('email') as string,
-                password: formData.get('password') as string,
-                firstname: formData.get('firstname') as string,
-                lastname: formData.get('lastname') as string
+            const response = await fetch('http://localhost:8080/auth/register', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    email: formData.get('email'),
+                    password: formData.get('password'),
+                    firstname: formData.get('firstname'),
+                    lastname: formData.get('lastname')
+                })
             });
-            
-            console.log('Registration successful:', response.data);
+
+            if (!response.ok) {
+                throw new Error('Registration failed');
+            }
+
+            console.log('Registration successful');
             const loginTab = document.querySelector('.tab a[href="#login"]');
             if (loginTab instanceof HTMLElement) loginTab.click();
             alert('Registration successful! Please log in.');
