@@ -1,4 +1,4 @@
-import { Configuration, AuthenticationApi } from '../../ts-client/index.js';
+import { Configuration, AuthenticationApi } from '@auth/ts-client';
 
 // Initialize API client
 const api = new AuthenticationApi(new Configuration({
