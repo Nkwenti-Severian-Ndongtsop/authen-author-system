@@ -26,7 +26,8 @@ use crate::{
         routes::auth::login,
         routes::auth::register,
         routes::protected::admin_route,
-        routes::protected::user_route
+        routes::protected::user_route,
+        routes::profile::get_profile
     ),
     components(
         schemas(
@@ -39,7 +40,8 @@ use crate::{
     ),
     tags(
         (name = "auth", description = "Authentication endpoints"),
-        (name = "protected", description = "Protected endpoints")
+        (name = "protected", description = "Protected endpoints"),
+        (name = "profile", description = "User profile endpoints")
     )
 )]
 struct ApiDoc;
@@ -73,6 +75,7 @@ async fn main() {
     let app = Router::new()
         .route("/register", post(auth::register))   
         .route("/login", post(auth::login))
+        .route("/api/profile", get(routes::profile::get_profile))
         .route(
             "/admin",
             get(protected::admin_route)
