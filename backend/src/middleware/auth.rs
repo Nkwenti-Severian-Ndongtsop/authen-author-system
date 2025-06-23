@@ -1,9 +1,10 @@
 use axum::{
-    body::Body,
     extract::State,
-    http::{Request, StatusCode},
+    http::Request,
     middleware::Next,
     response::Response,
+};
+use axum_extra::{
     headers::{authorization::Bearer, Authorization},
     TypedHeader,
 };
