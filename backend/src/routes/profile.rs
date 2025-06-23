@@ -1,14 +1,17 @@
 use axum::{
-    extract::{State, TypedHeader},
-    headers::{authorization::Bearer, Authorization},
+    extract::State,
     http::StatusCode,
     Json,
+};
+use axum_extra::{
+    headers::{authorization::Bearer, Authorization},
+    TypedHeader,
 };
 use sqlx::{Pool, Postgres};
 
 use crate::{
     db::queries::get_user_by_email,
-    middleware::auth::verify_token,
+    middleware::auth::decode_token,
     models::user::User,
 };
 
@@ -32,7 +35,7 @@ pub async fn get_profile(
     TypedHeader(auth): TypedHeader<Authorization<Bearer>>,
 ) -> Result<Json<User>, (StatusCode, Json<String>)> {
     // Verify token and get claims
-    let claims = verify_token(auth.token())
+    let claims = decode_token(auth.token())
         .map_err(|_| (StatusCode::UNAUTHORIZED, Json("Invalid token".to_string())))?;
 
     // Get user from database
