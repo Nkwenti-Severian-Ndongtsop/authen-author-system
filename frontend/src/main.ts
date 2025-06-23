@@ -1,4 +1,4 @@
-import { Configuration, AuthenticationApi } from 'ts-client';
+import { Configuration, AuthenticationApi } from '../../ts-client/dist/index.js';
 import './style.scss';
 
 // Initialize API client
