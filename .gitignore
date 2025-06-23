@@ -40,5 +40,5 @@ Thumbs.db
 # Build output
 dist/
 build/ 
-Cargo.lock
 target/
+build.sh
