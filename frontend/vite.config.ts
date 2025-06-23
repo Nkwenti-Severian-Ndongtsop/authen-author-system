@@ -11,9 +11,7 @@ export default defineConfig({
         outDir: '../dist',
         emptyOutDir: true
     },
-    resolve: {
-        alias: {
-            'ts-client': resolve(__dirname, '../ts-client')
-        }
+    optimizeDeps: {
+        include: ['../../ts-client/dist/index.js']
     }
 }); 
