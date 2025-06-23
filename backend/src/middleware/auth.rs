@@ -4,16 +4,21 @@ use axum::{
     http::{Request, StatusCode},
     middleware::Next,
     response::Response,
+    headers::{authorization::Bearer, Authorization},
+    TypedHeader,
 };
 use jsonwebtoken::{decode, encode, DecodingKey, EncodingKey, Header, Validation};
 use serde::{Deserialize, Serialize};
-use crate::models::user::{Role, User};
-use crate::config::config::get_jwt_secret;
+use sqlx::{Pool, Postgres};
+use crate::{models::user::Role, db::queries::get_user_by_email};
+
+const JWT_SECRET: &[u8] = b"your-secret-key";
+
 #[derive(Debug, Serialize, Deserialize)]
 pub struct Claims {
-    pub sub: String,
-    pub role: String,
-    pub exp: usize,
+    pub sub: String,  // email
+    pub role: String, // user role
+    pub exp: usize,   // expiration time
 }
 
 pub fn create_token(email: &str, role: &str) -> String {
@@ -31,43 +36,41 @@ pub fn create_token(email: &str, role: &str) -> String {
     encode(
         &Header::default(),
         &claims,
-        &EncodingKey::from_secret(get_jwt_secret().as_bytes()),
+        &EncodingKey::from_secret(JWT_SECRET),
     )
     .unwrap()
 }
 
-pub async fn auth_middleware(
-    State(required_role): State<Role>,
-    mut req: Request<Body>,
-    next: Next,
-) -> Result<Response, StatusCode> {
-    let token = req
-        .headers()
-        .get("Authorization")
-        .and_then(|value| value.to_str().ok())
-        .and_then(|value| value.strip_prefix("Bearer "))
-        .ok_or(StatusCode::UNAUTHORIZED)?;
-
+pub fn decode_token(token: &str) -> Result<Claims, jsonwebtoken::errors::Error> {
     let token_data = decode::<Claims>(
         token,
-        &DecodingKey::from_secret(get_jwt_secret().as_bytes()),
+        &DecodingKey::from_secret(JWT_SECRET),
         &Validation::default(),
-    )
-    .map_err(|_| StatusCode::UNAUTHORIZED)?;
+    )?;
+    Ok(token_data.claims)
+}
 
-    let user = User {
-        id: 0,
-        firstname: String::new(),
-        lastname: String::new(),
-        email: token_data.claims.sub,
-        password: String::new(),
-        role: token_data.claims.role,
-    };
+pub async fn auth_middleware<R>(
+    State(pool): State<Pool<Postgres>>,
+    TypedHeader(auth): TypedHeader<Authorization<Bearer>>,
+    mut request: Request<axum::body::Body>,
+    next: Next,
+) -> Result<Response, (axum::http::StatusCode, String)>
+where
+    R: std::str::FromStr + PartialEq + ToString,
+{
+    let claims = decode_token(auth.token())
+        .map_err(|_| (axum::http::StatusCode::UNAUTHORIZED, "Invalid token".to_string()))?;
 
-    if user.get_role() != required_role {
-        return Err(StatusCode::FORBIDDEN);
-    }
+    let user = get_user_by_email(&pool, &claims.sub)
+        .await
+        .map_err(|_| {
+            (
+                axum::http::StatusCode::UNAUTHORIZED,
+                "User not found".to_string(),
+            )
+        })?;
 
-    req.extensions_mut().insert(user);
-    Ok(next.run(req).await)
+    request.extensions_mut().insert(user);
+    Ok(next.run(request).await)
 }
