@@ -12,11 +12,11 @@ export default defineConfig({
         emptyOutDir: true
     },
     optimizeDeps: {
-        include: ['../../ts-client/dist/index.js']
+        include: ['@auth/ts-client']
     },
     resolve: {
         alias: {
-            '@auth/ts-client': resolve(__dirname, '../ts-client')
+            '@auth/ts-client': resolve(__dirname, '../ts-client/dist')
         }
     }
 }); 
