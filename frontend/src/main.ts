@@ -41,8 +41,80 @@ function handleRoute() {
     }
 }
 
-document.addEventListener('DOMContentLoaded', function() {
-    handleRoute();
+// Listen for route changes
+window.addEventListener('popstate', handleRoute);
+handleRoute();
+
+document.addEventListener('DOMContentLoaded', () => {
+    // DOM elements
+    const tabs = document.querySelectorAll('.tab a');
+    const loginForm = document.querySelector<HTMLFormElement>('#login-form');
+    const signupForm = document.querySelector<HTMLFormElement>('#signup-form');
+
+    // Tab switching
+    tabs.forEach(tab => {
+        tab.addEventListener('click', (e) => {
+            e.preventDefault();
+            const target = (e.target as HTMLAnchorElement).getAttribute('href');
+            
+            // Update active tab
+            document.querySelector('.tab.active')?.classList.remove('active');
+            (e.target as HTMLElement).parentNode?.classList.add('active');
+            
+            // Show target content
+            const currentContent = document.querySelector('.tab-content > div:not([style*="display: none"])');
+            if (currentContent) {
+                currentContent.setAttribute('style', 'display: none');
+            }
+            if (target) {
+                document.querySelector(target)?.setAttribute('style', 'display: block');
+            }
+        });
+    });
+
+    loginForm?.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const formData = new FormData(loginForm);
+        
+        try {
+            console.log('Attempting login with:', {
+                email: formData.get('email'),
+                password: formData.get('password')?.toString().length
+            });
+
+            const response = await fetch('http://localhost:8000/auth/login', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    email: formData.get('email'),
+                    password: formData.get('password')
+                })
+            });
+
+            if (!response.ok) {
+                const errorData = await response.json();
+                console.error('Server error:', {
+                    status: response.status,
+                    statusText: response.statusText,
+                    error: errorData
+                });
+                throw new Error(errorData.message || 'Login failed');
+            }
+
+            const data = await response.json();
+            console.log('Login successful:', data);
+            // Store token and redirect
+            localStorage.setItem('token', data.token);
+            window.location.href = '/';
+            handleRoute(); // Ensure route handler is called after redirection
+            
+        } catch (error) {
+            console.error('Login failed:', error);
+            alert('Login failed. Please check your credentials.');
+        }
+    });
 
     // Input event handling
     const formInputs = document.querySelectorAll<HTMLInputElement | HTMLTextAreaElement>('.form input, .form textarea');
@@ -113,53 +185,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 targetContent.style.display = 'block';
             }
         });
-    });
-
-    // Form submission
-    const loginForm = document.getElementById('login-form') as HTMLFormElement;
-    const signupForm = document.getElementById('signup-form') as HTMLFormElement;
-
-    loginForm?.addEventListener('submit', async (e) => {
-        e.preventDefault();
-        const formData = new FormData(loginForm);
-        
-        try {
-            console.log('Attempting login with:', {
-                email: formData.get('email'),
-                password: formData.get('password')?.length
-            });
-
-            const response = await fetch('http://localhost:8000/auth/login', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                    email: formData.get('email'),
-                    password: formData.get('password')
-                })
-            });
-
-            if (!response.ok) {
-                const errorData = await response.json();
-                console.error('Server error:', {
-                    status: response.status,
-                    statusText: response.statusText,
-                    error: errorData
-                });
-                throw new Error(errorData.message || 'Login failed');
-            }
-
-            const data = await response.json();
-            console.log('Login successful:', data);
-            // Store token and redirect
-            localStorage.setItem('token', data.token);
-            window.location.href = '/';
-            
-        } catch (error) {
-            console.error('Login failed:', error);
-            alert('Login failed. Please check your credentials.');
-        }
     });
 
     signupForm?.addEventListener('submit', async (e) => {
