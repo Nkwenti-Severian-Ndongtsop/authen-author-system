@@ -26,9 +26,6 @@ build/
 .DS_Store
 Thumbs.db
 
-# Generated API clients
-ts-client/
-
 # IDE
 .idea/
 .vscode/
@@ -43,4 +40,3 @@ ts-client/
 # Build output
 dist/
 build/ 
-frontend/src/packag-lock.json
