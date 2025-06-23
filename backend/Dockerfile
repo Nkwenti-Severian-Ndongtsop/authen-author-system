@@ -23,11 +23,10 @@ ARG ADMIN_LASTNAME
 ARG ADMIN_EMAIL
 ARG ADMIN_PASSWORD
 
-# Copy the migrations directory first
+# Copy backend files
+COPY Cargo.toml Cargo.lock ./
+COPY src ./src
 COPY migrations ./migrations
-
-# Copy the entire backend directory
-COPY . .
 
 # Build the application
 RUN cargo build --release
@@ -41,9 +40,6 @@ RUN apt-get update && \
     ca-certificates \
     libssl3 && \
     rm -rf /var/lib/apt/lists/*
-
-# Create a non-root user
-RUN useradd -m -U -s /bin/false app
 
 WORKDIR /app
 
@@ -72,12 +68,6 @@ ENV ADMIN_FIRSTNAME=${ADMIN_FIRSTNAME}
 ENV ADMIN_LASTNAME=${ADMIN_LASTNAME}
 ENV ADMIN_EMAIL=${ADMIN_EMAIL}
 ENV ADMIN_PASSWORD=${ADMIN_PASSWORD}
-
-# Change ownership to non-root user
-RUN chown -R app:app /app
-
-# Switch to non-root user
-USER app
 
 # Expose the port
 EXPOSE ${PORT}
