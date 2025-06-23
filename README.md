@@ -21,7 +21,7 @@ authen-author-system/
 
 1. **Clone the repository**
    ```bash
-   git clone <repository-url>
+   git clone https://github.com/Nkwenti-Severian-Ndongtsop/authen-author-system.git
    cd authen-author-system
    ```
 
