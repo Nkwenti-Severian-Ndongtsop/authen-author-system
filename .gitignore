@@ -4,6 +4,28 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 
+# Build output
+dist/
+build/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Environment variables
+.env
+.env.local
+.env.*.local
+.env.development
+.env.test
+.env.production
+
+# OS
+.DS_Store
+Thumbs.db
+
 # Generated API clients
 ts-client/
 
@@ -21,3 +43,4 @@ ts-client/
 # Build output
 dist/
 build/ 
+frontend/src/packag-lock.json
