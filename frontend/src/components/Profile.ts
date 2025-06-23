@@ -1,4 +1,4 @@
-import { Configuration, DefaultApi } from '../../../ts-client';
+import { Configuration, AuthenticationApi } from '../../../ts-client/dist/index.js';
 
 interface UserProfile {
     id: number;
@@ -8,18 +8,15 @@ interface UserProfile {
 }
 
 export class ProfileComponent extends HTMLElement {
-    private api: DefaultApi;
+    private api: AuthenticationApi;
     private profile: UserProfile | null = null;
 
     constructor() {
         super();
         const config = new Configuration({
-            basePath: 'http://localhost:8080',
-            headers: {
-                'Authorization': `Bearer ${localStorage.getItem('token')}`
-            }
+            basePath: 'http://localhost:3000'
         });
-        this.api = new DefaultApi(config);
+        this.api = new AuthenticationApi(config);
         this.attachShadow({ mode: 'open' });
     }
 
