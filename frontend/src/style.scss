@@ -2,6 +2,7 @@
 $body-bg: #c1bdba;
 $form-bg: #13232f;
 $white: #ffffff;
+$error: #ff4444;
 
 $main: #1ab188;
 $main-light: lighten($main,5%);
@@ -26,6 +27,10 @@ html {
 body {
   background: $body-bg;
   font-family: 'Titillium Web', sans-serif;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  margin: 0;
 }
 
 a {
@@ -41,9 +46,10 @@ a {
   background: rgba($form-bg,.9);
   padding: 40px;
   max-width: 600px;
-  margin: 40px auto;
+  margin: 0 auto;
   border-radius: $br;
   box-shadow: 0 4px 10px 4px rgba($form-bg,.3);
+  width: 100%;
 }
 
 .tab-group {
@@ -143,6 +149,15 @@ textarea {
 .field-wrap {
   position: relative;
   margin-bottom: 40px;
+
+  .error-message {
+    color: $error;
+    font-size: 14px;
+    margin-top: 5px;
+    position: absolute;
+    bottom: -20px;
+    left: 0;
+  }
 }
 
 .top-row {
