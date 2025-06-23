@@ -11,7 +11,7 @@ use axum_extra::{
 use jsonwebtoken::{decode, encode, DecodingKey, EncodingKey, Header, Validation};
 use serde::{Deserialize, Serialize};
 use sqlx::{Pool, Postgres};
-use crate::{models::user::Role, db::queries::get_user_by_email};
+use crate::db::queries::get_user_by_email;
 
 const JWT_SECRET: &[u8] = b"your-secret-key";
 
