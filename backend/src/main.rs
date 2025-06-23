@@ -26,7 +26,8 @@ use crate::{
         routes::auth::login,
         routes::auth::register,
         routes::protected::admin_route,
-        routes::protected::user_route
+        routes::protected::user_route,
+        routes::health::health_check
     ),
     components(
         schemas(
@@ -39,7 +40,8 @@ use crate::{
     ),
     tags(
         (name = "auth", description = "Authentication endpoints"),
-        (name = "protected", description = "Protected endpoints")
+        (name = "protected", description = "Protected endpoints"),
+        (name = "health", description = "Health check endpoint")
     )
 )]
 struct ApiDoc;
@@ -57,7 +59,7 @@ async fn main() {
             axum::http::Method::OPTIONS,
             axum::http::Method::HEAD,
         ])
-        // Allow requests from any origin
+        // Allow requests from any origin during development
         .allow_origin(get_frontend_url().parse::<axum::http::HeaderValue>().unwrap())
         // Allow sending any headers in the request
         .allow_headers([
@@ -71,6 +73,7 @@ async fn main() {
 
     // Create router with all routes
     let app = Router::new()
+        .route("/health", get(routes::health::health_check))
         .route("/register", post(auth::register))   
         .route("/login", post(auth::login))
         .route(
@@ -92,6 +95,7 @@ async fn main() {
 
     println!("🚀 Server running on http://localhost:{}", get_port());
     println!("📚 Swagger UI available at http://localhost:{}/swagger-ui/", get_port());
+    println!("💚 Health check available at http://localhost:{}/health", get_port());
     let listener = tokio::net::TcpListener::bind(format!("0.0.0.0:{}", get_port()))
         .await
         .unwrap();
