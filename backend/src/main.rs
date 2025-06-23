@@ -9,7 +9,8 @@ use axum::{
     routing::{get, post},
     Router,
 };
-use tower_http::cors::{CorsLayer, Any};
+use tower_http::cors::{CorsLayer, AllowOrigin};
+use http::HeaderValue;
 use utoipa::OpenApi;
 use utoipa_swagger_ui::SwaggerUi;
 use crate::{
@@ -61,7 +62,7 @@ async fn main() {
 
     // Configure CORS
     let cors = CorsLayer::new()
-        .allow_origin(Any)
+        .allow_origin(frontend_url.parse::<HeaderValue>().unwrap())
         .allow_methods([axum::http::Method::GET, axum::http::Method::POST])
         .allow_headers([axum::http::header::AUTHORIZATION, axum::http::header::CONTENT_TYPE]);
 
