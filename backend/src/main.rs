@@ -71,11 +71,12 @@ async fn main() {
             axum::http::Method::OPTIONS,
             axum::http::Method::HEAD,
         ])
-        // Allow requests from any origin during development
-        .allow_origin(get_frontend_url().parse::<HeaderValue>().unwrap())
+        // Allow specific origins during development
+        .allow_origin("http://localhost:5174".parse::<HeaderValue>().unwrap())
         .allow_headers([
             axum::http::header::AUTHORIZATION,
             axum::http::header::CONTENT_TYPE,
+            axum::http::header::ACCEPT,
         ]);
 
     // Build router
