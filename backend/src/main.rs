@@ -8,9 +8,9 @@ use axum::{
     middleware::from_fn_with_state,
     routing::{get, post},
     Router,
+    http::HeaderValue,
 };
-use tower_http::cors::{CorsLayer, AllowOrigin};
-use http::HeaderValue;
+use tower_http::cors::CorsLayer;
 use utoipa::OpenApi;
 use utoipa_swagger_ui::SwaggerUi;
 use crate::{
