@@ -24,7 +24,7 @@ ARG ADMIN_EMAIL
 ARG ADMIN_PASSWORD
 
 # Copy backend files
-COPY . .
+COPY /backend/. .
 
 # Build the application
 RUN cargo build --release
