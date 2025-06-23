@@ -124,7 +124,12 @@ document.addEventListener('DOMContentLoaded', function() {
         const formData = new FormData(loginForm);
         
         try {
-            const response = await fetch('http://localhost:8080/auth/login', {
+            console.log('Attempting login with:', {
+                email: formData.get('email'),
+                password: formData.get('password')?.length
+            });
+
+            const response = await fetch('http://localhost:8000/auth/login', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
@@ -136,16 +141,21 @@ document.addEventListener('DOMContentLoaded', function() {
             });
 
             if (!response.ok) {
-                throw new Error('Login failed');
+                const errorData = await response.json();
+                console.error('Server error:', {
+                    status: response.status,
+                    statusText: response.statusText,
+                    error: errorData
+                });
+                throw new Error(errorData.message || 'Login failed');
             }
 
             const data = await response.json();
-            if (data.token) {
-                localStorage.setItem('token', data.token);
-                window.location.href = '/';
-            } else {
-                throw new Error('No token received');
-            }
+            console.log('Login successful:', data);
+            // Store token and redirect
+            localStorage.setItem('token', data.token);
+            window.location.href = '/';
+            
         } catch (error) {
             console.error('Login failed:', error);
             alert('Login failed. Please check your credentials.');
