@@ -9,6 +9,11 @@ html {
 body {
     background: #c1bdba;
     font-family: 'Titillium Web', sans-serif;
+    min-height: 100vh;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 a {
@@ -34,7 +39,7 @@ a:hover {
     list-style: none;
     padding: 0;
     margin: 0 0 40px 0;
-    display: flex;
+  display: flex;
 }
 
 .tab-group:after {
@@ -169,7 +174,7 @@ input:focus {
 
 .button:hover, .button:focus {
     background: #179b77;
-}
+  }
 
 .button-block {
     display: block;
@@ -179,8 +184,49 @@ input:focus {
 .forgot {
     margin-top: -20px;
     text-align: right;
-}
+  }
 
 #login {
     display: none;
+}
+
+#app {
+    width: 100%;
+    max-width: 600px;
+    margin: 0 20px;
+}
+
+.auth-container {
+    display: none;
+}
+
+.auth-container.visible {
+    display: block;
+}
+
+.profile-container {
+    display: none;
+    background: white;
+    padding: 40px;
+    border-radius: 4px;
+    box-shadow: 0 4px 10px 4px rgba(19, 35, 47, 0.3);
+}
+
+.profile-container.visible {
+    display: block;
+}
+
+.profile-info {
+    margin-bottom: 30px;
+}
+
+.profile-info p {
+    margin: 10px 0;
+    padding: 10px;
+    border-bottom: 1px solid #eee;
+}
+
+.profile-info strong {
+    color: #1ab188;
+    margin-right: 10px;
 } 
