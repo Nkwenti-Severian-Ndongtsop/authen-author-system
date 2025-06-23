@@ -149,10 +149,10 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
-    // Tab switching with fade effect
-    const tabs = document.querySelectorAll<HTMLElement>('.tab a');
+    // Tab switching
+    const tabLinks = document.querySelectorAll<HTMLElement>('.tab a');
     
-    tabs.forEach(tab => {
+    tabLinks.forEach(tab => {
         tab.addEventListener('click', (e) => {
             e.preventDefault();
             
