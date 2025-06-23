@@ -26,7 +26,7 @@ ARG ADMIN_PASSWORD
 # Copy backend files
 COPY Cargo.* .
 COPY src/ src/
-COPY migrations/ migrations/
+COPY ./migrations migrations/
 
 # Build the application
 RUN cargo build --release
