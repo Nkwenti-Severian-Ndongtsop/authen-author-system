@@ -1,65 +1,31 @@
-import { User } from '../../ts-client/api';
+import { User } from '../types';
 
 export class ProfileComponent extends HTMLElement {
-    private profile: User | null = null;
+    private user: User | null = null;
 
     constructor() {
         super();
-        this.loadProfile();
-    }
-
-    connectedCallback() {
         this.render();
     }
 
-    private async loadProfile() {
-        try {
-            const token = localStorage.getItem('token');
-            if (!token) {
-                window.location.href = '/login';
-                return;
-            }
-
-            const response = await fetch('http://localhost:8000/api/profile', {
-                headers: {
-                    'Authorization': `Bearer ${token}`,
-                    'Content-Type': 'application/json'
-                }
-            });
-
-            if (!response.ok) {
-                throw new Error('Failed to fetch profile');
-            }
-
-            this.profile = await response.json();
-            this.render();
-        } catch (error) {
-            console.error('Failed to load profile:', error);
-            localStorage.removeItem('token');
-            window.location.href = '/login';
-        }
+    set data(user: User) {
+        this.user = user;
+        this.render();
     }
 
     private render() {
-        if (!this.profile) {
-            this.innerHTML = '<div>Loading...</div>';
-            return;
-        }
+        if (!this.user) return;
 
         this.innerHTML = `
-            <div class="profile">
+            <div class="profile-info">
                 <h2>Profile</h2>
-                <div class="profile-info">
-                    <p><strong>Name:</strong> ${this.profile.firstname} ${this.profile.lastname}</p>
-                    <p><strong>Email:</strong> ${this.profile.email}</p>
-                    <p><strong>Role:</strong> ${this.profile.role}</p>
-                </div>
-                <button onclick="localStorage.removeItem('token'); window.location.href='/login'">
-                    Logout
-                </button>
+                <p><strong>Name:</strong> <span id="profile-name">${this.user.firstname} ${this.user.lastname}</span></p>
+                <p><strong>Email:</strong> <span id="profile-email">${this.user.email}</span></p>
+                <p><strong>Role:</strong> <span id="profile-role">${this.user.role}</span></p>
             </div>
+            <button id="logout-button">Logout</button>
         `;
     }
 }
 
-customElements.define('profile-component', ProfileComponent); 
+customElements.define('user-profile', ProfileComponent); 
