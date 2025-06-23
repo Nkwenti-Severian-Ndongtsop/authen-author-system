@@ -9,7 +9,7 @@ use crate::{
     db::queries::init_db,
     middleware::auth::auth_middleware,
     models::user::Role,
-    routes::{auth, protected, profile, health},
+    routes::{auth, protected},
 };
 use axum::{
     http::HeaderValue,
