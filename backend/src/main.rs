@@ -99,9 +99,9 @@ async fn main() {
         .merge(SwaggerUi::new("/swagger-ui").url("/api-docs/openapi.json", ApiDoc::openapi()))
         .layer(cors);
 
-    println!("🚀 Server running on http://localhost:{}", get_port());
-    println!("📚 Swagger UI available at http://localhost:{}/swagger-ui/", get_port());
-    println!("💚 Health check available at http://localhost:{}/health", get_port());
+    println!("🚀 Server running on https://backend-auth-system.onrender.com");
+    println!("📚 Swagger UI available at https://backend-auth-system.onrender.com/swagger-ui/");
+    println!("💚 Health check available at https://backend-auth-system.onrender.com/health");
     
     let listener = tokio::net::TcpListener::bind(format!("0.0.0.0:{}", get_port()))
         .await
