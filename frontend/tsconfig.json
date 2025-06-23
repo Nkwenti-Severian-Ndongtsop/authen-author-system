@@ -14,7 +14,11 @@
     "noUnusedLocals": true,
     "noUnusedParameters": true,
     "noFallthroughCasesInSwitch": true,
-    "types": ["vite/client"]
+    "types": ["vite/client"],
+    "baseUrl": ".",
+    "paths": {
+      "@auth/ts-client": ["../ts-client/dist"]
+    }
   },
-  "include": ["src"]
+  "include": ["src", "*.ts"]
 }   

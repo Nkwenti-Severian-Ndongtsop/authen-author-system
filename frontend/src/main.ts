@@ -1,24 +1,19 @@
-import { Configuration, AuthenticationApi } from '../../ts-client/dist/index.js';
 import './style.scss';
 import './components/Profile';
 
-// Initialize API client
-const api = new AuthenticationApi(new Configuration({
-    basePath: import.meta.env.VITE_BACKEND_API,
-    headers: {
-        'Content-Type': 'application/json'
-    }
-}));
-
 // State management
 function showAuthForm() {
-    document.querySelector('.auth-container')?.classList.add('visible');
-    document.querySelector('.profile-container')?.classList.remove('visible');
+    const authContainer = document.querySelector('.auth-container') as HTMLElement;
+    const profileContainer = document.querySelector('.profile-container') as HTMLElement;
+    authContainer?.classList.add('visible');
+    profileContainer?.classList.remove('visible');
 }
 
 function showProfile() {
-    document.querySelector('.auth-container')?.classList.remove('visible');
-    document.querySelector('.profile-container')?.classList.add('visible');
+    const authContainer = document.querySelector('.auth-container') as HTMLElement;
+    const profileContainer = document.querySelector('.profile-container') as HTMLElement;
+    authContainer?.classList.remove('visible');
+    profileContainer?.classList.add('visible');
 }
 
 // Check authentication state
@@ -54,9 +49,13 @@ async function loadProfile() {
         const profile = await response.json();
         
         // Update profile view
-        document.getElementById('profile-name')!.textContent = `${profile.firstname} ${profile.lastname}`;
-        document.getElementById('profile-email')!.textContent = profile.email;
-        document.getElementById('profile-role')!.textContent = profile.role;
+        const nameElement = document.getElementById('profile-name') as HTMLElement;
+        const emailElement = document.getElementById('profile-email') as HTMLElement;
+        const roleElement = document.getElementById('profile-role') as HTMLElement;
+        
+        if (nameElement) nameElement.textContent = `${profile.firstname} ${profile.lastname}`;
+        if (emailElement) emailElement.textContent = profile.email;
+        if (roleElement) roleElement.textContent = profile.role;
         
         showProfile();
     } catch (error) {
@@ -83,8 +82,14 @@ document.addEventListener('DOMContentLoaded', () => {
             const target = (e.target as HTMLAnchorElement).getAttribute('href');
             
             // Update active tab
-            document.querySelector('.tab.active')?.classList.remove('active');
-            (e.target as HTMLElement).parentNode?.classList.add('active');
+            const activeTab = document.querySelector('.tab.active');
+            if (activeTab) {
+                activeTab.classList.remove('active');
+            }
+            const parentNode = (e.target as HTMLElement).parentNode as HTMLElement;
+            if (parentNode) {
+                parentNode.classList.add('active');
+            }
             
             // Show target content
             document.querySelectorAll('.tab-content > div').forEach(div => {
@@ -207,49 +212,4 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         });
     });
-});
-
-// Utility functions for fade effects
-function fadeOut(element: HTMLElement, duration: number = 400): void {
-    element.style.opacity = '1';
-    element.style.display = 'block';
-    
-    let start: number | null = null;
-    
-    function animate(currentTime: number) {
-        if (!start) start = currentTime;
-        const progress = currentTime - start;
-        const opacity = 1 - Math.min(progress / duration, 1);
-        
-        element.style.opacity = opacity.toString();
-        
-        if (progress < duration) {
-            requestAnimationFrame(animate);
-        } else {
-            element.style.display = 'none';
-        }
-    }
-    
-    requestAnimationFrame(animate);
-}
-
-function fadeIn(element: HTMLElement, duration: number = 600): void {
-    element.style.opacity = '0';
-    element.style.display = 'block';
-    
-    let start: number | null = null;
-    
-    function animate(currentTime: number) {
-        if (!start) start = currentTime;
-        const progress = currentTime - start;
-        const opacity = Math.min(progress / duration, 1);
-        
-        element.style.opacity = opacity.toString();
-        
-        if (progress < duration) {
-            requestAnimationFrame(animate);
-        }
-    }
-    
-    requestAnimationFrame(animate);
-} 
+}); 

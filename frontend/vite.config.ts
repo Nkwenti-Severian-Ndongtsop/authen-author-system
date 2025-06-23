@@ -2,13 +2,13 @@ import { defineConfig } from 'vite';
 import { resolve } from 'path';
 
 export default defineConfig({
-    root: 'src',
+    root: '.',
     server: {
         port: 5173,
         open: true
     },
     build: {
-        outDir: '../dist',
+        outDir: 'dist',
         emptyOutDir: true
     },
     optimizeDeps: {
