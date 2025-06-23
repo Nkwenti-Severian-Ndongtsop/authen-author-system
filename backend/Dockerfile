@@ -24,9 +24,9 @@ ARG ADMIN_EMAIL
 ARG ADMIN_PASSWORD
 
 # Copy backend files
-COPY Cargo.toml Cargo.lock ./
-COPY src ./src
-COPY migrations ./migrations
+COPY ./Cargo.toml ./Cargo.lock ./
+COPY ./src ./src
+COPY ./migrations ./migrations
 
 # Build the application
 RUN cargo build --release
