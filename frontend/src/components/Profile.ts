@@ -2,9 +2,10 @@ import { Configuration, AuthenticationApi } from '../../../ts-client/dist/index.
 
 interface UserProfile {
     id: number;
-    username: string;
+    firstname: string;
+    lastname: string;
     email: string;
-    created_at: string;
+    role: string;
 }
 
 export class ProfileComponent extends HTMLElement {
@@ -13,8 +14,10 @@ export class ProfileComponent extends HTMLElement {
 
     constructor() {
         super();
+        const token = localStorage.getItem('token');
         const config = new Configuration({
-            basePath: 'http://localhost:3000'
+            basePath: 'http://localhost:8080',
+            accessToken: token || undefined
         });
         this.api = new AuthenticationApi(config);
         this.attachShadow({ mode: 'open' });
@@ -27,16 +30,29 @@ export class ProfileComponent extends HTMLElement {
 
     private async loadProfile() {
         try {
-            // TODO: Implement actual profile endpoint call
-            // For now, using mock data
-            this.profile = {
-                id: 1,
-                username: 'Current User',
-                email: 'user@example.com',
-                created_at: new Date().toISOString()
-            };
+            const token = localStorage.getItem('token');
+            if (!token) {
+                window.location.href = '/login';
+                return;
+            }
+
+            // TODO: Replace with actual profile endpoint call once implemented
+            const response = await fetch('http://localhost:8080/api/profile', {
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                }
+            });
+
+            if (!response.ok) {
+                throw new Error('Failed to fetch profile');
+            }
+
+            this.profile = await response.json();
         } catch (error) {
             console.error('Failed to load profile:', error);
+            localStorage.removeItem('token');
+            window.location.href = '/login';
         }
     }
 
@@ -110,9 +126,9 @@ export class ProfileComponent extends HTMLElement {
             <div class="profile-container">
                 <div class="profile-header">
                     <div class="profile-avatar">
-                        ${this.profile?.username.charAt(0).toUpperCase() || 'U'}
+                        ${this.profile ? this.profile.firstname.charAt(0).toUpperCase() : 'U'}
                     </div>
-                    <h2>${this.profile?.username || 'Loading...'}</h2>
+                    <h2>${this.profile ? `${this.profile.firstname} ${this.profile.lastname}` : 'Loading...'}</h2>
                 </div>
                 <div class="profile-info">
                     <div class="info-item">
@@ -120,8 +136,8 @@ export class ProfileComponent extends HTMLElement {
                         <span>${this.profile?.email || 'Loading...'}</span>
                     </div>
                     <div class="info-item">
-                        <span class="info-label">Member since:</span>
-                        <span>${this.profile ? new Date(this.profile.created_at).toLocaleDateString() : 'Loading...'}</span>
+                        <span class="info-label">Role:</span>
+                        <span>${this.profile?.role || 'Loading...'}</span>
                     </div>
                 </div>
                 <button class="logout-button">Logout</button>
