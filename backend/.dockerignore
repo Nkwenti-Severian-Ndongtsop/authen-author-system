@@ -14,6 +14,13 @@ target/
 .env
 *.env
 
+# Build script
+build.sh
+
+# Docker
+Dockerfile
+.dockerignore
+
 # Misc
 README.md
 LICENSE
