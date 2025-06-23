@@ -50,10 +50,12 @@ async fn main() {
 
     // CORS configuration
     let cors = CorsLayer::new()
-        // Allow only GET and POST methods
+        // Allow methods needed for Swagger UI
         .allow_methods([
             axum::http::Method::GET,
             axum::http::Method::POST,
+            axum::http::Method::OPTIONS,
+            axum::http::Method::HEAD,
         ])
         // Allow requests from any origin
         .allow_origin(get_frontend_url().parse::<axum::http::HeaderValue>().unwrap())
@@ -62,13 +64,13 @@ async fn main() {
             axum::http::header::AUTHORIZATION,
             axum::http::header::ACCEPT,
             axum::http::header::CONTENT_TYPE,
+            axum::http::header::ORIGIN,
         ])
         // Allow credentials (cookies, authorization headers)
         .allow_credentials(true);
 
     // Create router with all routes
     let app = Router::new()
-        .merge(SwaggerUi::new("/swagger-ui").url("/api-docs/openapi.json", ApiDoc::openapi()))  
         .route("/register", post(auth::register))   
         .route("/login", post(auth::login))
         .route(
@@ -81,11 +83,15 @@ async fn main() {
             get(protected::user_route)
                 .route_layer(from_fn_with_state(Role::User, auth_middleware)),
         )
+        // Serve Swagger UI and OpenAPI docs
+        .merge(SwaggerUi::new("/swagger-ui")
+            .url("/api-docs/openapi.json", ApiDoc::openapi())
+        )
         .with_state(init_db(get_database_url().as_str()).await)
         .layer(cors);
 
-    
-    println!("Server running on http://localhost:{}", get_port());
+    println!("🚀 Server running on http://localhost:{}", get_port());
+    println!("📚 Swagger UI available at http://localhost:{}/swagger-ui/", get_port());
     let listener = tokio::net::TcpListener::bind(format!("0.0.0.0:{}", get_port()))
         .await
         .unwrap();
