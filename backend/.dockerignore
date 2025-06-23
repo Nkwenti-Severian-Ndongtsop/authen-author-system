@@ -1,0 +1,25 @@
+# Git
+.git
+.gitignore
+
+# Rust - only ignore target directory
+target/
+
+# IDE
+.idea/
+.vscode/
+
+# Environment
+.env
+*.env
+
+# Build script
+build.sh
+
+# Docker
+.dockerignore
+
+# Misc
+README.md
+LICENSE
+*.log 

@@ -28,7 +28,11 @@ use utoipa_swagger_ui::SwaggerUi;
         routes::auth::register,
         routes::protected::admin_route,
         routes::protected::user_route,
+
         routes::profile::get_profile
+
+        routes::health::health_check
+
     ),
     components(
         schemas(
@@ -42,7 +46,11 @@ use utoipa_swagger_ui::SwaggerUi;
     tags(
         (name = "auth", description = "Authentication endpoints"),
         (name = "protected", description = "Protected endpoints"),
+
         (name = "profile", description = "User profile endpoints")
+
+        (name = "health", description = "Health check endpoint")
+
     )
 )]
 struct ApiDoc;
@@ -62,8 +70,21 @@ async fn main() {
 
     // Configure CORS
     let cors = CorsLayer::new()
+
         .allow_origin(frontend_url.parse::<HeaderValue>().unwrap())
         .allow_methods([axum::http::Method::GET, axum::http::Method::POST])
+
+        // Allow methods needed for Swagger UI
+        .allow_methods([
+            axum::http::Method::GET,
+            axum::http::Method::POST,
+            axum::http::Method::OPTIONS,
+            axum::http::Method::HEAD,
+        ])
+        // Allow requests from any origin during development
+        .allow_origin(get_frontend_url().parse::<axum::http::HeaderValue>().unwrap())
+        // Allow sending any headers in the request
+
         .allow_headers([
             axum::http::header::AUTHORIZATION,
             axum::http::header::CONTENT_TYPE,
@@ -71,9 +92,15 @@ async fn main() {
 
     // Build router
     let app = Router::new()
+
         .route("/auth/login", post(auth::login))
         .route("/auth/register", post(auth::register))
         .route("/api/profile", get(routes::profile::get_profile))
+
+        .route("/health", get(routes::health::health_check))
+        .route("/register", post(auth::register))   
+        .route("/login", post(auth::login))
+
         .route(
             "/api/admin",
             get(protected::admin_route)
@@ -88,9 +115,18 @@ async fn main() {
         .merge(SwaggerUi::new("/swagger-ui").url("/api-docs/openapi.json", ApiDoc::openapi()))
         .layer(cors);
 
+
     // Start server
     let addr = std::net::SocketAddr::from(([127, 0, 0, 1], port));
     println!("Server running on http://{}", addr);
     let listener = tokio::net::TcpListener::bind(addr).await.unwrap();
+
+    println!("🚀 Server running on http://localhost:{}", get_port());
+    println!("📚 Swagger UI available at http://localhost:{}/swagger-ui/", get_port());
+    println!("💚 Health check available at http://localhost:{}/health", get_port());
+    let listener = tokio::net::TcpListener::bind(format!("0.0.0.0:{}", get_port()))
+        .await
+        .unwrap();
+
     axum::serve(listener, app).await.unwrap();
 }
