@@ -1,3 +1,5 @@
+@use "sass:color";
+
 // Variables
 $body-bg: #c1bdba;
 $form-bg: #13232f;
@@ -5,8 +7,8 @@ $white: #ffffff;
 $error: #ff4444;
 
 $main: #1ab188;
-$main-light: lighten($main,5%);
-$main-dark: darken($main,5%);
+$main-light: color.adjust($main, $lightness: 5%);
+$main-dark: color.adjust($main, $lightness: -5%);
 
 $gray-light: #a0b3b0;
 $gray: #ddd;
@@ -240,7 +242,7 @@ textarea {
         width: 100%;
         
         &:hover {
-            background: darken($main, 10%);
+            background: color.adjust($main, $lightness: -10%);
         }
     }
 } 
