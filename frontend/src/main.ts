@@ -3,17 +3,27 @@ import './components/Profile';
 
 // State management
 function showAuthForm() {
+    console.log('Showing auth form...');
     const authContainer = document.querySelector('.auth-container') as HTMLElement;
     const profileContainer = document.querySelector('.profile-container') as HTMLElement;
+    console.log('Auth container:', authContainer);
+    console.log('Profile container:', profileContainer);
     authContainer?.classList.add('visible');
     profileContainer?.classList.remove('visible');
+    console.log('Auth container visibility:', authContainer?.classList.contains('visible'));
+    console.log('Profile container visibility:', profileContainer?.classList.contains('visible'));
 }
 
 function showProfile() {
+    console.log('Showing profile...');
     const authContainer = document.querySelector('.auth-container') as HTMLElement;
     const profileContainer = document.querySelector('.profile-container') as HTMLElement;
+    console.log('Auth container:', authContainer);
+    console.log('Profile container:', profileContainer);
     authContainer?.classList.remove('visible');
     profileContainer?.classList.add('visible');
+    console.log('Auth container visibility:', authContainer?.classList.contains('visible'));
+    console.log('Profile container visibility:', profileContainer?.classList.contains('visible'));
 }
 
 // Check authentication state
@@ -29,12 +39,15 @@ function checkAuth() {
 // Load profile data
 async function loadProfile() {
     try {
+        console.log('Loading profile data...');
         const token = localStorage.getItem('token');
         if (!token) {
+            console.log('No token found, showing auth form');
             showAuthForm();
             return;
         }
 
+        console.log('Fetching profile data...');
         const response = await fetch(`${import.meta.env.VITE_BACKEND_API}/api/profile`, {
             headers: {
                 'Authorization': `Bearer ${token}`,
@@ -47,16 +60,18 @@ async function loadProfile() {
         }
 
         const profile = await response.json();
+        console.log('Profile data received:', profile);
         
-        // Update profile view
-        const nameElement = document.getElementById('profile-name') as HTMLElement;
-        const emailElement = document.getElementById('profile-email') as HTMLElement;
-        const roleElement = document.getElementById('profile-role') as HTMLElement;
+        // Update profile component
+        const profileElement = document.querySelector('user-profile');
+        if (profileElement) {
+            console.log('Setting profile data to component');
+            (profileElement as any).data = profile;
+        } else {
+            console.error('Profile element not found');
+        }
         
-        if (nameElement) nameElement.textContent = `${profile.firstname} ${profile.lastname}`;
-        if (emailElement) emailElement.textContent = profile.email;
-        if (roleElement) roleElement.textContent = profile.role;
-        
+        console.log('Profile data updated, showing profile view');
         showProfile();
     } catch (error) {
         console.error('Failed to load profile:', error);
@@ -109,30 +124,53 @@ document.addEventListener('DOMContentLoaded', () => {
         e.preventDefault();
         const formData = new FormData(loginForm);
         
+        // Get the submit button and disable it
+        const submitButton = loginForm.querySelector('button[type="submit"]') as HTMLButtonElement;
+        const originalButtonText = submitButton.textContent || 'Log In';
+        
         try {
-            const response = await fetch(`${import.meta.env.VITE_BACKEND_API}/auth/login`, {
+            // Show loading state
+            submitButton.disabled = true;
+            submitButton.innerHTML = '<span class="loading-spinner"></span> Logging in...';
+            
+            console.log('Attempting login...');
+            const loginUrl = `${import.meta.env.VITE_BACKEND_API}/auth/login`;
+            console.log('Login URL:', loginUrl);
+            
+            const loginData = {
+                email: formData.get('email'),
+                password: formData.get('password')
+            };
+            console.log('Login data:', { email: loginData.email, password: '***' });
+            
+            const response = await fetch(loginUrl, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
                 },
-                body: JSON.stringify({
-                    email: formData.get('email'),
-                    password: formData.get('password')
-                })
+                body: JSON.stringify(loginData)
             });
 
+            console.log('Response status:', response.status);
+            const responseData = await response.json();
+            console.log('Response data:', responseData);
+
             if (!response.ok) {
-                const errorData = await response.json();
-                throw new Error(errorData.message || 'Login failed');
+                throw new Error(responseData.message || 'Login failed');
             }
 
-            const data = await response.json();
-            localStorage.setItem('token', data.token);
+            console.log('Login successful, storing token...');
+            localStorage.setItem('token', responseData.token);
+            console.log('Loading profile...');
             loadProfile();
             
         } catch (error) {
             console.error('Login failed:', error);
-            alert('Login failed. Please check your credentials.');
+            alert('Login failed. Please check your credentials and try again.');
+            
+            // Reset button state
+            submitButton.disabled = false;
+            submitButton.textContent = originalButtonText;
         }
     });
 
@@ -141,7 +179,15 @@ document.addEventListener('DOMContentLoaded', () => {
         e.preventDefault();
         const formData = new FormData(signupForm);
         
+        // Get the submit button and disable it
+        const submitButton = signupForm.querySelector('button[type="submit"]') as HTMLButtonElement;
+        const originalButtonText = submitButton.textContent || 'Get Started';
+        
         try {
+            // Show loading state
+            submitButton.disabled = true;
+            submitButton.innerHTML = '<span class="loading-spinner"></span> Creating Account...';
+            
             const response = await fetch(`${import.meta.env.VITE_BACKEND_API}/auth/register`, {
                 method: 'POST',
                 headers: {
@@ -160,6 +206,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 throw new Error(errorData.message || 'Registration failed');
             }
 
+            // Registration successful
             alert('Registration successful! Please log in.');
             
             // Switch to login tab
@@ -174,6 +221,10 @@ document.addEventListener('DOMContentLoaded', () => {
         } catch (error) {
             console.error('Registration failed:', error);
             alert('Registration failed. Please try again.');
+        } finally {
+            // Reset button state
+            submitButton.disabled = false;
+            submitButton.textContent = originalButtonText;
         }
     });
 
@@ -212,4 +263,4 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         });
     });
-}); 
+});
