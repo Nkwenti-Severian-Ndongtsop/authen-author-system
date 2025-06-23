@@ -1,25 +1,25 @@
+mod config;
 mod db;
 mod middleware;
 mod models;
 mod routes;
-mod config;
 
-use axum::{
-    middleware::from_fn_with_state,
-    routing::{get, post},
-    Router,
-    http::HeaderValue,
-};
-use tower_http::cors::CorsLayer;
-use utoipa::OpenApi;
-use utoipa_swagger_ui::SwaggerUi;
 use crate::{
+    config::config::{get_database_url, get_frontend_url, get_port, init},
     db::queries::init_db,
-    config::config::{get_port, init, get_frontend_url, get_database_url},
     middleware::auth::auth_middleware,
     models::user::Role,
     routes::{auth, protected},
 };
+use axum::{
+    http::HeaderValue,
+    middleware::from_fn_with_state,
+    routing::{get, post},
+    Router,
+};
+use tower_http::cors::CorsLayer;
+use utoipa::OpenApi;
+use utoipa_swagger_ui::SwaggerUi;
 
 #[derive(OpenApi)]
 #[openapi(
@@ -64,7 +64,10 @@ async fn main() {
     let cors = CorsLayer::new()
         .allow_origin(frontend_url.parse::<HeaderValue>().unwrap())
         .allow_methods([axum::http::Method::GET, axum::http::Method::POST])
-        .allow_headers([axum::http::header::AUTHORIZATION, axum::http::header::CONTENT_TYPE]);
+        .allow_headers([
+            axum::http::header::AUTHORIZATION,
+            axum::http::header::CONTENT_TYPE,
+        ]);
 
     // Build router
     let app = Router::new()
