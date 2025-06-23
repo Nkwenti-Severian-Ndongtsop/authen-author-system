@@ -4,7 +4,10 @@ import './components/Profile';
 
 // Initialize API client
 const api = new AuthenticationApi(new Configuration({
-    basePath: 'http://localhost:3000'
+    basePath: 'http://localhost:8080',
+    headers: {
+        'Content-Type': 'application/json'
+    }
 }));
 
 // Add profile route handling
@@ -20,10 +23,27 @@ const routes = {
             app.innerHTML = '<profile-component></profile-component>';
         }
     },
-    // ... existing routes ...
+    '/login': () => {
+        const token = localStorage.getItem('token');
+        if (token) {
+            window.location.href = '/';
+            return;
+        }
+    }
 };
 
+// Handle routing
+function handleRoute() {
+    const path = window.location.pathname;
+    const route = routes[path];
+    if (route) {
+        route();
+    }
+}
+
 document.addEventListener('DOMContentLoaded', function() {
+    handleRoute();
+
     // Input event handling
     const formInputs = document.querySelectorAll<HTMLInputElement | HTMLTextAreaElement>('.form input, .form textarea');
     
@@ -83,14 +103,14 @@ document.addEventListener('DOMContentLoaded', function() {
             const allContent = document.querySelectorAll('.tab-content > div');
             allContent.forEach(content => {
                 if (content.id !== target.substring(1)) {
-                    fadeOut(content as HTMLElement);
+                    content.style.display = 'none';
                 }
             });
             
             // Show target content
             const targetContent = document.querySelector(target);
             if (targetContent) {
-                fadeIn(targetContent as HTMLElement);
+                targetContent.style.display = 'block';
             }
         });
     });
@@ -109,10 +129,12 @@ document.addEventListener('DOMContentLoaded', function() {
                 password: formData.get('password') as string
             });
             
-            console.log('Login successful:', response.data);
-            localStorage.setItem('token', response.data.token || '');
-            // window.location.href = '/dashboard';
-            
+            if (response.data.token) {
+                localStorage.setItem('token', response.data.token);
+                window.location.href = '/';
+            } else {
+                throw new Error('No token received');
+            }
         } catch (error) {
             console.error('Login failed:', error);
             alert('Login failed. Please check your credentials.');
@@ -127,7 +149,8 @@ document.addEventListener('DOMContentLoaded', function() {
             const response = await api.authRegisterPost({
                 email: formData.get('email') as string,
                 password: formData.get('password') as string,
-                name: `${formData.get('firstName')} ${formData.get('lastName')}`
+                firstname: formData.get('firstname') as string,
+                lastname: formData.get('lastname') as string
             });
             
             console.log('Registration successful:', response.data);
