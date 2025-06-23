@@ -18,6 +18,10 @@ $normal: 400;
 $bold: 600;
 $br: 4px;
 
+// Breakpoints
+$mobile: 480px;
+$tablet: 768px;
+
 *, *:before, *:after {
   box-sizing: border-box;
 }
@@ -30,9 +34,11 @@ body {
   background: $body-bg;
   font-family: 'Titillium Web', sans-serif;
   min-height: 100vh;
+  margin: 0;
+  padding: 20px;
   display: flex;
   align-items: center;
-  margin: 0;
+  justify-content: center;
 }
 
 a {
@@ -52,17 +58,22 @@ a {
   border-radius: $br;
   box-shadow: 0 4px 10px 4px rgba($form-bg,.3);
   width: 100%;
+
+  @media (max-width: $mobile) {
+    padding: 20px;
+  }
 }
 
 .tab-group {
   list-style: none;
   padding: 0;
   margin: 0 0 40px 0;
-  &:after {
-    content: "";
-    display: table;
-    clear: both;
+  display: flex;
+  
+  @media (max-width: $mobile) {
+    flex-direction: column;
   }
+
   li a {
     display: block;
     text-decoration: none;
@@ -71,15 +82,22 @@ a {
     color: $gray-light;
     font-size: 20px;
     float: left;
-    width: 50%;
+    width: 100%;
     text-align: center;
     cursor: pointer;
     transition: .5s ease;
+    
+    @media (max-width: $mobile) {
+      font-size: 16px;
+      padding: 10px;
+    }
+
     &:hover {
       background: $main-dark;
       color: $white;
     }
   }
+
   .active a {
     background: $main;
     color: $white;
@@ -95,6 +113,11 @@ h1 {
   color: $white;
   font-weight: $thin;
   margin: 0 0 40px;
+  
+  @media (max-width: $mobile) {
+    font-size: 24px;
+    margin: 0 0 20px;
+  }
 }
 
 label {
@@ -113,7 +136,7 @@ label {
 }
 
 label.active {
-  transform: translateY(50px);
+  transform: translateY(-25px);
   left: 2px;
   font-size: 14px;
   .req {
@@ -137,6 +160,11 @@ input, textarea {
   color: $white;
   border-radius: 0;
   transition: border-color .25s ease, box-shadow .25s ease;
+  
+  @media (max-width: $mobile) {
+    font-size: 16px;
+  }
+
   &:focus {
     outline: 0;
     border-color: $main;
@@ -151,6 +179,10 @@ textarea {
 .field-wrap {
   position: relative;
   margin-bottom: 40px;
+  
+  @media (max-width: $mobile) {
+    margin-bottom: 20px;
+  }
 
   .error-message {
     color: $error;
@@ -163,26 +195,24 @@ textarea {
 }
 
 .top-row {
-  &:after {
-    content: "";
-    display: table;
-    clear: both;
+  display: flex;
+  gap: 4%;
+  margin-bottom: 20px;
+  
+  @media (max-width: $mobile) {
+    flex-direction: column;
+    gap: 20px;
   }
 
   > div {
-    float: left;
-    width: 48%;
-    margin-right: 4%;
-    &:last-child { 
-      margin: 0;
-    }
+    flex: 1;
   }
 }
 
 .button {
   border: 0;
   outline: none;
-  border-radius: 0;
+  border-radius: $br;
   padding: 15px 0;
   font-size: 2rem;
   font-weight: $bold;
@@ -192,8 +222,19 @@ textarea {
   color: $white;
   transition: all .5s ease;
   -webkit-appearance: none;
+  
+  @media (max-width: $mobile) {
+    font-size: 1.5rem;
+    padding: 12px 0;
+  }
+
   &:hover, &:focus {
     background: $main-dark;
+  }
+  
+  &:disabled {
+    background: lighten($main, 15%);
+    cursor: not-allowed;
   }
 }
 
@@ -244,5 +285,89 @@ textarea {
         &:hover {
             background: color.adjust($main, $lightness: -10%);
         }
+    }
+}
+
+.auth-container {
+    display: none;
+    width: 100%;
+    
+    &.visible {
+        display: block;
+    }
+}
+
+.profile-container {
+    display: none;
+    background: white;
+    padding: 40px;
+    border-radius: $br;
+    box-shadow: 0 4px 10px 4px rgba($form-bg,.3);
+    width: 100%;
+    
+    @media (max-width: $mobile) {
+        padding: 20px;
+    }
+    
+    &.visible {
+        display: block;
+    }
+
+    .profile-info {
+        margin-bottom: 30px;
+
+        h2 {
+            color: $main;
+            text-align: center;
+            margin-bottom: 20px;
+            
+            @media (max-width: $mobile) {
+                font-size: 24px;
+                margin-bottom: 15px;
+            }
+        }
+
+        p {
+            margin: 10px 0;
+            padding: 10px;
+            border-bottom: 1px solid #eee;
+            font-size: 16px;
+            
+            @media (max-width: $mobile) {
+                font-size: 14px;
+                padding: 8px;
+            }
+
+            strong {
+                color: $main;
+                margin-right: 10px;
+                min-width: 80px;
+                display: inline-block;
+            }
+        }
+    }
+}
+
+// Loading spinner
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+.loading-spinner {
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    margin-right: 10px;
+    border: 3px solid rgba(255, 255, 255, 0.3);
+    border-radius: 50%;
+    border-top-color: $white;
+    animation: spin 1s ease-in-out infinite;
+    vertical-align: middle;
+    
+    @media (max-width: $mobile) {
+        width: 16px;
+        height: 16px;
+        border-width: 2px;
     }
 } 
