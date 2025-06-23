@@ -4,7 +4,7 @@ import './components/Profile';
 
 // Initialize API client
 const api = new AuthenticationApi(new Configuration({
-    basePath: 'http://localhost:8000',
+    basePath: import.meta.env.VITE_BACKEND_API,
     headers: {
         'Content-Type': 'application/json'
     }
@@ -40,7 +40,7 @@ async function loadProfile() {
             return;
         }
 
-        const response = await fetch('http://localhost:8000/api/profile', {
+        const response = await fetch(`${import.meta.env.VITE_BACKEND_API}/api/profile`, {
             headers: {
                 'Authorization': `Bearer ${token}`,
                 'Content-Type': 'application/json'
@@ -105,7 +105,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const formData = new FormData(loginForm);
         
         try {
-            const response = await fetch('http://localhost:8000/auth/login', {
+            const response = await fetch(`${import.meta.env.VITE_BACKEND_API}/auth/login`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
@@ -137,7 +137,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const formData = new FormData(signupForm);
         
         try {
-            const response = await fetch('http://localhost:8000/auth/register', {
+            const response = await fetch(`${import.meta.env.VITE_BACKEND_API}/auth/register`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
