@@ -1,5 +1,6 @@
 {
   "name": "auth-frontend",
+  "private": true,
   "version": "1.0.0",
   "type": "module",
   "scripts": {
@@ -8,7 +9,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "ts-client": "file:../ts-client"
+    "@auth/ts-client": "file:../ts-client"
   },
   "devDependencies": {
     "typescript": "^5.3.3",
