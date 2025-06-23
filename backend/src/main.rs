@@ -29,7 +29,7 @@ use utoipa_swagger_ui::SwaggerUi;
         routes::protected::admin_route,
         routes::protected::user_route,
 
-        routes::profile::get_profile
+        routes::profile::get_profile,
 
         routes::health::health_check
 
@@ -47,9 +47,9 @@ use utoipa_swagger_ui::SwaggerUi;
         (name = "auth", description = "Authentication endpoints"),
         (name = "protected", description = "Protected endpoints"),
 
-        (name = "profile", description = "User profile endpoints")
+        (name = "profile", description = "User profile endpoints"),
 
-        (name = "health", description = "Health check endpoint")
+        (name = "health", description = "Health check endpoint"),
 
     )
 )]
@@ -96,7 +96,6 @@ async fn main() {
         .route("/auth/login", post(auth::login))
         .route("/auth/register", post(auth::register))
         .route("/api/profile", get(routes::profile::get_profile))
-
         .route("/health", get(routes::health::health_check))
         .route("/register", post(auth::register))   
         .route("/login", post(auth::login))
@@ -119,8 +118,7 @@ async fn main() {
     // Start server
     let addr = std::net::SocketAddr::from(([127, 0, 0, 1], port));
     println!("Server running on http://{}", addr);
-    let listener = tokio::net::TcpListener::bind(addr).await.unwrap();
-
+    
     println!("🚀 Server running on http://localhost:{}", get_port());
     println!("📚 Swagger UI available at http://localhost:{}/swagger-ui/", get_port());
     println!("💚 Health check available at http://localhost:{}/health", get_port());
