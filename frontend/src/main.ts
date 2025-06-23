@@ -10,46 +10,71 @@ const api = new AuthenticationApi(new Configuration({
     }
 }));
 
-// Add profile route handling
-const routes = {
-    '/': () => {
-        const token = localStorage.getItem('token');
-        if (!token) {
-            window.location.href = '/login';
-            return;
-        }
-        const app = document.querySelector<HTMLDivElement>('#app');
-        if (app) {
-            app.innerHTML = '<profile-component></profile-component>';
-        }
-    },
-    '/login': () => {
-        const token = localStorage.getItem('token');
-        if (token) {
-            window.location.href = '/';
-            return;
-        }
-    }
-};
+// State management
+function showAuthForm() {
+    document.querySelector('.auth-container')?.classList.add('visible');
+    document.querySelector('.profile-container')?.classList.remove('visible');
+}
 
-// Handle routing
-function handleRoute() {
-    const path = window.location.pathname;
-    const route = routes[path];
-    if (route) {
-        route();
+function showProfile() {
+    document.querySelector('.auth-container')?.classList.remove('visible');
+    document.querySelector('.profile-container')?.classList.add('visible');
+}
+
+// Check authentication state
+function checkAuth() {
+    const token = localStorage.getItem('token');
+    if (token) {
+        loadProfile();
+    } else {
+        showAuthForm();
     }
 }
 
-// Listen for route changes
-window.addEventListener('popstate', handleRoute);
-handleRoute();
+// Load profile data
+async function loadProfile() {
+    try {
+        const token = localStorage.getItem('token');
+        if (!token) {
+            showAuthForm();
+            return;
+        }
+
+        const response = await fetch('http://localhost:8000/api/profile', {
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json'
+            }
+        });
+
+        if (!response.ok) {
+            throw new Error('Failed to fetch profile');
+        }
+
+        const profile = await response.json();
+        
+        // Update profile view
+        document.getElementById('profile-name')!.textContent = `${profile.firstname} ${profile.lastname}`;
+        document.getElementById('profile-email')!.textContent = profile.email;
+        document.getElementById('profile-role')!.textContent = profile.role;
+        
+        showProfile();
+    } catch (error) {
+        console.error('Failed to load profile:', error);
+        localStorage.removeItem('token');
+        showAuthForm();
+    }
+}
 
 document.addEventListener('DOMContentLoaded', () => {
+    // Check authentication state on load
+    checkAuth();
+
     // DOM elements
     const tabs = document.querySelectorAll('.tab a');
     const loginForm = document.querySelector<HTMLFormElement>('#login-form');
     const signupForm = document.querySelector<HTMLFormElement>('#signup-form');
+    const logoutButton = document.querySelector<HTMLButtonElement>('#logout-button');
 
     // Tab switching
     tabs.forEach(tab => {
@@ -62,26 +87,24 @@ document.addEventListener('DOMContentLoaded', () => {
             (e.target as HTMLElement).parentNode?.classList.add('active');
             
             // Show target content
-            const currentContent = document.querySelector('.tab-content > div:not([style*="display: none"])');
-            if (currentContent) {
-                currentContent.setAttribute('style', 'display: none');
-            }
+            document.querySelectorAll('.tab-content > div').forEach(div => {
+                (div as HTMLElement).style.display = 'none';
+            });
             if (target) {
-                document.querySelector(target)?.setAttribute('style', 'display: block');
+                const targetElement = document.querySelector(target);
+                if (targetElement instanceof HTMLElement) {
+                    targetElement.style.display = 'block';
+                }
             }
         });
     });
 
+    // Login form submission
     loginForm?.addEventListener('submit', async (e) => {
         e.preventDefault();
         const formData = new FormData(loginForm);
         
         try {
-            console.log('Attempting login with:', {
-                email: formData.get('email'),
-                password: formData.get('password')?.toString().length
-            });
-
             const response = await fetch('http://localhost:8000/auth/login', {
                 method: 'POST',
                 headers: {
@@ -95,20 +118,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
             if (!response.ok) {
                 const errorData = await response.json();
-                console.error('Server error:', {
-                    status: response.status,
-                    statusText: response.statusText,
-                    error: errorData
-                });
                 throw new Error(errorData.message || 'Login failed');
             }
 
             const data = await response.json();
-            console.log('Login successful:', data);
-            // Store token and redirect
             localStorage.setItem('token', data.token);
-            window.location.href = '/';
-            handleRoute(); // Ensure route handler is called after redirection
+            loadProfile();
             
         } catch (error) {
             console.error('Login failed:', error);
@@ -116,77 +131,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    // Input event handling
-    const formInputs = document.querySelectorAll<HTMLInputElement | HTMLTextAreaElement>('.form input, .form textarea');
-    
-    formInputs.forEach(input => {
-        ['keyup', 'blur', 'focus'].forEach(eventType => {
-            input.addEventListener(eventType, (e) => {
-                const label = input.previousElementSibling as HTMLLabelElement;
-                
-                if (e.type === 'keyup') {
-                    if (input.value === '') {
-                        label.classList.remove('active', 'highlight');
-                    } else {
-                        label.classList.add('active', 'highlight');
-                    }
-                } 
-                else if (e.type === 'blur') {
-                    if (input.value === '') {
-                        label.classList.remove('active', 'highlight');
-                    } else {
-                        label.classList.remove('highlight');
-                    }
-                } 
-                else if (e.type === 'focus') {
-                    if (input.value === '') {
-                        label.classList.remove('highlight');
-                    } else if (input.value !== '') {
-                        label.classList.add('highlight');
-                    }
-                }
-            });
-        });
-    });
-
-    // Tab switching
-    const tabLinks = document.querySelectorAll<HTMLElement>('.tab a');
-    
-    tabLinks.forEach(tab => {
-        tab.addEventListener('click', (e) => {
-            e.preventDefault();
-            
-            // Update active state
-            const parentTab = (e.target as HTMLElement).parentElement;
-            if (!parentTab) return;
-            
-            // Remove active class from all siblings
-            const siblings = Array.from(parentTab.parentElement?.children || []);
-            siblings.forEach(sibling => sibling.classList.remove('active'));
-            
-            // Add active class to clicked tab
-            parentTab.classList.add('active');
-            
-            // Get target content
-            const target = (e.target as HTMLElement).getAttribute('href');
-            if (!target) return;
-            
-            // Hide all other content
-            const allContent = document.querySelectorAll('.tab-content > div');
-            allContent.forEach(content => {
-                if (content.id !== target.substring(1)) {
-                    content.style.display = 'none';
-                }
-            });
-            
-            // Show target content
-            const targetContent = document.querySelector(target);
-            if (targetContent) {
-                targetContent.style.display = 'block';
-            }
-        });
-    });
-
+    // Signup form submission
     signupForm?.addEventListener('submit', async (e) => {
         e.preventDefault();
         const formData = new FormData(signupForm);
@@ -210,15 +155,57 @@ document.addEventListener('DOMContentLoaded', () => {
                 throw new Error(errorData.message || 'Registration failed');
             }
 
-            console.log('Registration successful');
-            const loginTab = document.querySelector('.tab a[href="#login"]');
-            if (loginTab instanceof HTMLElement) loginTab.click();
             alert('Registration successful! Please log in.');
+            
+            // Switch to login tab
+            const loginTab = document.querySelector('.tab a[href="#login"]');
+            if (loginTab instanceof HTMLElement) {
+                loginTab.click();
+            }
+            
+            // Clear signup form
+            signupForm.reset();
             
         } catch (error) {
             console.error('Registration failed:', error);
             alert('Registration failed. Please try again.');
         }
+    });
+
+    // Logout button
+    logoutButton?.addEventListener('click', () => {
+        localStorage.removeItem('token');
+        showAuthForm();
+    });
+
+    // Handle input animations
+    const formInputs = document.querySelectorAll<HTMLInputElement | HTMLTextAreaElement>('.field-wrap input, .field-wrap textarea');
+    formInputs.forEach(input => {
+        const label = input.previousElementSibling as HTMLLabelElement;
+        
+        ['keyup', 'blur', 'focus'].forEach(eventType => {
+            input.addEventListener(eventType, (e) => {
+                if (e.type === 'keyup') {
+                    if (input.value === '') {
+                        label.classList.remove('active', 'highlight');
+                    } else {
+                        label.classList.add('active', 'highlight');
+                    }
+                } else if (e.type === 'blur') {
+                    if (input.value === '') {
+                        label.classList.remove('active', 'highlight');
+                    } else {
+                        label.classList.remove('highlight');
+                    }
+                } else if (e.type === 'focus') {
+                    if (input.value === '') {
+                        label.classList.remove('highlight');
+                    } else {
+                        label.classList.add('highlight');
+                    }
+                }
+            });
+        });
     });
 });
 
