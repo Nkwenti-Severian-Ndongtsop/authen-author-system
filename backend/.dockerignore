@@ -2,9 +2,8 @@
 .git
 .gitignore
 
-# Rust
+# Rust - only ignore target directory
 target/
-**/*.rs.bk
 
 # IDE
 .idea/
@@ -18,7 +17,6 @@ target/
 build.sh
 
 # Docker
-Dockerfile
 .dockerignore
 
 # Misc
