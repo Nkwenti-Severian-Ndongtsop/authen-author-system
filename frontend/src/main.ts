@@ -179,6 +179,30 @@ document.addEventListener('DOMContentLoaded', () => {
         e.preventDefault();
         const formData = new FormData(signupForm);
         
+        // Get form values
+        const firstname = formData.get('firstname') as string;
+        const lastname = formData.get('lastname') as string;
+        const email = formData.get('email') as string;
+        const password = formData.get('password') as string;
+
+        // Frontend validation
+        if (firstname.length < 2 || firstname.length > 50) {
+            alert('First name must be between 2 and 50 characters');
+            return;
+        }
+        if (lastname.length < 2 || lastname.length > 50) {
+            alert('Last name must be between 2 and 50 characters');
+            return;
+        }
+        if (password.length < 6) {
+            alert('Password must be at least 6 characters');
+            return;
+        }
+        if (!email.match(/^[^\s@]+@[^\s@]+\.[^\s@]+$/)) {
+            alert('Please enter a valid email address');
+            return;
+        }
+        
         // Get the submit button and disable it
         const submitButton = signupForm.querySelector('button[type="submit"]') as HTMLButtonElement;
         const originalButtonText = submitButton.textContent || 'Get Started';
@@ -194,16 +218,17 @@ document.addEventListener('DOMContentLoaded', () => {
                     'Content-Type': 'application/json'
                 },
                 body: JSON.stringify({
-                    firstname: formData.get('firstname'),
-                    lastname: formData.get('lastname'),
-                    email: formData.get('email'),
-                    password: formData.get('password')
+                    firstname,
+                    lastname,
+                    email,
+                    password
                 })
             });
 
+            const data = await response.json();
+
             if (!response.ok) {
-                const errorData = await response.json();
-                throw new Error(errorData.message || 'Registration failed');
+                throw new Error(data.message || 'Registration failed');
             }
 
             // Registration successful
@@ -220,7 +245,11 @@ document.addEventListener('DOMContentLoaded', () => {
             
         } catch (error) {
             console.error('Registration failed:', error);
-            alert('Registration failed. Please try again.');
+            if (error instanceof Error) {
+                alert(error.message);
+            } else {
+                alert('Registration failed. Please try again.');
+            }
         } finally {
             // Reset button state
             submitButton.disabled = false;
