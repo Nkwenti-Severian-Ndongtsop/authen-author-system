@@ -1,10 +1,27 @@
 import { Configuration, AuthenticationApi } from '../../ts-client/dist/index.js';
 import './style.scss';
+import './components/Profile';
 
 // Initialize API client
 const api = new AuthenticationApi(new Configuration({
     basePath: 'http://localhost:3000'
 }));
+
+// Add profile route handling
+const routes = {
+    '/': () => {
+        const token = localStorage.getItem('token');
+        if (!token) {
+            window.location.href = '/login';
+            return;
+        }
+        const app = document.querySelector<HTMLDivElement>('#app');
+        if (app) {
+            app.innerHTML = '<profile-component></profile-component>';
+        }
+    },
+    // ... existing routes ...
+};
 
 document.addEventListener('DOMContentLoaded', function() {
     // Input event handling
