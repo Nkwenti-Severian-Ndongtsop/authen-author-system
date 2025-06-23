@@ -48,55 +48,47 @@ struct ApiDoc;
 
 #[tokio::main]
 async fn main() {
+    // Initialize environment
     init();
 
-    // CORS configuration
-    let cors = CorsLayer::new()
-        // Allow methods needed for Swagger UI
-        .allow_methods([
-            axum::http::Method::GET,
-            axum::http::Method::POST,
-            axum::http::Method::OPTIONS,
-            axum::http::Method::HEAD,
-        ])
-        // Allow requests from any origin
-        .allow_origin(get_frontend_url().parse::<axum::http::HeaderValue>().unwrap())
-        // Allow sending any headers in the request
-        .allow_headers([
-            axum::http::header::AUTHORIZATION,
-            axum::http::header::ACCEPT,
-            axum::http::header::CONTENT_TYPE,
-            axum::http::header::ORIGIN,
-        ])
-        // Allow credentials (cookies, authorization headers)
-        .allow_credentials(true);
+    // Get configuration
+    let port = get_port();
+    let frontend_url = get_frontend_url();
+    let database_url = get_database_url();
 
-    // Create router with all routes
+    // Initialize database connection
+    let pool = init_db(&database_url).await;
+
+    // Configure CORS
+    let cors = CorsLayer::new()
+        .allow_origin(frontend_url.parse().unwrap())
+        .allow_methods([axum::http::Method::GET, axum::http::Method::POST])
+        .allow_headers([axum::http::header::AUTHORIZATION, axum::http::header::CONTENT_TYPE]);
+
+    // Build router
     let app = Router::new()
-        .route("/register", post(auth::register))   
-        .route("/login", post(auth::login))
+        .route("/auth/login", post(auth::login))
+        .route("/auth/register", post(auth::register))
         .route("/api/profile", get(routes::profile::get_profile))
         .route(
-            "/admin",
+            "/api/admin",
             get(protected::admin_route)
-                .route_layer(from_fn_with_state(Role::Admin, auth_middleware)),
+                .layer(from_fn_with_state(pool.clone(), auth_middleware::<Role>)),
         )
         .route(
-            "/user",
+            "/api/user",
             get(protected::user_route)
-                .route_layer(from_fn_with_state(Role::User, auth_middleware)),
+                .layer(from_fn_with_state(pool.clone(), auth_middleware::<Role>)),
         )
-        // Serve Swagger UI and OpenAPI docs
-        .merge(SwaggerUi::new("/swagger-ui")
-            .url("/api-docs/openapi.json", ApiDoc::openapi())
-        )
-        .with_state(init_db(get_database_url().as_str()).await)
+        .with_state(pool)
+        .merge(SwaggerUi::new("/swagger-ui").url("/api-docs/openapi.json", ApiDoc::openapi()))
         .layer(cors);
 
-    println!("🚀 Server running on http://localhost:{}", get_port());
-    println!("📚 Swagger UI available at http://localhost:{}/swagger-ui/", get_port());
-    let listener = tokio::net::TcpListener::bind(format!("0.0.0.0:{}", get_port()))
+    // Start server
+    let addr = std::net::SocketAddr::from(([127, 0, 0, 1], port));
+    println!("Server running on http://{}", addr);
+    axum::Server::bind(&addr)
+        .serve(app.into_make_service())
         .await
         .unwrap();
-    axum::serve(listener, app).await.unwrap();
 }
