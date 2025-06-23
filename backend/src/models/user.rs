@@ -2,6 +2,7 @@ use serde::{Deserialize, Serialize};
 use utoipa::ToSchema;
 use validator::Validate;
 use sqlx::FromRow;
+use std::str::FromStr;
 
 /// Represents a user in the system
 #[derive(Debug, Serialize, Deserialize, FromRow, ToSchema, Clone)]
@@ -38,6 +39,18 @@ pub enum Role {
     Admin,
     /// Regular user with limited access
     User,
+}
+
+impl FromStr for Role {
+    type Err = String;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        match s {
+            "Admin" => Ok(Role::Admin),
+            "User" => Ok(Role::User),
+            _ => Err(format!("Invalid role: {}", s)),
+        }
+    }
 }
 
 impl ToString for Role {
