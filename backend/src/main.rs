@@ -101,7 +101,7 @@ async fn main() {
     println!("🚀 Server running on https://backend-auth-system.onrender.com");
     println!("📚 Swagger UI available at https://backend-auth-system.onrender.com/swagger-ui/");
     println!("💚 Health check available at https://backend-auth-system.onrender.com/health");
-    
+
     let listener = tokio::net::TcpListener::bind(format!("0.0.0.0:{}", get_port()))
         .await
         .unwrap();
