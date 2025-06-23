@@ -1,11 +1,5 @@
-import { Configuration, AuthenticationApi } from '@auth/ts-client';
 import './style.scss';
 import './components/Profile';
-
-// Initialize API client
-const config = new Configuration({
-    basePath: import.meta.env.VITE_BACKEND_API
-});
 
 // State management
 function showAuthForm() {
