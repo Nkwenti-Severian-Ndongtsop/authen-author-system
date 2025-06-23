@@ -1,0 +1,20 @@
+# Git
+.git
+.gitignore
+
+# Rust
+target/
+**/*.rs.bk
+
+# IDE
+.idea/
+.vscode/
+
+# Environment
+.env
+*.env
+
+# Misc
+README.md
+LICENSE
+*.log 
