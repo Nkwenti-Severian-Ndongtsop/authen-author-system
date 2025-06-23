@@ -163,15 +163,16 @@ document.addEventListener('DOMContentLoaded', function() {
                     'Content-Type': 'application/json'
                 },
                 body: JSON.stringify({
-                    email: formData.get('email'),
-                    password: formData.get('password'),
                     firstname: formData.get('firstname'),
-                    lastname: formData.get('lastname')
+                    lastname: formData.get('lastname'),
+                    email: formData.get('email'),
+                    password: formData.get('password')
                 })
             });
 
             if (!response.ok) {
-                throw new Error('Registration failed');
+                const errorData = await response.json();
+                throw new Error(errorData.message || 'Registration failed');
             }
 
             console.log('Registration successful');
