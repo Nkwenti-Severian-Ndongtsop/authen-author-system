@@ -13,5 +13,10 @@ export default defineConfig({
     },
     optimizeDeps: {
         include: ['../../ts-client/dist/index.js']
+    },
+    resolve: {
+        alias: {
+            '@auth/ts-client': resolve(__dirname, '../ts-client')
+        }
     }
 }); 
