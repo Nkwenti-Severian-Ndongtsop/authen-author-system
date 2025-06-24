@@ -290,21 +290,21 @@ textarea {
 
 // Container visibility
 .auth-container, .profile-container {
-  display: none;
-  width: 100%;
-
-  &.visible {
-    display: block;
-  }
+    display: none;
+    width: 100%;
+    
+    &.visible {
+        display: block;
+    }
 }
 
 // Profile styles
 .profile-container {
   background: rgba($form-bg, 0.9);
-  padding: 40px;
+    padding: 40px;
   max-width: 800px;
   margin: 0 auto;
-  border-radius: $br;
+    border-radius: $br;
   box-shadow: 0 4px 10px 4px rgba($form-bg, 0.3);
   color: $white;
 
@@ -346,10 +346,10 @@ textarea {
     border-radius: 20px;
     font-size: 14px;
     font-weight: $bold;
-  }
+    }
 
-  .profile-info {
-    margin-bottom: 30px;
+    .profile-info {
+        margin-bottom: 30px;
   }
 
   .activity-overview {
@@ -361,7 +361,7 @@ textarea {
     h3 {
       margin: 0 0 15px;
       font-weight: $normal;
-      color: $main;
+            color: $main;
     }
   }
 
@@ -371,7 +371,7 @@ textarea {
     label {
       position: static;
       display: block;
-      font-size: 14px;
+                font-size: 14px;
       color: $gray-light;
       margin-bottom: 5px;
       transform: none;
@@ -387,7 +387,7 @@ textarea {
     display: flex;
     gap: 10px;
     justify-content: flex-end;
-  }
+    }
 }
 
 // Loading spinner
