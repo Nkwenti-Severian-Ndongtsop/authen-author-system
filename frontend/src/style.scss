@@ -349,100 +349,45 @@ textarea {
   }
 
   .profile-info {
-.profile-container {
-    display: none;
-    background: rgba($form-bg, 0.9);
-    padding: 40px;
-    max-width: 800px;
-    margin: 0 auto;
+    margin-bottom: 30px;
+  }
+
+  .activity-overview {
+    background: rgba($gray-light, 0.1);
+    padding: 20px;
     border-radius: $br;
-    box-shadow: 0 4px 10px 4px rgba($form-bg, 0.3);
-    color: $white;
+    margin-bottom: 30px;
 
-    &.visible {
-        display: block;
+    h3 {
+      margin: 0 0 15px;
+      font-weight: $normal;
+      color: $main;
+    }
+  }
+
+  .info-group {
+    margin-bottom: 15px;
+
+    label {
+      position: static;
+      display: block;
+      font-size: 14px;
+      color: $gray-light;
+      margin-bottom: 5px;
+      transform: none;
     }
 
-    .profile-header {
-        display: flex;
-        align-items: center;
-        gap: 20px;
-        margin-bottom: 30px;
-        padding-bottom: 20px;
-        border-bottom: 1px solid rgba($gray-light, 0.2);
+    p {
+      margin: 0;
+      font-size: 16px;
     }
+  }
 
-    .profile-picture-container {
-        width: 120px;
-        height: 120px;
-        border-radius: 50%;
-        overflow: hidden;
-        border: 3px solid $main;
-    }
-
-    .profile-picture {
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
-    }
-
-    .profile-title {
-        h2 {
-            margin: 0 0 10px;
-            font-size: 28px;
-            font-weight: $normal;
-        }
-    }
-
-    .role-badge {
-        display: inline-block;
-        padding: 4px 12px;
-        background: $main;
-        border-radius: 20px;
-        font-size: 14px;
-        font-weight: $bold;
-    }
-
-    .profile-info {
-        margin-bottom: 30px;
-    }
-
-    .activity-overview {
-        background: rgba($gray-light, 0.1);
-        padding: 20px;
-        border-radius: $br;
-        margin-bottom: 30px;
-
-        h3 {
-            margin: 0 0 15px;
-            font-weight: $normal;
-            color: $main;
-        }
-    }
-
-    .info-group {
-        margin-bottom: 15px;
-
-        label {
-            position: static;
-            display: block;
-            font-size: 14px;
-            color: $gray-light;
-            margin-bottom: 5px;
-            transform: none;
-        }
-
-        p {
-            margin: 0;
-            font-size: 16px;
-        }
-    }
-
-    .profile-actions {
-        display: flex;
-        gap: 10px;
-        justify-content: flex-end;
-    }
+  .profile-actions {
+    display: flex;
+    gap: 10px;
+    justify-content: flex-end;
+  }
 }
 
 // Loading spinner
