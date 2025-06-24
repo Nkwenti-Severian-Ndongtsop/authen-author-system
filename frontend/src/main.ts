@@ -5,8 +5,10 @@ import { ProfileComponent } from './components/Profile';
 customElements.define('user-profile', ProfileComponent);
 
 // Initialize app
-const app = document.getElementById('app');
-if (app) {
+async function initializeApp() {
+    const app = document.getElementById('app');
+    if (!app) return;
+
     // Check if user is logged in
     const token = localStorage.getItem('token');
     if (!token) {
@@ -63,11 +65,36 @@ if (app) {
         `;
     } else {
         // Show profile
-        app.innerHTML = `
-            <div class="card">
-                <user-profile></user-profile>
-            </div>
-        `;
+        try {
+            const response = await fetch(`${import.meta.env.VITE_BACKEND_API}/api/profile`, {
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            });
+
+            if (!response.ok) {
+                throw new Error('Failed to fetch profile');
+            }
+
+            const userData = await response.json();
+            
+            // Create and render profile component
+            app.innerHTML = `
+                <div class="card">
+                    <user-profile></user-profile>
+                </div>
+            `;
+
+            // Initialize profile component with user data
+            const profileComponent = document.querySelector('user-profile') as ProfileComponent;
+            if (profileComponent) {
+                profileComponent.data = userData;
+            }
+        } catch (error) {
+            console.error('Failed to load profile:', error);
+            localStorage.removeItem('token');
+            window.location.reload();
+        }
     }
 }
 
@@ -100,7 +127,11 @@ function createParticle() {
     return particle;
 }
 
+// Initialize the application when DOM is loaded
 document.addEventListener('DOMContentLoaded', () => {
+    initializeApp();
+
+    // Setup particles
     const particlesContainer = document.querySelector('.particles-container');
     if (particlesContainer) {
         // Create initial particles
