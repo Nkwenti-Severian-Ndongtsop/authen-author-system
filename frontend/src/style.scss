@@ -669,7 +669,7 @@ a {
     background-color: var(--danger-color);
     
     &:hover {
-      background-color: darken(#ff4444, 10%);
+      background-color: color.adjust(#ff4444, $lightness: -10%);
     }
   }
 
@@ -678,7 +678,7 @@ a {
     color: var(--text-color);
     
     &:hover {
-      background-color: lighten(#2a2a2a, 10%);
+      background-color: color.adjust(#2a2a2a, $lightness: 10%);
     }
   }
 }
