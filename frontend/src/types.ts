@@ -15,5 +15,5 @@ export interface ProfileUpdateData {
     lastname?: string;
     email?: string;
     password?: string;
-    profile_picture?: File;
+    profile_picture?: File | string;
 } 
