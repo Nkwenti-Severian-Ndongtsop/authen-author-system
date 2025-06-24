@@ -90,19 +90,17 @@ async function loadProfile(token: string) {
 
         const userData = await response.json();
         
-        // Create the card div first
-        const cardDiv = document.createElement('div');
-        cardDiv.className = 'card';
-        
-        // Clear the app container and add the card
-        app.innerHTML = '';
-        app.appendChild(cardDiv);
-
-        // Create and add the profile element using innerHTML
-        cardDiv.innerHTML = '<user-profile></user-profile>';
+        // Create the profile container structure
+        app.innerHTML = `
+            <div class="card">
+                <div class="profile-container">
+                    <user-profile></user-profile>
+                </div>
+            </div>
+        `;
         
         // Get a reference to the profile element
-        const profileElement = cardDiv.querySelector('user-profile') as ProfileComponent;
+        const profileElement = app.querySelector('user-profile') as ProfileComponent;
         
         // Now set the data
         if (profileElement) {
