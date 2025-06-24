@@ -30,6 +30,7 @@ use utoipa_swagger_ui::SwaggerUi;
         routes::protected::user_route,
         routes::profile::get_profile,
         routes::profile::update_profile,
+        routes::profile::upload_photo,
         routes::health::health_check,
     ),
     components(
@@ -87,6 +88,7 @@ async fn main() {
         .route("/auth/register", post(auth::register))
         .route("/api/profile", get(routes::profile::get_profile))
         .route("/api/profile/update", put(routes::profile::update_profile))
+        .route("/api/profile/photo", post(routes::profile::upload_photo))
         .route(
             "/api/admin",
             get(protected::admin_route)
