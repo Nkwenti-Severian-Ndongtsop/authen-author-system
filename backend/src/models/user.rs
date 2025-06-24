@@ -105,7 +105,7 @@ pub struct TokenResponse {
 }
 
 /// Request payload for profile update
-#[derive(Debug, Deserialize, Validate, ToSchema)]
+#[derive(Debug, Deserialize, Validate, ToSchema, Default)]
 pub struct ProfileUpdateRequest {
     /// First name (2-50 characters)
     #[validate(length(min = 2, max = 50))]
