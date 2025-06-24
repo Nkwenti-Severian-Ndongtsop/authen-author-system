@@ -2,6 +2,9 @@
 import './style.scss';
 import './components/Profile';
 
+// Get the backend API URL from environment variables
+const BACKEND_API = process.env.VITE_BACKEND_API || 'http://localhost:8000';
+
 // State management
 function showAuthForm() {
     const authContainer = document.querySelector('.auth-container') as HTMLElement;
@@ -42,7 +45,7 @@ async function loadProfile() {
             return;
         }
 
-        const response = await fetch(`${import.meta.env.VITE_BACKEND_API}/api/profile`, {
+        const response = await fetch(`${BACKEND_API}/api/profile`, {
             headers: {
                 'Authorization': `Bearer ${token}`,
                 'Content-Type': 'application/json'
@@ -151,7 +154,7 @@ function showLoginForm(app: HTMLElement) {
         const formData = new FormData(loginForm);
         
         try {
-            const response = await fetch(`${import.meta.env.VITE_BACKEND_API}/auth/login`, {
+            const response = await fetch(`${BACKEND_API}/auth/login`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -181,7 +184,7 @@ function showLoginForm(app: HTMLElement) {
         const formData = new FormData(signupForm);
         
         try {
-            const response = await fetch(`${import.meta.env.VITE_BACKEND_API}/auth/register`, {
+            const response = await fetch(`${BACKEND_API}/auth/register`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -281,7 +284,7 @@ function showEditModal(userData: any) {
             const token = localStorage.getItem('token');
             if (!token) throw new Error('No token found');
 
-            const response = await fetch(`${import.meta.env.VITE_BACKEND_API}/api/profile/update`, {
+            const response = await fetch(`${BACKEND_API}/api/profile/update`, {
                 method: 'PUT',
                 headers: {
                     'Authorization': `Bearer ${token}`,
@@ -429,7 +432,7 @@ document.addEventListener('DOMContentLoaded', () => {
             submitButton.disabled = true;
             submitButton.innerHTML = '<span class="loading-spinner"></span> Logging in...';
             
-            const response = await fetch(`${import.meta.env.VITE_BACKEND_API}/auth/login`, {
+            const response = await fetch(`${BACKEND_API}/auth/login`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
@@ -497,7 +500,7 @@ document.addEventListener('DOMContentLoaded', () => {
             submitButton.disabled = true;
             submitButton.innerHTML = '<span class="loading-spinner"></span> Creating Account...';
             
-            const response = await fetch(`${import.meta.env.VITE_BACKEND_API}/auth/register`, {
+            const response = await fetch(`${BACKEND_API}/auth/register`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
