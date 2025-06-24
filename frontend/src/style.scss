@@ -1047,4 +1047,40 @@ button {
 .success-message {
   background: rgba(0, 214, 178, 0.95);
   color: white;
+}
+
+// Greeting section styles
+.greeting-section {
+    background: rgba(15, 31, 40, 0.95);
+    border-radius: 20px;
+    padding: 2rem;
+    margin-bottom: 2rem;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+    backdrop-filter: blur(10px);
+    animation: fadeSlideUp 0.5s ease-out;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+
+    .greeting-text {
+        font-size: 2.5rem;
+        font-weight: 600;
+        margin: 0;
+        background: linear-gradient(120deg, #00d6b2, #00bcd4);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        letter-spacing: -0.5px;
+    }
+
+    .greeting-date {
+        font-size: 1.1rem;
+        color: rgba(255, 255, 255, 0.7);
+        margin: 0.5rem 0 0;
+        font-weight: 400;
+    }
+}
+
+// Enhance profile container layout
+.profile-container {
+    max-width: 1200px;
+    margin: 2rem auto;
+    padding: 0 1.5rem;
 } 
