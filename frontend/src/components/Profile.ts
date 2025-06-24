@@ -31,6 +31,7 @@ export class ProfileComponent extends HTMLElement {
 
     private async handleProfileUpdate(data: ProfileUpdateData) {
         try {
+            console.log('Handling profile update:', data);
             const token = localStorage.getItem('token');
             if (!token) throw new Error('No token found');
 
@@ -41,7 +42,7 @@ export class ProfileComponent extends HTMLElement {
                 }
             });
 
-            const response = await fetch('http://localhost:8000/api/profile/update', {
+            const response = await fetch(`${import.meta.env.VITE_BACKEND_API}/api/profile/update`, {
                 method: 'PUT',
                 headers: {
                     'Authorization': `Bearer ${token}`
@@ -52,6 +53,7 @@ export class ProfileComponent extends HTMLElement {
             if (!response.ok) throw new Error('Failed to update profile');
 
             const updatedUser = await response.json();
+            console.log('Profile updated successfully:', updatedUser);
             this.data = updatedUser;
             this.closeEditModal();
         } catch (error) {
@@ -61,13 +63,21 @@ export class ProfileComponent extends HTMLElement {
     }
 
     private openEditModal() {
+        console.log('Opening edit modal');
         this.isEditModalOpen = true;
         this.render();
+        
+        // Re-attach event listeners after re-rendering
+        this.setupEventListeners();
     }
 
     private closeEditModal() {
+        console.log('Closing edit modal');
         this.isEditModalOpen = false;
         this.render();
+        
+        // Re-attach event listeners after re-rendering
+        this.setupEventListeners();
     }
 
     private getDefaultProfilePicture(): string {
@@ -188,20 +198,34 @@ export class ProfileComponent extends HTMLElement {
         // Edit profile button
         const editButton = this.querySelector('#edit-profile');
         if (editButton) {
-            editButton.addEventListener('click', () => this.openEditModal());
+            console.log('Found edit button, adding click listener');
+            editButton.addEventListener('click', (e) => {
+                e.preventDefault();
+                console.log('Edit button clicked');
+                this.openEditModal();
+            });
+        } else {
+            console.warn('Edit button not found');
         }
 
         // Cancel edit button
         const cancelButton = this.querySelector('#cancel-edit');
         if (cancelButton) {
-            cancelButton.addEventListener('click', () => this.closeEditModal());
+            console.log('Found cancel button, adding click listener');
+            cancelButton.addEventListener('click', (e) => {
+                e.preventDefault();
+                console.log('Cancel button clicked');
+                this.closeEditModal();
+            });
         }
 
         // Edit profile form
         const editForm = this.querySelector('#edit-profile-form');
         if (editForm) {
+            console.log('Found edit form, adding submit listener');
             editForm.addEventListener('submit', async (e) => {
                 e.preventDefault();
+                console.log('Form submitted');
                 const formData = new FormData(e.target as HTMLFormElement);
                 const data: ProfileUpdateData = {};
                 
@@ -217,14 +241,17 @@ export class ProfileComponent extends HTMLElement {
 
                 await this.handleProfileUpdate(data);
             });
+        } else {
+            console.warn('Edit form not found');
         }
 
         // Logout button
-        const logoutButton = this.querySelector('#logout-button') as HTMLButtonElement;
+        const logoutButton = this.querySelector('#logout-button');
         if (logoutButton) {
+            console.log('Found logout button, adding click listener');
             logoutButton.addEventListener('click', async () => {
                 try {
-                    logoutButton.disabled = true;
+                    logoutButton.setAttribute('disabled', 'true');
                     logoutButton.innerHTML = '<span class="loading-spinner"></span> Logging out...';
                     
                     await new Promise(resolve => setTimeout(resolve, 500));
@@ -232,10 +259,12 @@ export class ProfileComponent extends HTMLElement {
                     window.location.reload();
                 } catch (error) {
                     console.error('Logout failed:', error);
-                    logoutButton.disabled = false;
+                    logoutButton.removeAttribute('disabled');
                     logoutButton.textContent = 'Logout';
                 }
             });
+        } else {
+            console.warn('Logout button not found');
         }
     }
 } 
