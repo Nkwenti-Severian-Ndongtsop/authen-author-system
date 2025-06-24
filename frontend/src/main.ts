@@ -1,5 +1,8 @@
 import './style.scss';
-import './components/Profile';
+import { ProfileComponent } from './components/Profile';
+
+// Register custom elements
+customElements.define('user-profile', ProfileComponent);
 
 // State management
 function showAuthForm() {
