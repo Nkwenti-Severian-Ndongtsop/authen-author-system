@@ -338,30 +338,7 @@ h2 {
 
 // Theme toggle
 .theme-toggle {
-  position: fixed;
-  top: 1rem;
-  right: 1rem;
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  background: rgba(15, 31, 40, 0.95);
-  border: none;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 1000;
-  transition: all 0.3s ease;
-  
-  &:hover {
-    transform: scale(1.1);
-  }
-  
-  svg {
-    width: 24px;
-    height: 24px;
-    fill: #fff;
-  }
+  display: none;
 }
 
 a {
@@ -859,8 +836,7 @@ a {
 
 /* Light Theme */
 body.light-theme {
-  background: #f5f5f5;
-  color: var(--navy);
+  display: none;
 }
 
 body.light-theme .container {
