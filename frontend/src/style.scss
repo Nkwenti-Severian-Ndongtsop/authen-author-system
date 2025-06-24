@@ -60,15 +60,21 @@ a {
   justify-content: center;
 }
 
+#app {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
 .card {
   background: rgba($form-bg, 0.85);
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
   border-radius: $br;
-  padding: 2rem;
+  padding: 2.5rem;
   width: 100%;
-  max-width: 600px;
-  margin: 0 auto;
+  max-width: 500px;
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
   border: 1px solid rgba($white, 0.1);
   position: relative;
@@ -97,12 +103,12 @@ a {
     text-align: center;
     color: $white;
     font-weight: $thin;
-    margin: 0 0 40px;
+    margin: 0 0 2rem;
     font-size: 2rem;
     
     @media (max-width: $mobile) {
       font-size: 1.5rem;
-      margin: 0 0 20px;
+      margin: 0 0 1.5rem;
     }
   }
 }
@@ -110,7 +116,7 @@ a {
 .tab-group {
   list-style: none;
   padding: 0;
-  margin: 0 0 40px 0;
+  margin: 0 0 2rem;
   display: flex;
   gap: 4px;
   
@@ -126,7 +132,7 @@ a {
     a {
       background: rgba($gray-light, 0.25);
       color: $gray-light;
-      padding: 15px;
+      padding: 1rem;
       display: block;
       text-decoration: none;
       font-size: 1.2rem;
@@ -136,7 +142,7 @@ a {
       
       @media (max-width: $mobile) {
         font-size: 1rem;
-        padding: 10px;
+        padding: 0.8rem;
       }
 
       &:hover {
@@ -154,30 +160,31 @@ a {
 
 .field-wrap {
   position: relative;
-  margin-bottom: 30px;
+  margin-bottom: 2rem;
 
   label {
     position: absolute;
-    transform: translateY(6px);
-    left: 13px;
-    color: rgba($white, 0.5);
+    transform: translateY(0.75rem);
+    left: 1rem;
+    color: rgba($white, 0.6);
     transition: all 0.25s ease;
     pointer-events: none;
-    font-size: 0.9rem;
+    font-size: 1rem;
 
     .req {
       margin: 2px;
       color: $main;
     }
-  }
 
-  label.active {
-    transform: translateY(-25px);
-    left: 2px;
-    font-size: 0.8rem;
+    &.active {
+      transform: translateY(-1.5rem);
+      left: 0;
+      font-size: 0.85rem;
+      color: $main;
 
-    .req {
-      opacity: 0;
+      .req {
+        opacity: 0;
+      }
     }
   }
 
@@ -185,7 +192,7 @@ a {
     font-size: 1rem;
     display: block;
     width: 100%;
-    padding: 10px;
+    padding: 0.75rem 1rem;
     background: rgba($gray-light, 0.1);
     border: 1px solid rgba($gray-light, 0.3);
     border-radius: $br;
@@ -198,18 +205,6 @@ a {
       box-shadow: 0 0 0 3px rgba($main, 0.1);
       background: rgba($gray-light, 0.15);
     }
-
-    &:focus ~ label,
-    &:valid ~ label {
-      transform: translateY(-25px);
-      left: 2px;
-      font-size: 0.8rem;
-      color: $main;
-
-      .req {
-        opacity: 0;
-      }
-    }
   }
 }
 
@@ -217,22 +212,23 @@ a {
   border: 0;
   outline: none;
   border-radius: $br;
-  padding: 15px 0;
-  font-size: 1.2rem;
+  padding: 1rem;
+  font-size: 1.1rem;
   font-weight: $bold;
   text-transform: uppercase;
   letter-spacing: .1em;
   background: $main;
   color: $white;
-  transition: all .5s ease;
+  transition: all .3s ease;
   cursor: pointer;
   
   &:hover {
     background: $main-dark;
+    transform: translateY(-1px);
   }
   
   &:active {
-    transform: scale(0.95);
+    transform: translateY(1px);
   }
 }
 
@@ -737,6 +733,7 @@ user-profile {
   width: 100%;
   height: 100%;
   overflow: hidden;
+  pointer-events: none;
 }
 
 .particle {
