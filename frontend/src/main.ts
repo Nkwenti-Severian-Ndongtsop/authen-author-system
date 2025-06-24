@@ -1,8 +1,4 @@
 import './style.scss';
-import { ProfileComponent } from './components/Profile';
-
-// Register custom elements
-customElements.define('user-profile', ProfileComponent);
 
 // Initialize app
 async function initializeApp() {
