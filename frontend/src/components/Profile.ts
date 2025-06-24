@@ -1,5 +1,5 @@
 // Get the backend API URL from environment variables
-const BACKEND_API = process.env.VITE_BACKEND_API || 'http://localhost:8000';
+const BACKEND_API: string = `${import.meta.env.VITE_BACKEND_API || 'http://localhost:8000'}`;
 
 interface ProfileData {
     firstname: string;
@@ -36,6 +36,11 @@ class UserProfile extends HTMLElement {
 
     private getDefaultProfilePicture(): string {
         return `data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23ffffff'%3E%3Cpath d='M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3zm0 14.2c-2.5 0-4.71-1.28-6-3.22.03-1.99 4-3.08 6-3.08 1.99 0 5.97 1.09 6 3.08-1.29 1.94-3.5 3.22-6 3.22z'/%3E%3C/svg%3E`;
+    }
+
+    private getProfilePictureUrl(url?: string): string {
+        if (!url) return this.getDefaultProfilePicture();
+        return url.startsWith('data:') ? url : `${BACKEND_API}${url}`;
     }
 
     private formatDate(dateString: string): string {
@@ -110,6 +115,8 @@ class UserProfile extends HTMLElement {
 
             // Handle photo upload first if there's a new photo
             const photoFile = (form.querySelector('#photo-upload') as HTMLInputElement).files?.[0];
+            let profilePictureUrl = this._data?.profile_picture;
+
             if (photoFile) {
                 const photoFormData = new FormData();
                 photoFormData.append('photo', photoFile);
@@ -127,7 +134,7 @@ class UserProfile extends HTMLElement {
                 }
 
                 const photoResult = await photoResponse.json();
-                formData.append('profile_picture', photoResult.url);
+                profilePictureUrl = photoResult.url;
             }
 
             // Update profile data
@@ -142,7 +149,7 @@ class UserProfile extends HTMLElement {
                     lastname: formData.get('lastname'),
                     email: formData.get('email'),
                     password: formData.get('password') || undefined,
-                    profile_picture: formData.get('profile_picture') || this._data?.profile_picture
+                    profile_picture: profilePictureUrl
                 })
             });
 
@@ -177,14 +184,14 @@ class UserProfile extends HTMLElement {
 
         const logoutButton = this.shadowRoot.querySelector('#logout-button');
         const editButton = this.shadowRoot.querySelector('#edit-button');
-        const closeButton = this.shadowRoot.querySelector('.modal-close');
+        const closeButtons = this.shadowRoot.querySelectorAll('.modal-close');
         const editForm = this.shadowRoot.querySelector('#edit-form');
         const modal = this.shadowRoot.querySelector('.modal');
         const photoInput = this.shadowRoot.querySelector('#photo-upload');
 
         logoutButton?.addEventListener('click', this.handleLogout);
         editButton?.addEventListener('click', this.handleEditProfile);
-        closeButton?.addEventListener('click', this.handleModalClose);
+        closeButtons?.forEach(button => button.addEventListener('click', this.handleModalClose));
         editForm?.addEventListener('submit', (e) => this.handleProfileUpdate(e));
         modal?.addEventListener('click', this.handleModalClick);
         photoInput?.addEventListener('change', this.handlePhotoUpload);
@@ -559,7 +566,7 @@ class UserProfile extends HTMLElement {
         const content = this._data ? `
             <div class="profile-container">
                 <img 
-                    src="${this._data.profile_picture || this.getDefaultProfilePicture()}" 
+                    src="${this.getProfilePictureUrl(this._data.profile_picture)}" 
                     alt="Profile picture"
                     class="profile-picture"
                     onerror="this.src='${this.getDefaultProfilePicture()}'"
@@ -601,7 +608,7 @@ class UserProfile extends HTMLElement {
                     <form id="edit-form">
                         <div class="photo-upload-container">
                             <img 
-                                src="${this._data.profile_picture || this.getDefaultProfilePicture()}" 
+                                src="${this.getProfilePictureUrl(this._data.profile_picture)}" 
                                 alt="Profile preview"
                                 class="photo-preview"
                             >
