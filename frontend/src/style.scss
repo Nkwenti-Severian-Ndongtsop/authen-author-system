@@ -409,56 +409,87 @@ textarea {
 
 // Modal styles
 .modal-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: rgba(0, 0, 0, 0.7);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    z-index: 1000;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 20px;
 }
 
 .modal {
-    background: rgba($form-bg, 0.95);
-    padding: 30px;
-    border-radius: $br;
-    width: 90%;
-    max-width: 500px;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+  background: rgba($form-bg, 0.95);
+  padding: 30px;
+  border-radius: $br;
+  width: 90%;
+  max-width: 500px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+  position: relative;
+  z-index: 1001;
 
-    h3 {
-        margin: 0 0 20px;
-        color: $white;
-        font-weight: $normal;
+  h3 {
+    margin: 0 0 20px;
+    color: $white;
+    font-weight: $normal;
+  }
+
+  .form-group {
+    margin-bottom: 20px;
+    position: relative;
+
+    label {
+      position: static;
+      display: block;
+      font-size: 14px;
+      color: $gray-light;
+      margin-bottom: 5px;
+      transform: none;
     }
 
-    .form-group {
-        margin-bottom: 20px;
+    input {
+      font-size: 16px;
+      padding: 8px 12px;
+      border-radius: $br;
+      width: 100%;
+      background: rgba($white, 0.1);
+      border: 1px solid rgba($gray-light, 0.2);
+      color: $white;
+      transition: all 0.3s ease;
 
-        label {
-            position: static;
-            display: block;
-            font-size: 14px;
-            color: $gray-light;
-            margin-bottom: 5px;
-            transform: none;
+      &:focus {
+        outline: none;
+        border-color: $main;
+        background: rgba($white, 0.15);
+      }
+
+      &[type="file"] {
+        padding: 6px;
+        background: none;
+        border: 1px dashed rgba($gray-light, 0.3);
+        cursor: pointer;
+
+        &:hover {
+          border-color: $main;
         }
-
-        input {
-            font-size: 16px;
-            padding: 8px 12px;
-            border-radius: $br;
-        }
+      }
     }
+  }
 
-    .button-group {
-        display: flex;
-        gap: 10px;
-        justify-content: flex-end;
+  .button-group {
+    display: flex;
+    gap: 10px;
+    justify-content: flex-end;
+    margin-top: 30px;
+
+    button {
+      min-width: 120px;
     }
+  }
 }
 
 // Animation
