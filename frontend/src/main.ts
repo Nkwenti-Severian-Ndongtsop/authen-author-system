@@ -1,8 +1,10 @@
 import './style.scss';
 import { ProfileComponent } from './components/Profile';
 
-// Register custom elements
-customElements.define('user-profile', ProfileComponent);
+// Only register if not already registered
+if (!customElements.get('user-profile')) {
+    customElements.define('user-profile', ProfileComponent);
+}
 
 // State management
 function showAuthForm() {
