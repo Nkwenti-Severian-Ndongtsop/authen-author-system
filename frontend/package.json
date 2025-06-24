@@ -11,12 +11,9 @@
   "dependencies": {
     "@auth/ts-client": "file:../ts-client"
   },
-  "sass": {
-    "api": "modern"
-  },
   "devDependencies": {
     "@types/node": "^20.11.16",
-    "sass": "^1.89.2",
+    "sass": "^1.63.6",
     "typescript": "^5.2.2",
     "vite": "^5.0.8"
   }
