@@ -1049,4 +1049,55 @@ user-profile {
         opacity: 1;
         transform: translateY(0);
     }
+}
+
+// Message Styles
+.message {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  padding: 1rem 1.5rem;
+  border-radius: $br;
+  color: $white;
+  font-size: 0.9rem;
+  font-weight: $bold;
+  z-index: 2000;
+  animation: slideIn 0.3s ease forwards;
+  box-shadow: 0 4px 12px rgba(black, 0.15);
+  
+  &.message-success {
+    background: linear-gradient(135deg, $main 0%, darken($main, 10%) 100%);
+    border-left: 4px solid lighten($main, 10%);
+  }
+  
+  &.message-error {
+    background: linear-gradient(135deg, $error 0%, darken($error, 10%) 100%);
+    border-left: 4px solid lighten($error, 10%);
+  }
+  
+  &.fade-out {
+    animation: slideOut 0.3s ease forwards;
+  }
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateX(100%);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes slideOut {
+  from {
+    opacity: 1;
+    transform: translateX(0);
+  }
+  to {
+    opacity: 0;
+    transform: translateX(100%);
+  }
 } 
