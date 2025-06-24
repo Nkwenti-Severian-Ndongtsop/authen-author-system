@@ -1,6 +1,6 @@
 import { defineConfig } from 'vite';
 import { resolve } from 'path';
-import * as sass from 'sass';
+import * as sass from 'sass-embedded';
 
 export default defineConfig({
     root: '.',
@@ -25,7 +25,6 @@ export default defineConfig({
             scss: {
                 implementation: sass,
                 sassOptions: {
-                    api: 'modern',
                     style: 'expanded',
                     sourceMap: true
                 }
