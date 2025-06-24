@@ -1,5 +1,5 @@
 use axum::{
-    extract::{State, Multipart},
+    extract::{State, Multipart, FromRequest},
     http::StatusCode,
     Json,
 };
@@ -10,6 +10,7 @@ use axum_extra::{
 use sqlx::{Pool, Postgres};
 use validator::Validate;
 use std::str::FromStr;
+use std::default::Default;
 
 use crate::{
     db::queries::{get_user_by_email, update_user_profile},
