@@ -93,14 +93,7 @@ pub async fn register(
     })?;
 
     // Create token
-    let token = create_token(&user.email, &user.role).map_err(|e| {
-        println!("❌ Failed to create token: {}", e);
-        (
-            StatusCode::INTERNAL_SERVER_ERROR,
-            Json("Failed to create token".to_string()),
-        )
-    })?;
-
+    let token = create_token(&user.email, &user.role);
     println!("✅ Registration successful for user: {} {}", user.firstname, user.lastname);
     Ok((StatusCode::CREATED, Json(AuthResponse { token, user })))
 }
@@ -151,14 +144,7 @@ pub async fn login(
     }
 
     // Create token
-    let token = create_token(&user.email, &user.role).map_err(|e| {
-        println!("❌ Failed to create token: {}", e);
-        (
-            StatusCode::INTERNAL_SERVER_ERROR,
-            Json("Failed to create token".to_string()),
-        )
-    })?;
-
+    let token = create_token(&user.email, &user.role);
     println!("✅ Login successful for user: {} {}", user.firstname, user.lastname);
     Ok(Json(AuthResponse { token, user }))
 }
