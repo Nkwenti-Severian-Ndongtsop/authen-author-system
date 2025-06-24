@@ -14,7 +14,7 @@ use crate::{
 use axum::{
     http::HeaderValue,
     middleware::from_fn_with_state,
-    routing::{get, post},
+    routing::{get, post, put},
     Router,
 };
 use tower_http::cors::CorsLayer;
@@ -29,6 +29,7 @@ use utoipa_swagger_ui::SwaggerUi;
         routes::protected::admin_route,
         routes::protected::user_route,
         routes::profile::get_profile,
+        routes::profile::update_profile,
         routes::health::health_check,
     ),
     components(
@@ -84,6 +85,7 @@ async fn main() {
         .route("/auth/login", post(auth::login))
         .route("/auth/register", post(auth::register))
         .route("/api/profile", get(routes::profile::get_profile))
+        .route("/api/profile/update", put(routes::profile::update_profile))
         .route(
             "/api/admin",
             get(protected::admin_route)
