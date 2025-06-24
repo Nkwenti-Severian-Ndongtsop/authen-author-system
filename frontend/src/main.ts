@@ -1,10 +1,87 @@
 import './style.scss';
 import { ProfileComponent } from './components/Profile';
 
-// Only register if not already registered
-if (!customElements.get('user-profile')) {
-    customElements.define('user-profile', ProfileComponent);
+// Register custom elements
+customElements.define('user-profile', ProfileComponent);
+
+// Initialize app
+const app = document.getElementById('app');
+if (app) {
+    // Check if user is logged in
+    const token = localStorage.getItem('token');
+    if (!token) {
+        // Show login form
+        app.innerHTML = `
+            <div class="card">
+                <div class="auth-container">
+                    <ul class="tab-group">
+                        <li class="tab active"><a href="#login">Log In</a></li>
+                        <li class="tab"><a href="#signup">Sign Up</a></li>
+                    </ul>
+
+                    <div class="tab-content">
+                        <div id="login">
+                            <h1>Welcome Back!</h1>
+                            <form id="login-form">
+                                <div class="field-wrap">
+                                    <label>Email Address<span class="req">*</span></label>
+                                    <input type="email" name="email" required autocomplete="off"/>
+                                </div>
+                                <div class="field-wrap">
+                                    <label>Password<span class="req">*</span></label>
+                                    <input type="password" name="password" required autocomplete="off"/>
+                                </div>
+                                <button type="submit" class="button button-block">Log In</button>
+                            </form>
+                        </div>
+
+                        <div id="signup" style="display: none;">
+                            <h1>Sign Up</h1>
+                            <form id="signup-form">
+                                <div class="field-wrap">
+                                    <label>First Name<span class="req">*</span></label>
+                                    <input type="text" name="firstname" required autocomplete="off" />
+                                </div>
+                                <div class="field-wrap">
+                                    <label>Last Name<span class="req">*</span></label>
+                                    <input type="text" name="lastname" required autocomplete="off"/>
+                                </div>
+                                <div class="field-wrap">
+                                    <label>Email Address<span class="req">*</span></label>
+                                    <input type="email" name="email" required autocomplete="off"/>
+                                </div>
+                                <div class="field-wrap">
+                                    <label>Set A Password<span class="req">*</span></label>
+                                    <input type="password" name="password" required autocomplete="off"/>
+                                </div>
+                                <button type="submit" class="button button-block">Get Started</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+    } else {
+        // Show profile
+        app.innerHTML = `
+            <div class="card">
+                <user-profile></user-profile>
+            </div>
+        `;
+    }
 }
+
+// Initialize particles
+document.addEventListener('DOMContentLoaded', () => {
+    const particlesContainer = document.querySelector('.particles-container');
+    if (particlesContainer) {
+        for (let i = 1; i <= 50; i++) {
+            const particle = document.createElement('div');
+            particle.className = `particle-${i}`;
+            particlesContainer.appendChild(particle);
+        }
+    }
+});
 
 // State management
 function showAuthForm() {
