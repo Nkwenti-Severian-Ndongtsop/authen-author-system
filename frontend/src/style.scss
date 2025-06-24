@@ -1083,4 +1083,41 @@ button {
     max-width: 1200px;
     margin: 2rem auto;
     padding: 0 1.5rem;
+}
+
+// Password field container
+.password-field {
+    position: relative;
+    width: 100%;
+    
+    input {
+        width: 100%;
+        padding-right: 40px; // Make room for the toggle button
+    }
+    
+    .password-toggle {
+        position: absolute;
+        right: 12px;
+        top: 50%;
+        transform: translateY(-50%);
+        background: none;
+        border: none;
+        padding: 0;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: rgba(255, 255, 255, 0.7);
+        transition: color 0.3s ease;
+        
+        &:hover {
+            color: #00d6b2;
+        }
+        
+        svg {
+            width: 20px;
+            height: 20px;
+            fill: currentColor;
+        }
+    }
 } 
