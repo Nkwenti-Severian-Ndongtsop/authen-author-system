@@ -41,13 +41,10 @@ class UserProfile extends HTMLElement {
     private getProfilePictureUrl(url?: string): string {
         if (!url) return this.getDefaultProfilePicture();
         if (url.startsWith('data:')) return url;
+        if (url.startsWith('http')) return url;
         
-        // If it's a relative path, construct the full URL
-        if (url.startsWith('/')) {
-            return `${BACKEND_API}${url}`;
-        } else {
-            return `${BACKEND_API}/uploads/${url}`;
-        }
+        // For uploaded files, construct the full URL to the uploads directory
+        return `https://backend-auth-system.onrender.com/uploads/${url}`;
     }
 
     private formatDate(dateString: string): string {
