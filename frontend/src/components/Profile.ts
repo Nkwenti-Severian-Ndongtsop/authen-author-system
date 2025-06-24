@@ -83,8 +83,8 @@ export class ProfileComponent extends HTMLElement {
         if (!this.user) {
             this.innerHTML = `
                 <div class="profile-container animate-in">
-                    <div class="profile-info">
-                        <h2>Loading profile...</h2>
+                <div class="profile-info">
+                    <h2>Loading profile...</h2>
                     </div>
                 </div>
             `;
