@@ -39,7 +39,7 @@ function showLoginForm(app: HTMLElement) {
                                 <label>Password<span class="req">*</span></label>
                                 <input type="password" name="password" required autocomplete="off"/>
                             </div>
-                            <button type="submit" class="button button-block">Log In</button>
+                            <button type="submit" class="button button-primary button-block">Log In</button>
                         </form>
                     </div>
 
@@ -62,7 +62,7 @@ function showLoginForm(app: HTMLElement) {
                                 <label>Set A Password<span class="req">*</span></label>
                                 <input type="password" name="password" required autocomplete="off"/>
                             </div>
-                            <button type="submit" class="button button-block">Get Started</button>
+                            <button type="submit" class="button button-primary button-block">Get Started</button>
                         </form>
                     </div>
                 </div>
