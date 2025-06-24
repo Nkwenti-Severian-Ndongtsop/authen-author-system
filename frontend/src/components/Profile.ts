@@ -66,18 +66,12 @@ export class ProfileComponent extends HTMLElement {
         console.log('Opening edit modal');
         this.isEditModalOpen = true;
         this.render();
-        
-        // Re-attach event listeners after re-rendering
-        this.setupEventListeners();
     }
 
     private closeEditModal() {
         console.log('Closing edit modal');
         this.isEditModalOpen = false;
         this.render();
-        
-        // Re-attach event listeners after re-rendering
-        this.setupEventListeners();
     }
 
     private getDefaultProfilePicture(): string {
@@ -107,6 +101,7 @@ export class ProfileComponent extends HTMLElement {
             return;
         }
 
+        // Create the modal HTML if it's open
         const modalHtml = this.isEditModalOpen ? `
             <div class="modal-overlay">
                 <div class="modal animate-in">
@@ -114,84 +109,91 @@ export class ProfileComponent extends HTMLElement {
                     <form id="edit-profile-form" class="edit-profile-form">
                         <div class="form-group">
                             <label for="firstname">First Name</label>
-                            <input type="text" id="firstname" name="firstname" value="${this.user.firstname}">
+                            <input type="text" id="firstname" name="firstname" value="${this.user.firstname || ''}" required>
                         </div>
                         <div class="form-group">
                             <label for="lastname">Last Name</label>
-                            <input type="text" id="lastname" name="lastname" value="${this.user.lastname}">
+                            <input type="text" id="lastname" name="lastname" value="${this.user.lastname || ''}" required>
                         </div>
                         <div class="form-group">
                             <label for="email">Email</label>
-                            <input type="email" id="email" name="email" value="${this.user.email}">
+                            <input type="email" id="email" name="email" value="${this.user.email || ''}" required>
                         </div>
                         <div class="form-group">
                             <label for="password">New Password (leave blank to keep current)</label>
-                            <input type="password" id="password" name="password">
+                            <input type="password" id="password" name="password" minlength="6">
                         </div>
                         <div class="form-group">
                             <label for="profile_picture">Profile Picture</label>
                             <input type="file" id="profile_picture" name="profile_picture" accept="image/*">
                         </div>
                         <div class="button-group">
-                            <button type="submit" class="button">Save Changes</button>
                             <button type="button" class="button button-secondary" id="cancel-edit">Cancel</button>
+                            <button type="submit" class="button">Save Changes</button>
                         </div>
                     </form>
                 </div>
             </div>
         ` : '';
 
+        // Create the main profile HTML
+        const profileHtml = `
+            <div class="profile-header animate-in">
+                <div class="profile-picture-container">
+                    <img 
+                        src="${this.user.profile_picture || this.getDefaultProfilePicture()}" 
+                        alt="Profile picture"
+                        class="profile-picture"
+                        onerror="this.src='${this.getDefaultProfilePicture()}'"
+                    >
+                </div>
+                <div class="profile-title">
+                    <h2>${this.user.firstname} ${this.user.lastname}</h2>
+                    <span class="role-badge">${this.user.role}</span>
+                </div>
+            </div>
+
+            <div class="profile-info animate-in">
+                <div class="info-group">
+                    <label>Email</label>
+                    <p>${this.user.email}</p>
+                </div>
+                <div class="info-group">
+                    <label>Member Since</label>
+                    <p>${this.formatDate(this.user.created_at)}</p>
+                </div>
+            </div>
+
+            <div class="activity-overview animate-in">
+                <h3>Activity Overview</h3>
+                <div class="info-group">
+                    <label>Last Login</label>
+                    <p>${this.formatDate(this.user.last_login)}</p>
+                </div>
+                <div class="info-group">
+                    <label>Total Logins</label>
+                    <p>${this.user.login_count || 0}</p>
+                </div>
+            </div>
+
+            <div class="profile-actions animate-in">
+                <button id="edit-profile" class="button">Edit Profile</button>
+                <button id="logout-button" class="button button-danger">Logout</button>
+            </div>
+        `;
+
+        // Combine the profile and modal HTML
         this.innerHTML = `
             <div>
-                <div class="profile-header animate-in">
-                    <div class="profile-picture-container">
-                        <img 
-                            src="${this.user.profile_picture || this.getDefaultProfilePicture()}" 
-                            alt="Profile picture"
-                            class="profile-picture"
-                            onerror="this.src='${this.getDefaultProfilePicture()}'"
-                        >
-                    </div>
-                    <div class="profile-title">
-                        <h2>${this.user.firstname} ${this.user.lastname}</h2>
-                        <span class="role-badge">${this.user.role}</span>
-                    </div>
-                </div>
-
-                <div class="profile-info animate-in">
-                    <div class="info-group">
-                        <label>Email</label>
-                        <p>${this.user.email}</p>
-                    </div>
-                    <div class="info-group">
-                        <label>Member Since</label>
-                        <p>${this.formatDate(this.user.created_at)}</p>
-                    </div>
-                </div>
-
-                <div class="activity-overview animate-in">
-                    <h3>Activity Overview</h3>
-                    <div class="info-group">
-                        <label>Last Login</label>
-                        <p>${this.formatDate(this.user.last_login)}</p>
-                    </div>
-                    <div class="info-group">
-                        <label>Total Logins</label>
-                        <p>${this.user.login_count || 0}</p>
-                    </div>
-                </div>
-
-                <div class="profile-actions animate-in">
-                    <button id="edit-profile" class="button">Edit Profile</button>
-                    <button id="logout-button" class="button button-danger">Logout</button>
-                </div>
-
+                ${profileHtml}
                 ${modalHtml}
             </div>
         `;
 
-        // Add event listeners
-        this.setupEventListeners();
+        // Add event listeners after rendering
+        requestAnimationFrame(() => {
+            this.setupEventListeners();
+        });
     }
 
     private setupEventListeners() {
@@ -201,6 +203,7 @@ export class ProfileComponent extends HTMLElement {
             console.log('Found edit button, adding click listener');
             editButton.addEventListener('click', (e) => {
                 e.preventDefault();
+                e.stopPropagation();
                 console.log('Edit button clicked');
                 this.openEditModal();
             });
@@ -214,6 +217,7 @@ export class ProfileComponent extends HTMLElement {
             console.log('Found cancel button, adding click listener');
             cancelButton.addEventListener('click', (e) => {
                 e.preventDefault();
+                e.stopPropagation();
                 console.log('Cancel button clicked');
                 this.closeEditModal();
             });
@@ -225,6 +229,7 @@ export class ProfileComponent extends HTMLElement {
             console.log('Found edit form, adding submit listener');
             editForm.addEventListener('submit', async (e) => {
                 e.preventDefault();
+                e.stopPropagation();
                 console.log('Form submitted');
                 const formData = new FormData(e.target as HTMLFormElement);
                 const data: ProfileUpdateData = {};
