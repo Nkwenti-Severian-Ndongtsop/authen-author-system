@@ -9,26 +9,46 @@ if (!customElements.get('user-profile')) {
 // State management
 function showAuthForm() {
     console.log('Showing auth form...');
-    const authContainer = document.querySelector('.auth-container') as HTMLElement;
-    const profileContainer = document.querySelector('.profile-container') as HTMLElement;
+    const authContainer = document.querySelector('.auth-container');
+    const profileContainer = document.querySelector('.profile-container');
+    
     console.log('Auth container:', authContainer);
     console.log('Profile container:', profileContainer);
-    authContainer?.classList.add('visible');
-    profileContainer?.classList.remove('visible');
-    console.log('Auth container visibility:', authContainer?.classList.contains('visible'));
-    console.log('Profile container visibility:', profileContainer?.classList.contains('visible'));
+    
+    if (authContainer) {
+        authContainer.classList.add('visible');
+        console.log('Added visible class to auth container');
+    }
+    if (profileContainer) {
+        profileContainer.classList.remove('visible');
+        console.log('Removed visible class from profile container');
+    }
+    
+    // Log final state
+    console.log('Auth container classes:', authContainer?.classList.toString());
+    console.log('Profile container classes:', profileContainer?.classList.toString());
 }
 
 function showProfile() {
     console.log('Showing profile...');
-    const authContainer = document.querySelector('.auth-container') as HTMLElement;
-    const profileContainer = document.querySelector('.profile-container') as HTMLElement;
+    const authContainer = document.querySelector('.auth-container');
+    const profileContainer = document.querySelector('.profile-container');
+    
     console.log('Auth container:', authContainer);
     console.log('Profile container:', profileContainer);
-    authContainer?.classList.remove('visible');
-    profileContainer?.classList.add('visible');
-    console.log('Auth container visibility:', authContainer?.classList.contains('visible'));
-    console.log('Profile container visibility:', profileContainer?.classList.contains('visible'));
+    
+    if (authContainer) {
+        authContainer.classList.remove('visible');
+        console.log('Removed visible class from auth container');
+    }
+    if (profileContainer) {
+        profileContainer.classList.add('visible');
+        console.log('Added visible class to profile container');
+    }
+    
+    // Log final state
+    console.log('Auth container classes:', authContainer?.classList.toString());
+    console.log('Profile container classes:', profileContainer?.classList.toString());
 }
 
 // Check authentication state
