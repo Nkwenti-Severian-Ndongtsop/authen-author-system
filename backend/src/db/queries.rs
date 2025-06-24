@@ -72,9 +72,9 @@ pub async fn create_user(
     sqlx::query_as!(
         User,
         r#"
-        INSERT INTO users (firstname, lastname, email, password, role)
-        VALUES ($1, $2, $3, $4, $5)
-        RETURNING id, firstname, lastname, email, password, role
+        INSERT INTO users (firstname, lastname, email, password, role, created_at, last_login, login_count, profile_picture)
+        VALUES ($1, $2, $3, $4, $5, CURRENT_TIMESTAMP, NULL, 0, NULL)
+        RETURNING id, firstname, lastname, email, password, role, created_at, last_login, login_count, profile_picture
         "#,
         firstname,
         lastname,
