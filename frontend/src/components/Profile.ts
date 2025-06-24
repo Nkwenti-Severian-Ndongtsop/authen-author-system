@@ -202,10 +202,10 @@ export class ProfileComponent extends HTMLElement {
                 formData.forEach((value, key) => {
                     if (value instanceof File) {
                         if (value.size > 0) {
-                            data[key as keyof ProfileUpdateData] = value;
+                            data[key as 'profile_picture'] = value;
                         }
                     } else if (value && typeof value === 'string' && value.trim()) {
-                        data[key as keyof ProfileUpdateData] = value.trim();
+                        data[key as Exclude<keyof ProfileUpdateData, 'profile_picture'>] = value.trim();
                     }
                 });
 
