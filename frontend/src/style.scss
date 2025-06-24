@@ -329,27 +329,26 @@ h1 {
   position: fixed;
   top: 1rem;
   right: 1rem;
-  z-index: 10;
-  background: rgba($form-bg, 0.8);
-  border: 1px solid rgba($white, 0.1);
-  padding: 0.5rem;
-  border-radius: $br;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: rgba(15, 31, 40, 0.95);
+  border: none;
   cursor: pointer;
-  backdrop-filter: blur(5px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
   transition: all 0.3s ease;
   
-  @media (max-width: $tablet) {
-    display: none;
-  }
-  
   &:hover {
-    background: rgba($form-bg, 0.9);
+    transform: scale(1.1);
   }
   
   svg {
     width: 24px;
     height: 24px;
-    fill: $main;
+    fill: #fff;
   }
 }
 
@@ -774,10 +773,11 @@ a {
   position: fixed;
   top: 0;
   left: 0;
-  right: 0;
-  bottom: 0;
-  z-index: -2;
+  width: 100%;
+  height: 100%;
+  z-index: 0;
   overflow: hidden;
+  background: radial-gradient(ellipse at bottom, #1B2735 0%, #090A0F 100%);
 }
 
 .aurora-container {
@@ -786,83 +786,62 @@ a {
   height: 200%;
   top: -50%;
   left: -50%;
-  animation: aurora-rotate 60s linear infinite;
   background: 
-    radial-gradient(circle at 50% 50%, 
-      var(--aurora-1) 0%,
-      transparent 40%),
-    radial-gradient(circle at 70% 60%, 
-      var(--aurora-2) 0%,
-      transparent 50%),
-    radial-gradient(circle at 30% 40%, 
-      var(--aurora-3) 0%,
-      transparent 45%);
-  filter: blur(60px);
+    radial-gradient(circle at center, transparent 0%, rgba(0, 214, 178, 0.1) 40%, transparent 70%),
+    radial-gradient(circle at 30% 50%, transparent 0%, rgba(100, 255, 218, 0.1) 30%, transparent 60%),
+    radial-gradient(circle at 70% 50%, transparent 0%, rgba(136, 146, 176, 0.1) 35%, transparent 65%);
+  animation: aurora 20s linear infinite;
+  transform-origin: center center;
 }
 
-@keyframes aurora-rotate {
-  0% {
-    transform: rotate(0deg) scale(1);
-  }
-  50% {
-    transform: rotate(180deg) scale(1.2);
-  }
-  100% {
-    transform: rotate(360deg) scale(1);
-  }
-}
-
-/* Floating Particles */
 .particles-container {
   position: fixed;
   top: 0;
   left: 0;
-  right: 0;
-  bottom: 0;
-  z-index: -1;
-  overflow: hidden;
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+  pointer-events: none;
 }
 
 .particle {
   position: absolute;
-  width: 4px;
-  height: 4px;
-  background: var(--mint);
+  width: 2px;
+  height: 2px;
+  background: rgba(255, 255, 255, 0.5);
   border-radius: 50%;
-  opacity: 0;
-  animation: float var(--duration, 15s) linear infinite;
-  filter: blur(1px);
-  transform-origin: center center;
+  animation: moveParticle var(--duration) linear infinite;
 }
 
-@keyframes float {
+@keyframes aurora {
   0% {
-    transform: translate(var(--start-x, 0), var(--start-y, 0)) scale(0);
-    opacity: 0;
-  }
-  20% {
-    opacity: var(--particle-opacity, 0.3);
-  }
-  80% {
-    opacity: var(--particle-opacity, 0.3);
+    transform: rotate(0deg);
   }
   100% {
-    transform: translate(var(--end-x, 100px), var(--end-y, -100px)) scale(1);
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes moveParticle {
+  0% {
+    transform: translate(var(--start-x), var(--start-y));
+    opacity: var(--particle-opacity);
+  }
+  100% {
+    transform: translate(calc(var(--start-x) + var(--end-x)), calc(var(--start-y) + var(--end-y)));
     opacity: 0;
   }
 }
 
-/* Content Container */
-.container {
+// App container
+#app {
   position: relative;
-  max-width: 600px;
-  margin: 0 auto;
+  z-index: 2;
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
   padding: 2rem;
-  background: rgba(10, 25, 47, 0.8);
-  backdrop-filter: blur(10px);
-  border-radius: 12px;
-  box-shadow: 0 8px 32px rgba(0, 214, 178, 0.1);
-  border: 1px solid rgba(136, 146, 176, 0.1);
 }
 
 /* Form Styles */
