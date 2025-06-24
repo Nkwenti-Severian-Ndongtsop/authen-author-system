@@ -35,42 +35,28 @@ export class ProfileComponent extends HTMLElement {
             const token = localStorage.getItem('token');
             if (!token) throw new Error('No token found');
 
-            // If there's a file, use FormData, otherwise use JSON
-            const hasFile = data.profile_picture instanceof File;
-            
-            let response;
-            if (hasFile) {
-                const formData = new FormData();
-                Object.entries(data).forEach(([key, value]) => {
-                    if (value !== undefined) {
-                        formData.append(key, value);
-                    }
-                });
-
-                response = await fetch(`${import.meta.env.VITE_BACKEND_API}/api/profile/update`, {
-                    method: 'PUT',
-                    headers: {
-                        'Authorization': `Bearer ${token}`
-                    },
-                    body: formData
-                });
-            } else {
-                // Remove undefined values and empty strings
-                const cleanData = Object.fromEntries(
-                    Object.entries(data).filter(([_, value]) => 
-                        value !== undefined && value !== ''
-                    )
-                );
-
-                response = await fetch(`${import.meta.env.VITE_BACKEND_API}/api/profile/update`, {
-                    method: 'PUT',
-                    headers: {
-                        'Authorization': `Bearer ${token}`,
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify(cleanData)
-                });
+            // Convert file to base64 if it exists
+            let cleanData = { ...data };
+            if (data.profile_picture instanceof File) {
+                const base64 = await this.fileToBase64(data.profile_picture);
+                cleanData.profile_picture = base64;
             }
+
+            // Remove undefined values and empty strings
+            cleanData = Object.fromEntries(
+                Object.entries(cleanData).filter(([_, value]) => 
+                    value !== undefined && value !== ''
+                )
+            );
+
+            const response = await fetch(`${import.meta.env.VITE_BACKEND_API}/api/profile/update`, {
+                method: 'PUT',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(cleanData)
+            });
 
             if (!response.ok) {
                 const errorData = await response.json().catch(() => null);
@@ -85,6 +71,15 @@ export class ProfileComponent extends HTMLElement {
             console.error('Profile update failed:', error);
             alert('Failed to update profile. Please try again.');
         }
+    }
+
+    private fileToBase64(file: File): Promise<string> {
+        return new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.readAsDataURL(file);
+            reader.onload = () => resolve(reader.result as string);
+            reader.onerror = error => reject(error);
+        });
     }
 
     private openEditModal() {
