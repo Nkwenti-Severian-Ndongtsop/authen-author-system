@@ -3,62 +3,27 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Authentication System</title>
+    <title>Auth System</title>
 </head>
 <body>
-    <div class="form">
-        <div class="auth-container">
-            <ul class="tab-group">
-                <li class="tab active"><a href="#login">Log In</a></li>
-                <li class="tab"><a href="#signup">Sign Up</a></li>
-            </ul>
-
-            <div class="tab-content">
-                <div id="login">
-                    <h1>Welcome Back!</h1>
-                    <form id="login-form">
-                        <div class="field-wrap">
-                            <label>Email Address<span class="req">*</span></label>
-                            <input type="email" name="email" required autocomplete="off"/>
-                        </div>
-                        <div class="field-wrap">
-                            <label>Password<span class="req">*</span></label>
-                            <input type="password" name="password" required autocomplete="off"/>
-                        </div>
-                        <button type="submit" class="button button-block">Log In</button>
-                    </form>
-                </div>
-
-                <div id="signup" style="display: none;">
-                    <h1>Sign Up</h1>
-                    <form id="signup-form">
-                        <div class="field-wrap">
-                            <label>First Name<span class="req">*</span></label>
-                            <input type="text" name="firstname" required autocomplete="off" />
-                        </div>
-                        <div class="field-wrap">
-                            <label>Last Name<span class="req">*</span></label>
-                            <input type="text" name="lastname" required autocomplete="off"/>
-                        </div>
-                        <div class="field-wrap">
-                            <label>Email Address<span class="req">*</span></label>
-                            <input type="email" name="email" required autocomplete="off"/>
-                        </div>
-                        <div class="field-wrap">
-                            <label>Set A Password<span class="req">*</span></label>
-                            <input type="password" name="password" required autocomplete="off"/>
-                        </div>
-                        <button type="submit" class="button button-block">Get Started</button>
-                    </form>
-                </div>
-            </div>
+    <div class="app-background">
+        <div class="aurora-container">
+            <div class="aurora"></div>
+            <div class="aurora aurora-2"></div>
+            <div class="aurora aurora-3"></div>
         </div>
-
-        <div class="profile-container">
-            <user-profile></user-profile>
+        <div class="particles-container">
+            <!-- Particles will be generated via SCSS -->
+            <% for (let i = 1; i <= 50; i++) { %>
+                <div class="particle-<%= i %>"></div>
+            <% } %>
         </div>
     </div>
 
-    <script type="module" src="src/main.ts"></script>
+    <div class="container">
+        <div id="app"></div>
+    </div>
+
+    <script type="module" src="/src/main.ts"></script>
 </body>
 </html> 
