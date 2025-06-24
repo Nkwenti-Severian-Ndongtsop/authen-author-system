@@ -72,14 +72,50 @@ if (app) {
 }
 
 // Initialize particles
+function createParticle() {
+    const particle = document.createElement('div');
+    particle.className = 'particle';
+    
+    // Random initial position
+    particle.style.left = `${Math.random() * 100}vw`;
+    particle.style.top = `${Math.random() * 100}vh`;
+    
+    // Random size
+    const scale = 0.4 + Math.random() * 1.6;
+    particle.style.transform = `scale(${scale})`;
+    
+    // Random movement
+    const moveX = (Math.random() - 0.5) * 200 + 'px';
+    const moveY = (Math.random() - 0.5) * 200 + 'px';
+    particle.style.setProperty('--move-x', moveX);
+    particle.style.setProperty('--move-y', moveY);
+    
+    // Random opacity
+    particle.style.setProperty('--particle-opacity', (0.1 + Math.random() * 0.5).toString());
+    
+    // Random animation duration
+    const duration = 15 + Math.random() * 20;
+    particle.style.animation = `float ${duration}s infinite linear`;
+    
+    return particle;
+}
+
 document.addEventListener('DOMContentLoaded', () => {
     const particlesContainer = document.querySelector('.particles-container');
     if (particlesContainer) {
-        for (let i = 1; i <= 50; i++) {
-            const particle = document.createElement('div');
-            particle.className = `particle-${i}`;
-            particlesContainer.appendChild(particle);
+        // Create initial particles
+        for (let i = 0; i < 50; i++) {
+            particlesContainer.appendChild(createParticle());
         }
+        
+        // Continuously replace particles to maintain smooth animation
+        setInterval(() => {
+            const oldParticle = particlesContainer.firstChild;
+            if (oldParticle) {
+                const newParticle = createParticle();
+                particlesContainer.replaceChild(newParticle, oldParticle);
+            }
+        }, 300);
     }
 });
 
