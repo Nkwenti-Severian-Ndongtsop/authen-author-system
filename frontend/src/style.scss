@@ -585,6 +585,11 @@ textarea {
   --primary-color: #646cff;
   --border-color: #333333;
   --danger-color: #ff4444;
+  --color-navy: #0a192f;
+  --color-teal: #2a9d8f;
+  --color-mint: #64ffda;
+  --color-indigo: #7f5af0;
+  --color-background: var(--color-navy);
 }
 
 // Additional button styles
@@ -605,4 +610,144 @@ textarea {
       background-color: lighten(#2a2a2a, 10%);
     }
   }
+}
+
+// Animated Background
+.app-background {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    z-index: -1;
+    overflow: hidden;
+    background: var(--color-background);
+}
+
+// Aurora Effect
+.aurora-container {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    opacity: 0.6;
+}
+
+.aurora {
+    position: absolute;
+    left: -50%;
+    top: -50%;
+    width: 200%;
+    height: 200%;
+    animation: aurora 20s infinite linear;
+    background-image: 
+        radial-gradient(circle at 50% 50%,
+            rgba(37, 184, 166, 0.2) 0%,
+            rgba(127, 90, 240, 0.1) 25%,
+            rgba(100, 255, 218, 0.1) 50%,
+            rgba(42, 157, 143, 0.2) 75%,
+            rgba(10, 25, 47, 0.3) 100%
+        );
+    filter: blur(60px);
+    transform-origin: center;
+}
+
+.aurora-2 {
+    animation-delay: -5s;
+    animation-duration: 25s;
+    opacity: 0.4;
+}
+
+.aurora-3 {
+    animation-delay: -10s;
+    animation-duration: 30s;
+    opacity: 0.3;
+}
+
+// Floating Particles
+.particles-container {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+}
+
+@for $i from 1 through 50 {
+    .particle-#{$i} {
+        position: absolute;
+        width: 2px;
+        height: 2px;
+        background: rgba(100, 255, 218, 0.5);
+        border-radius: 50%;
+        box-shadow: 0 0 10px 2px rgba(100, 255, 218, 0.3);
+        animation: float-#{$i} #{random(20) + 15}s infinite linear;
+        left: #{random(100)}vw;
+        top: #{random(100)}vh;
+        opacity: #{random(7) * 0.1};
+        transform: scale(#{random(5) * 0.4});
+    }
+
+    @keyframes float-#{$i} {
+        0% {
+            transform: translate(0, 0) scale(#{random(5) * 0.4});
+            opacity: 0;
+        }
+        20% {
+            opacity: #{random(7) * 0.1};
+        }
+        80% {
+            opacity: #{random(7) * 0.1};
+        }
+        100% {
+            transform: translate(
+                #{random(200) - 100}px,
+                #{random(200) - 100}px
+            ) scale(#{random(5) * 0.4});
+            opacity: 0;
+        }
+    }
+}
+
+@keyframes aurora {
+    from {
+        transform: rotate(0deg);
+    }
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+// Main container styles
+.container {
+    position: relative;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+    box-sizing: border-box;
+    color: #fff;
+}
+
+// Card styles with glassmorphism
+.card {
+    background: rgba(10, 25, 47, 0.7);
+    backdrop-filter: blur(10px);
+    border-radius: 1rem;
+    padding: 2rem;
+    box-shadow: 
+        0 8px 32px rgba(0, 0, 0, 0.3),
+        0 0 0 1px rgba(255, 255, 255, 0.1);
+    width: 100%;
+    max-width: 480px;
+    margin: 1rem;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+
+    &:hover {
+        transform: translateY(-2px);
+        box-shadow: 
+            0 12px 48px rgba(0, 0, 0, 0.4),
+            0 0 0 1px rgba(255, 255, 255, 0.15);
+    }
 } 
