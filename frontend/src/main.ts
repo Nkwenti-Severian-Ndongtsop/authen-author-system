@@ -5,26 +5,92 @@ import './components/Profile';
 // Backend API URL from .env with fallback
 const BACKEND_API: string = `${import.meta.env.VITE_BACKEND_API || 'http://localhost:8000'}`;
 
-// Get the backend API URL from environment variables
+// Initialize background elements
+function initializeBackground() {
+    // Create aurora background
+    const auroraBackground = document.createElement('div');
+    auroraBackground.className = 'aurora-background';
+    auroraBackground.innerHTML = '<div class="aurora-container"></div>';
+    document.body.appendChild(auroraBackground);
 
+    // Create particles container
+    const particlesContainer = document.createElement('div');
+    particlesContainer.className = 'particles-container';
+    document.body.appendChild(particlesContainer);
+
+    // Initialize particles
+    for (let i = 0; i < 50; i++) {
+        createParticle(particlesContainer);
+    }
+
+    // Continuously replace particles
+    setInterval(() => {
+        const oldParticle = particlesContainer.firstChild;
+        if (oldParticle) {
+            const newParticle = createParticle(particlesContainer);
+            particlesContainer.replaceChild(newParticle, oldParticle);
+        }
+    }, 300);
+}
+
+function createParticle(container: HTMLElement): HTMLElement {
+    const particle = document.createElement('div');
+    particle.className = 'particle';
+    
+    // Random initial position
+    const startX = Math.random() * window.innerWidth;
+    const startY = Math.random() * window.innerHeight;
+    
+    // Random movement
+    const moveX = (Math.random() - 0.5) * 200;
+    const moveY = (Math.random() - 0.5) * 200;
+    
+    // Random duration
+    const duration = 15 + Math.random() * 20;
+    
+    // Random opacity
+    const opacity = 0.1 + Math.random() * 0.3;
+    
+    // Set CSS variables
+    particle.style.setProperty('--start-x', `${startX}px`);
+    particle.style.setProperty('--start-y', `${startY}px`);
+    particle.style.setProperty('--end-x', `${moveX}px`);
+    particle.style.setProperty('--end-y', `${moveY}px`);
+    particle.style.setProperty('--duration', `${duration}s`);
+    particle.style.setProperty('--particle-opacity', opacity.toString());
+    
+    container.appendChild(particle);
+    return particle;
+}
 
 // State management
 function showAuthForm() {
-    const authContainer = document.querySelector('.auth-container') as HTMLElement;
+    let authContainer = document.querySelector('.auth-container') as HTMLElement;
     const profileContainer = document.querySelector('.profile-container') as HTMLElement;
     
-    if (authContainer && profileContainer) {
-        authContainer.style.display = 'block';
+    // Create auth container if it doesn't exist
+    if (!authContainer) {
+        authContainer = document.createElement('div');
+        authContainer.className = 'auth-container';
+        document.getElementById('app')?.appendChild(authContainer);
+        showLoginForm(authContainer);
+    }
+    
+    if (profileContainer) {
         profileContainer.style.display = 'none';
     }
+    authContainer.style.display = 'block';
 }
 
 function showProfile() {
     const authContainer = document.querySelector('.auth-container') as HTMLElement;
     const profileContainer = document.querySelector('.profile-container') as HTMLElement;
     
-    if (authContainer && profileContainer) {
+    if (authContainer) {
         authContainer.style.display = 'none';
+    }
+    
+    if (profileContainer) {
         profileContainer.style.display = 'block';
     }
 }
@@ -61,14 +127,23 @@ async function loadProfile() {
 
         const profile = await response.json();
         
-        // Update profile component
-        const profileElement = document.querySelector('user-profile');
-        if (profileElement) {
-            (profileElement as any).data = profile;
-            showProfile();
-        } else {
-            throw new Error('Profile element not found');
+        // Create profile container and element if they don't exist
+        let profileContainer = document.querySelector('.profile-container');
+        if (!profileContainer) {
+            profileContainer = document.createElement('div');
+            profileContainer.className = 'profile-container';
+            document.getElementById('app')?.appendChild(profileContainer);
         }
+        
+        let profileElement = document.querySelector('user-profile');
+        if (!profileElement) {
+            profileElement = document.createElement('user-profile');
+            profileContainer.appendChild(profileElement);
+        }
+        
+        // Update profile data
+        (profileElement as any).data = profile;
+        showProfile();
     } catch (error) {
         console.error('Failed to load profile:', error);
         localStorage.removeItem('token');
@@ -79,6 +154,9 @@ async function loadProfile() {
 
 // Initialize app
 async function initializeApp() {
+    // Initialize background first
+    initializeBackground();
+
     const app = document.getElementById('app');
     if (!app) return;
 
@@ -91,7 +169,7 @@ async function initializeApp() {
     // Check if user is logged in
     const token = localStorage.getItem('token');
     if (!token) {
-        showLoginForm(app);
+        showAuthForm();
     } else {
         await loadProfile();
     }
@@ -106,8 +184,8 @@ async function initializeApp() {
     });
 }
 
-function showLoginForm(app: HTMLElement) {
-    app.innerHTML = `
+function showLoginForm(container: HTMLElement) {
+    container.innerHTML = `
         <div class="container">
             <div class="toggle">
                 <button id="loginToggle" class="active">Log In</button>
@@ -132,10 +210,10 @@ function showLoginForm(app: HTMLElement) {
         </div>
     `;
 
-    const loginToggle = app.querySelector('#loginToggle');
-    const signupToggle = app.querySelector('#signupToggle');
-    const loginForm = app.querySelector('#loginForm') as HTMLFormElement;
-    const signupForm = app.querySelector('#signupForm') as HTMLFormElement;
+    const loginToggle = container.querySelector('#loginToggle');
+    const signupToggle = container.querySelector('#signupToggle');
+    const loginForm = container.querySelector('#loginForm') as HTMLFormElement;
+    const signupForm = container.querySelector('#signupForm') as HTMLFormElement;
 
     loginToggle?.addEventListener('click', () => {
         loginToggle.classList.add('active');
@@ -358,37 +436,11 @@ function showMessage(message: string, type: 'error' | 'success') {
     }, 3000);
 }
 
-// Initialize particles
-function createParticle() {
-    const particle = document.createElement('div');
-    particle.className = 'particle';
-    
-    // Random initial position
-    particle.style.left = `${Math.random() * 100}vw`;
-    particle.style.top = `${Math.random() * 100}vh`;
-    
-    // Random size
-    const scale = 0.4 + Math.random() * 1.6;
-    particle.style.transform = `scale(${scale})`;
-    
-    // Random movement
-    const moveX = (Math.random() - 0.5) * 200 + 'px';
-    const moveY = (Math.random() - 0.5) * 200 + 'px';
-    particle.style.setProperty('--move-x', moveX);
-    particle.style.setProperty('--move-y', moveY);
-    
-    // Random opacity
-    particle.style.setProperty('--particle-opacity', (0.1 + Math.random() * 0.5).toString());
-    
-    // Random animation duration
-    const duration = 15 + Math.random() * 20;
-    particle.style.animation = `float ${duration}s infinite linear`;
-    
-    return particle;
-}
-
 // Initialize the application when DOM is loaded
 document.addEventListener('DOMContentLoaded', () => {
+    // Initialize app
+    initializeApp();
+
     // Check authentication state on load
     checkAuth();
 
@@ -579,24 +631,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
         });
     });
-
-    // Setup particles
-    const particlesContainer = document.querySelector('.particles-container');
-    if (particlesContainer) {
-        // Create initial particles
-        for (let i = 0; i < 50; i++) {
-            particlesContainer.appendChild(createParticle());
-        }
-        
-        // Continuously replace particles to maintain smooth animation
-        setInterval(() => {
-            const oldParticle = particlesContainer.firstChild;
-            if (oldParticle) {
-                const newParticle = createParticle();
-                particlesContainer.replaceChild(newParticle, oldParticle);
-            }
-        }, 300);
-    }
 });
 
 // Utility functions for showing messages
