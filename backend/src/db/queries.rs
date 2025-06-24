@@ -93,7 +93,7 @@ pub async fn get_user_by_email(
     sqlx::query_as!(
         User,
         r#"
-        SELECT id, firstname, lastname, email, password, role
+        SELECT id, firstname, lastname, email, password, role, created_at, last_login, login_count, profile_picture
         FROM users
         WHERE email = $1
         "#,
@@ -101,6 +101,65 @@ pub async fn get_user_by_email(
     )
     .fetch_one(pool)
     .await
+}
+
+pub async fn update_user_profile(
+    pool: &Pool<Postgres>,
+    user_id: i32,
+    firstname: Option<&str>,
+    lastname: Option<&str>,
+    email: Option<&str>,
+    password: Option<&str>,
+    profile_picture: Option<&str>,
+) -> Result<User, sqlx::Error> {
+    let mut query = String::from(
+        "UPDATE users SET 
+        firstname = COALESCE($1, firstname),
+        lastname = COALESCE($2, lastname),
+        email = COALESCE($3, email),
+        profile_picture = COALESCE($4, profile_picture)"
+    );
+
+    let hashed_password = if let Some(pass) = password {
+        Some(hash(pass.as_bytes(), DEFAULT_COST).unwrap())
+    } else {
+        None
+    };
+
+    if hashed_password.is_some() {
+        query.push_str(", password = COALESCE($5, password)");
+    }
+
+    query.push_str(" WHERE id = $6 RETURNING id, firstname, lastname, email, password, role, created_at, last_login, login_count, profile_picture");
+
+    sqlx::query_as::<_, User>(&query)
+        .bind(firstname)
+        .bind(lastname)
+        .bind(email)
+        .bind(profile_picture)
+        .bind(hashed_password.as_deref())
+        .bind(user_id)
+        .fetch_one(pool)
+        .await
+}
+
+pub async fn update_login_activity(
+    pool: &Pool<Postgres>,
+    user_id: i32,
+) -> Result<(), sqlx::Error> {
+    sqlx::query!(
+        r#"
+        UPDATE users 
+        SET last_login = CURRENT_TIMESTAMP,
+            login_count = COALESCE(login_count, 0) + 1
+        WHERE id = $1
+        "#,
+        user_id
+    )
+    .execute(pool)
+    .await?;
+
+    Ok(())
 }
 
 pub fn verify_password(password: &str, hash: &str) -> bool {
