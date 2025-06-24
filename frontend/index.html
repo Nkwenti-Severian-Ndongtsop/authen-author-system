@@ -2,19 +2,64 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Authentication System</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
 </head>
 <body>
-    <div class="app-background">
-        <div class="stars"></div>
-        <div class="particles-container"></div>
+    <div class="form">
+        <div class="auth-container">
+            <ul class="tab-group">
+                <li class="tab active"><a href="#login">Log In</a></li>
+                <li class="tab"><a href="#signup">Sign Up</a></li>
+            </ul>
+
+            <div class="tab-content">
+                <div id="login">
+                    <h1>Welcome Back!</h1>
+                    <form id="login-form">
+                        <div class="field-wrap">
+                            <input type="email" name="email" required autocomplete="off"/>
+                            <label>Email Address<span class="req">*</span></label>
+                        </div>
+                        <div class="field-wrap">
+                            <input type="password" name="password" required autocomplete="off"/>
+                            <label>Password<span class="req">*</span></label>
+                        </div>
+                        <button type="submit" class="button button-block">Log In</button>
+                    </form>
+                </div>
+
+                <div id="signup" style="display: none;">
+                    <h1>Sign Up</h1>
+                    <form id="signup-form">
+                        <div class="field-wrap">
+                            <input type="text" name="firstname" required autocomplete="off" />
+                            <label>First Name<span class="req">*</span></label>
+                        </div>
+                        <div class="field-wrap">
+                            <input type="text" name="lastname" required autocomplete="off"/>
+                            <label>Last Name<span class="req">*</span></label>
+                        </div>
+                        <div class="field-wrap">
+                            <input type="email" name="email" required autocomplete="off"/>
+                            <label>Email Address<span class="req">*</span></label>
+                        </div>
+                        <div class="field-wrap">
+                            <input type="password" name="password" required autocomplete="off"/>
+                            <label>Set A Password<span class="req">*</span></label>
+                        </div>
+                        <button type="submit" class="button button-block">Get Started</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div class="profile-container">
+            <user-profile></user-profile>
+        </div>
     </div>
-    <main class="container">
-        <div id="app"></div>
-    </main>
+
     <script type="module" src="/src/main.ts"></script>
 </body>
 </html> 
