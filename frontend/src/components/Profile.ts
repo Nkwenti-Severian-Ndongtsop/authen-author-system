@@ -651,6 +651,7 @@ class UserProfile extends HTMLElement {
     }
 }
 
+// Register the custom element
 customElements.define('user-profile', UserProfile);
 
 export default UserProfile; 
