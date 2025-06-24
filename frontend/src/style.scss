@@ -138,23 +138,16 @@ a {
     text-align: center;
 
     a {
-      background: rgba($gray-light, 0.25);
+      background: rgba($white, 0.1);
       color: $gray-light;
-      padding: 1rem;
+      padding: 0.75rem;
       display: block;
       text-decoration: none;
-      font-size: 1.2rem;
-      font-weight: $normal;
-      transition: .5s ease;
       border-radius: $br;
-      
-      @media (max-width: $mobile) {
-        font-size: 1rem;
-        padding: 0.8rem;
-      }
+      transition: all 0.3s ease;
 
       &:hover {
-        background: $main-dark;
+        background: rgba($white, 0.15);
         color: $white;
       }
     }
@@ -168,16 +161,16 @@ a {
 
 .field-wrap {
   position: relative;
-  margin-bottom: 2rem;
+  margin-bottom: 1.5rem;
 
   label {
     position: absolute;
-    transform: translateY(0.75rem);
-    left: 1rem;
-    color: rgba($white, 0.6);
+    transform: translateY(6px);
+    left: 13px;
+    color: rgba($white, .5);
     transition: all 0.25s ease;
     pointer-events: none;
-    font-size: 1rem;
+    font-size: 0.9rem;
 
     .req {
       margin: 2px;
@@ -185,10 +178,9 @@ a {
     }
 
     &.active {
-      transform: translateY(-1.5rem);
-      left: 0;
-      font-size: 0.85rem;
-      color: $main;
+      transform: translateY(-25px);
+      left: 2px;
+      font-size: 0.8rem;
 
       .req {
         opacity: 0;
@@ -200,18 +192,25 @@ a {
     font-size: 1rem;
     display: block;
     width: 100%;
-    padding: 0.75rem 1rem;
-    background: rgba($gray-light, 0.1);
-    border: 1px solid rgba($gray-light, 0.3);
-    border-radius: $br;
+    padding: 10px;
+    background: rgba($white, .1);
     color: $white;
+    border: 1px solid rgba($white, .3);
+    border-radius: 4px;
     transition: all 0.3s ease;
 
     &:focus {
-      outline: none;
+      outline: 0;
       border-color: $main;
-      box-shadow: 0 0 0 3px rgba($main, 0.1);
-      background: rgba($gray-light, 0.15);
+      background: rgba($white, .15);
+    }
+
+    &:invalid {
+      outline: 0;
+    }
+
+    &:focus:invalid {
+      border-color: color.adjust($error, $lightness: -10%);
     }
   }
 }
