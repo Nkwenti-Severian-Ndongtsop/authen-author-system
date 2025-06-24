@@ -1,103 +1,51 @@
 // Import styles
 import './style.scss';
+import './components/Profile';
 
-// Initialize app
-async function initializeApp() {
-    const app = document.getElementById('app');
-    if (!app) return;
-
-    // Check if user is logged in
-    const token = localStorage.getItem('token');
-    if (!token) {
-        showLoginForm(app);
-    } else {
-        await loadProfile(token);
+// State management
+function showAuthForm() {
+    const authContainer = document.querySelector('.auth-container') as HTMLElement;
+    const profileContainer = document.querySelector('.profile-container') as HTMLElement;
+    
+    if (authContainer && profileContainer) {
+        authContainer.style.display = 'block';
+        profileContainer.style.display = 'none';
     }
 }
 
-function showLoginForm(app: HTMLElement) {
-    app.innerHTML = `
-        <div class="card">
-            <div class="auth-container">
-                <ul class="tab-group">
-                    <li class="tab active"><a href="#login">Log In</a></li>
-                    <li class="tab"><a href="#signup">Sign Up</a></li>
-                </ul>
-
-                <div class="tab-content">
-                    <div id="login">
-                        <h1>Welcome Back!</h1>
-                        <form id="login-form">
-                            <div class="field-wrap">
-                                <label>Email Address<span class="req">*</span></label>
-                                <input type="email" name="email" required autocomplete="off"/>
-                            </div>
-                            <div class="field-wrap">
-                                <label>Password<span class="req">*</span></label>
-                                <input type="password" name="password" required autocomplete="off"/>
-                            </div>
-                            <button type="submit" class="button button-primary button-block">Log In</button>
-                        </form>
-                    </div>
-
-                    <div id="signup" style="display: none;">
-                        <h1>Sign Up</h1>
-                        <form id="signup-form">
-                            <div class="field-wrap">
-                                <label>First Name<span class="req">*</span></label>
-                                <input type="text" name="firstname" required autocomplete="off" />
-                            </div>
-                            <div class="field-wrap">
-                                <label>Last Name<span class="req">*</span></label>
-                                <input type="text" name="lastname" required autocomplete="off"/>
-                            </div>
-                            <div class="field-wrap">
-                                <label>Email Address<span class="req">*</span></label>
-                                <input type="email" name="email" required autocomplete="off"/>
-                            </div>
-                            <div class="field-wrap">
-                                <label>Set A Password<span class="req">*</span></label>
-                                <input type="password" name="password" required autocomplete="off"/>
-                            </div>
-                            <button type="submit" class="button button-primary button-block">Get Started</button>
-                        </form>
-                    </div>
-                </div>
-            </div>
-        </div>
-    `;
-
-    setupAuthListeners();
-
-    // Initialize form animations
-    const inputs = app.querySelectorAll('input');
-    inputs.forEach(input => {
-        // Check if input has a value
-        if (input.value) {
-            input.parentElement?.querySelector('label')?.classList.add('active');
-        }
-
-        // Add focus event listeners
-        input.addEventListener('focus', () => {
-            input.parentElement?.querySelector('label')?.classList.add('active');
-        });
-
-        input.addEventListener('blur', () => {
-            if (!input.value) {
-                input.parentElement?.querySelector('label')?.classList.remove('active');
-            }
-        });
-    });
+function showProfile() {
+    const authContainer = document.querySelector('.auth-container') as HTMLElement;
+    const profileContainer = document.querySelector('.profile-container') as HTMLElement;
+    
+    if (authContainer && profileContainer) {
+        authContainer.style.display = 'none';
+        profileContainer.style.display = 'block';
+    }
 }
 
-async function loadProfile(token: string) {
-    const app = document.getElementById('app');
-    if (!app) return;
+// Check authentication state
+function checkAuth() {
+    const token = localStorage.getItem('token');
+    if (token) {
+        loadProfile();
+    } else {
+        showAuthForm();
+    }
+}
 
+// Load profile data
+async function loadProfile() {
     try {
+        const token = localStorage.getItem('token');
+        if (!token) {
+            showAuthForm();
+            return;
+        }
+
         const response = await fetch(`${import.meta.env.VITE_BACKEND_API}/api/profile`, {
             headers: {
-                'Authorization': `Bearer ${token}`
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json'
             }
         });
 
@@ -105,69 +53,159 @@ async function loadProfile(token: string) {
             throw new Error('Failed to fetch profile');
         }
 
-        const userData = await response.json();
+        const profile = await response.json();
         
-        // Create the profile container structure
-        app.innerHTML = `
-            <div class="card">
-                <div class="profile-container">
-                    <div class="profile-picture-container">
-                        <img 
-                            src="${userData.profile_picture || getDefaultProfilePicture()}" 
-                            alt="Profile picture"
-                            class="profile-picture"
-                            onerror="this.src='${getDefaultProfilePicture()}'"
-                        >
-                    </div>
-                    <div class="username">${userData.firstname} ${userData.lastname}</div>
-                    <div class="role">${userData.role}</div>
-
-                    <div class="info-label">Email</div>
-                    <div class="info-text">${userData.email}</div>
-
-                    <div class="info-label">Member Since</div>
-                    <div class="info-text">${formatDate(userData.created_at)}</div>
-
-                    <div class="activity-card">
-                        <h3>Activity Overview</h3>
-                        <div class="activity-item"><strong>Last Login:</strong> ${formatDate(userData.last_login)}</div>
-                        <div class="activity-item"><strong>Total Logins:</strong> ${userData.login_count || 0}</div>
-                    </div>
-
-                    <div class="profile-actions">
-                        <button class="btn btn-edit" id="edit-profile">EDIT PROFILE</button>
-                        <button class="btn btn-logout" id="logout">LOGOUT</button>
-                    </div>
-                </div>
-            </div>
-        `;
-
-        // Add event listeners
-        const editButton = app.querySelector('#edit-profile');
-        const logoutButton = app.querySelector('#logout');
-
-        editButton?.addEventListener('click', () => {
-            showEditModal(userData);
-        });
-
-        logoutButton?.addEventListener('click', () => {
-            localStorage.removeItem('token');
-            window.location.reload();
-        });
-
-        // Show the profile with animation
-        setTimeout(() => {
-            const profileContainer = app.querySelector('.profile-container');
-            if (profileContainer) {
-                profileContainer.classList.add('visible');
-            }
-        }, 100);
-
+        // Update profile component
+        const profileElement = document.querySelector('user-profile');
+        if (profileElement) {
+            (profileElement as any).data = profile;
+            showProfile();
+        } else {
+            throw new Error('Profile element not found');
+        }
     } catch (error) {
         console.error('Failed to load profile:', error);
         localStorage.removeItem('token');
-        window.location.reload();
+        showAuthForm();
+        showError('Session expired. Please log in again.');
     }
+}
+
+// Initialize app
+async function initializeApp() {
+    const app = document.getElementById('app');
+    if (!app) return;
+
+    // Add theme toggle
+    const themeToggle = document.createElement('button');
+    themeToggle.className = 'theme-toggle';
+    themeToggle.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 2.25a.75.75 0 01.75.75v2.25a.75.75 0 01-1.5 0V3a.75.75 0 01.75-.75zM7.5 12a4.5 4.5 0 119 0 4.5 4.5 0 01-9 0zM18.894 6.166a.75.75 0 00-1.06-1.06l-1.591 1.59a.75.75 0 101.06 1.061l1.591-1.59zM21.75 12a.75.75 0 01-.75.75h-2.25a.75.75 0 010-1.5H21a.75.75 0 01.75.75zM17.834 18.894a.75.75 0 001.06-1.06l-1.59-1.591a.75.75 0 10-1.061 1.06l1.59 1.591zM12 18a.75.75 0 01.75.75V21a.75.75 0 01-1.5 0v-2.25A.75.75 0 0112 18zM7.758 17.303a.75.75 0 00-1.061-1.06l-1.591 1.59a.75.75 0 001.06 1.061l1.591-1.59zM6 12a.75.75 0 01-.75.75H3a.75.75 0 010-1.5h2.25A.75.75 0 016 12zM6.697 7.757a.75.75 0 001.06-1.06l-1.59-1.591a.75.75 0 00-1.061 1.06l1.59 1.591z"/></svg>`;
+    document.body.appendChild(themeToggle);
+
+    // Check if user is logged in
+    const token = localStorage.getItem('token');
+    if (!token) {
+        showLoginForm(app);
+    } else {
+        await loadProfile();
+    }
+
+    // Setup theme toggle listener
+    themeToggle.addEventListener('click', () => {
+        document.body.classList.toggle('light-theme');
+        const isDark = !document.body.classList.contains('light-theme');
+        themeToggle.innerHTML = isDark 
+            ? `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 2.25a.75.75 0 01.75.75v2.25a.75.75 0 01-1.5 0V3a.75.75 0 01.75-.75zM7.5 12a4.5 4.5 0 119 0 4.5 4.5 0 01-9 0zM18.894 6.166a.75.75 0 00-1.06-1.06l-1.591 1.59a.75.75 0 101.06 1.061l1.591-1.59zM21.75 12a.75.75 0 01-.75.75h-2.25a.75.75 0 010-1.5H21a.75.75 0 01.75.75zM17.834 18.894a.75.75 0 001.06-1.06l-1.59-1.591a.75.75 0 10-1.061 1.06l1.59 1.591zM12 18a.75.75 0 01.75.75V21a.75.75 0 01-1.5 0v-2.25A.75.75 0 0112 18zM7.758 17.303a.75.75 0 00-1.061-1.06l-1.591 1.59a.75.75 0 001.06 1.061l1.591-1.59zM6 12a.75.75 0 01-.75.75H3a.75.75 0 010-1.5h2.25A.75.75 0 016 12zM6.697 7.757a.75.75 0 001.06-1.06l-1.59-1.591a.75.75 0 00-1.061 1.06l1.59 1.591z"/></svg>`
+            : `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21.752 15.002A9.718 9.718 0 0118 15.75c-5.385 0-9.75-4.365-9.75-9.75 0-1.33.266-2.597.748-3.752A9.753 9.753 0 003 11.25C3 16.635 7.365 21 12.75 21a9.753 9.753 0 009.002-5.998z"/></svg>`;
+    });
+}
+
+function showLoginForm(app: HTMLElement) {
+    app.innerHTML = `
+        <div class="container">
+            <div class="toggle">
+                <button id="loginToggle" class="active">Log In</button>
+                <button id="signupToggle">Sign Up</button>
+            </div>
+
+            <form id="loginForm" class="form active">
+                <h2>Welcome Back!</h2>
+                <input type="email" name="email" placeholder="Email Address" required />
+                <input type="password" name="password" placeholder="Password" required />
+                <button type="submit" class="btn">LOG IN</button>
+            </form>
+
+            <form id="signupForm" class="form">
+                <h2>Create Account</h2>
+                <input type="text" name="firstname" placeholder="First Name" required />
+                <input type="text" name="lastname" placeholder="Last Name" required />
+                <input type="email" name="email" placeholder="Email Address" required />
+                <input type="password" name="password" placeholder="Password" required />
+                <button type="submit" class="btn">SIGN UP</button>
+            </form>
+        </div>
+    `;
+
+    const loginToggle = app.querySelector('#loginToggle');
+    const signupToggle = app.querySelector('#signupToggle');
+    const loginForm = app.querySelector('#loginForm') as HTMLFormElement;
+    const signupForm = app.querySelector('#signupForm') as HTMLFormElement;
+
+    loginToggle?.addEventListener('click', () => {
+        loginToggle.classList.add('active');
+        signupToggle?.classList.remove('active');
+        loginForm?.classList.add('active');
+        signupForm?.classList.remove('active');
+    });
+
+    signupToggle?.addEventListener('click', () => {
+        signupToggle.classList.add('active');
+        loginToggle?.classList.remove('active');
+        signupForm?.classList.add('active');
+        loginForm?.classList.remove('active');
+    });
+
+    // Handle login form submission
+    loginForm?.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const formData = new FormData(loginForm);
+        
+        try {
+            const response = await fetch(`${import.meta.env.VITE_BACKEND_API}/auth/login`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    email: formData.get('email'),
+                    password: formData.get('password'),
+                }),
+            });
+
+            if (!response.ok) {
+                throw new Error('Login failed');
+            }
+
+            const data = await response.json();
+            localStorage.setItem('token', data.token);
+            await loadProfile();
+        } catch (error) {
+            console.error('Login failed:', error);
+            showError('Login failed. Please check your credentials and try again.');
+        }
+    });
+
+    // Handle signup form submission
+    signupForm?.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const formData = new FormData(signupForm);
+        
+        try {
+            const response = await fetch(`${import.meta.env.VITE_BACKEND_API}/auth/register`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    firstname: formData.get('firstname'),
+                    lastname: formData.get('lastname'),
+                    email: formData.get('email'),
+                    password: formData.get('password'),
+                }),
+            });
+
+            if (!response.ok) {
+                throw new Error('Registration failed');
+            }
+
+            const data = await response.json();
+            localStorage.setItem('token', data.token);
+            await loadProfile();
+        } catch (error) {
+            console.error('Registration failed:', error);
+            showError('Registration failed. Please try again.');
+        }
+    });
 }
 
 function getDefaultProfilePicture(): string {
@@ -271,13 +309,13 @@ function showEditModal(userData: any) {
             }
 
             // Reload profile
-            await loadProfile(token);
+            await loadProfile();
 
             // Show success message
-            showMessage('Profile updated successfully!', 'success');
+            showSuccess('Profile updated successfully!');
         } catch (error) {
             console.error('Failed to update profile:', error);
-            showMessage('Failed to update profile. Please try again.', 'error');
+            showError('Failed to update profile. Please try again.');
         }
     });
 }
@@ -293,106 +331,25 @@ async function handleProfilePicture(file: File | null): Promise<string | undefin
     });
 }
 
-function showMessage(message: string, type: 'success' | 'error') {
-    // Remove any existing message
-    const existingMessage = document.querySelector('.message');
-    if (existingMessage) {
-        existingMessage.remove();
+function showMessage(message: string, type: 'error' | 'success') {
+    const messageClass = type === 'error' ? 'error-message' : 'success-message';
+    
+    // Create message element if it doesn't exist
+    let messageElement = document.querySelector(`.${messageClass}`);
+    if (!messageElement) {
+        messageElement = document.createElement('div');
+        messageElement.className = messageClass;
+        document.body.appendChild(messageElement);
     }
-
-    // Create and append new message
-    const messageEl = document.createElement('div');
-    messageEl.className = `message ${type}`;
-    messageEl.textContent = message;
-    document.body.appendChild(messageEl);
-
-    // Remove message after delay
+    
+    // Show message
+    messageElement.textContent = message;
+    messageElement.classList.add('show');
+    
+    // Hide after 3 seconds
     setTimeout(() => {
-        messageEl.style.animation = 'slideOut 0.3s ease forwards';
-        setTimeout(() => messageEl.remove(), 300);
+        messageElement.classList.remove('show');
     }, 3000);
-}
-
-function setupAuthListeners() {
-    // Handle login form submission
-    const loginForm = document.getElementById('login-form');
-    loginForm?.addEventListener('submit', async (e) => {
-        e.preventDefault();
-        const formData = new FormData(e.target as HTMLFormElement);
-        try {
-            const response = await fetch(`${import.meta.env.VITE_BACKEND_API}/api/auth/login`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    email: formData.get('email'),
-                    password: formData.get('password'),
-                }),
-            });
-
-            if (!response.ok) {
-                throw new Error('Login failed');
-            }
-
-            const data = await response.json();
-            localStorage.setItem('token', data.token);
-            await loadProfile(data.token);
-        } catch (error) {
-            console.error('Login failed:', error);
-            alert('Login failed. Please try again.');
-        }
-    });
-
-    // Handle signup form submission
-    const signupForm = document.getElementById('signup-form');
-    signupForm?.addEventListener('submit', async (e) => {
-        e.preventDefault();
-        const formData = new FormData(e.target as HTMLFormElement);
-        try {
-            const response = await fetch(`${import.meta.env.VITE_BACKEND_API}/api/auth/register`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    firstname: formData.get('firstname'),
-                    lastname: formData.get('lastname'),
-                    email: formData.get('email'),
-                    password: formData.get('password'),
-                }),
-            });
-
-            if (!response.ok) {
-                throw new Error('Registration failed');
-            }
-
-            const data = await response.json();
-            localStorage.setItem('token', data.token);
-            await loadProfile(data.token);
-        } catch (error) {
-            console.error('Registration failed:', error);
-            alert('Registration failed. Please try again.');
-        }
-    });
-
-    // Handle tab switching
-    const tabs = document.querySelectorAll('.tab a');
-    tabs.forEach(tab => {
-        tab.addEventListener('click', (e) => {
-            e.preventDefault();
-            const targetId = (e.target as HTMLAnchorElement).getAttribute('href')?.substring(1);
-            if (!targetId) return;
-
-            // Update active tab
-            tabs.forEach(t => t.parentElement?.classList.remove('active'));
-            (e.target as HTMLElement).parentElement?.classList.add('active');
-
-            // Show/hide forms
-            document.getElementById('login')!.style.display = targetId === 'login' ? 'block' : 'none';
-            document.getElementById('signup')!.style.display = targetId === 'signup' ? 'block' : 'none';
-        });
-    });
 }
 
 // Initialize particles
@@ -426,7 +383,196 @@ function createParticle() {
 
 // Initialize the application when DOM is loaded
 document.addEventListener('DOMContentLoaded', () => {
-    initializeApp();
+    // Check authentication state on load
+    checkAuth();
+
+    // DOM elements
+    const tabs = document.querySelectorAll('.tab a');
+    const loginForm = document.querySelector<HTMLFormElement>('#login-form');
+    const signupForm = document.querySelector<HTMLFormElement>('#signup-form');
+    const logoutButton = document.querySelector<HTMLButtonElement>('#logout-button');
+
+    // Tab switching
+    tabs.forEach(tab => {
+        tab.addEventListener('click', (e) => {
+            e.preventDefault();
+            const target = (e.target as HTMLAnchorElement).getAttribute('href');
+            
+            // Update active tab
+            tabs.forEach(t => t.parentElement?.classList.remove('active'));
+            (e.target as HTMLElement).parentElement?.classList.add('active');
+            
+            // Show target content
+            document.querySelectorAll('.tab-content > div').forEach(div => {
+                (div as HTMLElement).style.display = 'none';
+            });
+            if (target) {
+                const targetElement = document.querySelector(target);
+                if (targetElement instanceof HTMLElement) {
+                    targetElement.style.display = 'block';
+                }
+            }
+        });
+    });
+
+    // Login form submission
+    loginForm?.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const formData = new FormData(loginForm);
+        
+        // Get the submit button and disable it
+        const submitButton = loginForm.querySelector('button[type="submit"]') as HTMLButtonElement;
+        const originalButtonText = submitButton.textContent || 'Log In';
+        
+        try {
+            // Show loading state
+            submitButton.disabled = true;
+            submitButton.innerHTML = '<span class="loading-spinner"></span> Logging in...';
+            
+            const response = await fetch(`${import.meta.env.VITE_BACKEND_API}/auth/login`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    email: formData.get('email'),
+                    password: formData.get('password')
+                })
+            });
+
+            const data = await response.json();
+
+            if (!response.ok) {
+                throw new Error(data.message || 'Login failed');
+            }
+
+            localStorage.setItem('token', data.token);
+            await loadProfile();
+            
+        } catch (error) {
+            console.error('Login failed:', error);
+            showError(error instanceof Error ? error.message : 'Login failed. Please try again.');
+        } finally {
+            // Reset button state
+            submitButton.disabled = false;
+            submitButton.textContent = originalButtonText;
+        }
+    });
+
+    // Signup form submission
+    signupForm?.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const formData = new FormData(signupForm);
+        
+        // Get form values
+        const firstname = formData.get('firstname') as string;
+        const lastname = formData.get('lastname') as string;
+        const email = formData.get('email') as string;
+        const password = formData.get('password') as string;
+
+        // Frontend validation
+        if (firstname.length < 2 || firstname.length > 50) {
+            showError('First name must be between 2 and 50 characters');
+            return;
+        }
+        if (lastname.length < 2 || lastname.length > 50) {
+            showError('Last name must be between 2 and 50 characters');
+            return;
+        }
+        if (password.length < 6) {
+            showError('Password must be at least 6 characters');
+            return;
+        }
+        if (!email.match(/^[^\s@]+@[^\s@]+\.[^\s@]+$/)) {
+            showError('Please enter a valid email address');
+            return;
+        }
+        
+        // Get the submit button and disable it
+        const submitButton = signupForm.querySelector('button[type="submit"]') as HTMLButtonElement;
+        const originalButtonText = submitButton.textContent || 'Get Started';
+        
+        try {
+            // Show loading state
+            submitButton.disabled = true;
+            submitButton.innerHTML = '<span class="loading-spinner"></span> Creating Account...';
+            
+            const response = await fetch(`${import.meta.env.VITE_BACKEND_API}/auth/register`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    firstname,
+                    lastname,
+                    email,
+                    password
+                })
+            });
+
+            const data = await response.json();
+
+            if (!response.ok) {
+                throw new Error(data.message || 'Registration failed');
+            }
+
+            // Registration successful
+            showSuccess('Registration successful! Please log in.');
+            
+            // Switch to login tab
+            const loginTab = document.querySelector('.tab a[href="#login"]');
+            if (loginTab instanceof HTMLElement) {
+                loginTab.click();
+            }
+            
+            // Clear signup form
+            signupForm.reset();
+            
+        } catch (error) {
+            console.error('Registration failed:', error);
+            showError(error instanceof Error ? error.message : 'Registration failed. Please try again.');
+        } finally {
+            // Reset button state
+            submitButton.disabled = false;
+            submitButton.textContent = originalButtonText;
+        }
+    });
+
+    // Logout button
+    logoutButton?.addEventListener('click', () => {
+        localStorage.removeItem('token');
+        showAuthForm();
+    });
+
+    // Handle input animations
+    const formInputs = document.querySelectorAll<HTMLInputElement | HTMLTextAreaElement>('.field-wrap input, .field-wrap textarea');
+    formInputs.forEach(input => {
+        const label = input.nextElementSibling as HTMLLabelElement;
+        
+        // Set initial state
+        if (input.value) {
+            label.classList.add('active');
+        }
+        
+        input.addEventListener('focus', () => {
+                        label.classList.add('active', 'highlight');
+        });
+        
+        input.addEventListener('blur', () => {
+            if (!input.value) {
+                label.classList.remove('active');
+                    }
+                        label.classList.remove('highlight');
+        });
+        
+        input.addEventListener('input', () => {
+            if (input.value) {
+                label.classList.add('active');
+                    } else {
+                label.classList.remove('active');
+                }
+        });
+    });
 
     // Setup particles
     const particlesContainer = document.querySelector('.particles-container');
@@ -446,3 +592,12 @@ document.addEventListener('DOMContentLoaded', () => {
         }, 300);
     }
 });
+
+// Utility functions for showing messages
+function showError(message: string) {
+    showMessage(message, 'error');
+}
+
+function showSuccess(message: string) {
+    showMessage(message, 'success');
+}
