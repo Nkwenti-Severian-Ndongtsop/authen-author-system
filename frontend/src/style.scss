@@ -79,11 +79,12 @@ body::before {
 .container {
   position: relative;
   background: rgba(15, 31, 40, 0.95);
-  padding: 2.5rem;
-  border-radius: 16px;
+  padding: 3rem;
+  border-radius: 20px;
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
   backdrop-filter: blur(10px);
   width: 100%;
+  max-width: 480px;
   animation: fadeUp 0.5s ease-out;
 }
 
@@ -100,17 +101,18 @@ body::before {
 
 .toggle {
   display: flex;
-  gap: 8px;
-  margin-bottom: 2rem;
+  gap: 12px;
+  margin-bottom: 2.5rem;
   width: 100%;
   
   button {
     flex: 1;
-    padding: 12px;
+    padding: 1rem 1.5rem;
     background: rgba(255, 255, 255, 0.1);
     border: none;
-    border-radius: 8px;
+    border-radius: 12px;
     color: rgba(255, 255, 255, 0.7);
+    font-size: 1.25rem;
     font-weight: 600;
     cursor: pointer;
     transition: all 0.3s ease;
@@ -142,8 +144,10 @@ body::before {
 h2 {
   color: white;
   text-align: center;
-  margin-bottom: 2rem;
+  margin-bottom: 2.5rem;
+  font-size: 2rem;
   font-weight: 600;
+  letter-spacing: -0.5px;
 }
 
 .tab-group {
@@ -229,23 +233,55 @@ h2 {
 }
 
 .btn {
+  display: block;
   width: 100%;
-  padding: 12px;
+  padding: 1rem 1.5rem;
   background: #00d6b2;
   color: white;
   border: none;
-  border-radius: 8px;
+  border-radius: 12px;
+  font-size: 1.25rem;
   font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
   cursor: pointer;
   transition: all 0.3s ease;
+  margin-top: 2rem;
+  position: relative;
   
   &:hover {
-    background: #00bfa5;
+    background: lighten(#00d6b2, 5%);
     transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(0, 214, 178, 0.2);
   }
   
   &:active {
     transform: translateY(0);
+  }
+  
+  &:disabled {
+    background: rgba(0, 214, 178, 0.5);
+    cursor: not-allowed;
+    transform: none;
+  }
+  
+  &.loading {
+    color: transparent;
+    pointer-events: none;
+    
+    &::after {
+      content: '';
+      position: absolute;
+      width: 20px;
+      height: 20px;
+      top: 50%;
+      left: 50%;
+      margin: -10px 0 0 -10px;
+      border: 2px solid rgba(255, 255, 255, 0.3);
+      border-top-color: white;
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
   }
 }
 
@@ -877,4 +913,162 @@ body.light-theme .toggle button.active {
     margin: 1rem;
     padding: 1.5rem;
   }
+}
+
+// Form group styles
+.form-group {
+  margin-bottom: 1.5rem;
+  width: 100%;
+}
+
+// Input styles
+input {
+  display: block;
+  width: 100%;
+  padding: 1rem 1.25rem;
+  background: rgba(255, 255, 255, 0.1);
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  border-radius: 12px;
+  color: white;
+  font-size: 1.125rem;
+  line-height: 1.5;
+  transition: all 0.3s ease;
+  
+  &:focus {
+    outline: none;
+    border-color: #00d6b2;
+    background: rgba(255, 255, 255, 0.15);
+  }
+  
+  &::placeholder {
+    color: rgba(255, 255, 255, 0.6);
+    font-size: 1.125rem;
+  }
+}
+
+// Toggle styles
+.toggle {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 2.5rem;
+  width: 100%;
+  
+  button {
+    flex: 1;
+    padding: 1rem 1.5rem;
+    background: rgba(255, 255, 255, 0.1);
+    border: none;
+    border-radius: 12px;
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 1.25rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    
+    &.active {
+      background: #00d6b2;
+      color: white;
+    }
+    
+    &:hover:not(.active) {
+      background: rgba(255, 255, 255, 0.15);
+      color: white;
+    }
+  }
+}
+
+// Container styles
+.container {
+  position: relative;
+  background: rgba(15, 31, 40, 0.95);
+  padding: 3rem;
+  border-radius: 20px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(10px);
+  width: 100%;
+  max-width: 480px;
+}
+
+// Heading styles
+h2 {
+  color: white;
+  text-align: center;
+  margin-bottom: 2.5rem;
+  font-size: 2rem;
+  font-weight: 600;
+  letter-spacing: -0.5px;
+}
+
+// Loading animation
+@keyframes loading {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+// Add loading spinner for all buttons
+button {
+  position: relative;
+  
+  &.loading {
+    color: transparent;
+    pointer-events: none;
+    
+    &::after {
+      content: '';
+      position: absolute;
+      width: 16px;
+      height: 16px;
+      top: 50%;
+      left: 50%;
+      margin: -8px 0 0 -8px;
+      border: 2px solid rgba(255, 255, 255, 0.3);
+      border-top-color: white;
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+  }
+}
+
+// Message animations
+@keyframes slideIn {
+  from {
+    transform: translateY(-100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.error-message,
+.success-message {
+  position: fixed;
+  top: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 1rem 2rem;
+  border-radius: 8px;
+  font-weight: 500;
+  z-index: 1000;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  
+  &.show {
+    animation: slideIn 0.3s ease forwards;
+  }
+}
+
+.error-message {
+  background: rgba(255, 68, 68, 0.95);
+  color: white;
+}
+
+.success-message {
+  background: rgba(0, 214, 178, 0.95);
+  color: white;
 } 
