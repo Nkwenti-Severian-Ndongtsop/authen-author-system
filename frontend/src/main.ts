@@ -20,52 +20,50 @@ async function initializeApp() {
 
 function showLoginForm(app: HTMLElement) {
     app.innerHTML = `
-        <div class="container">
-            <div class="card">
-                <div class="auth-container">
-                    <ul class="tab-group">
-                        <li class="tab active"><a href="#login">Log In</a></li>
-                        <li class="tab"><a href="#signup">Sign Up</a></li>
-                    </ul>
+        <div class="card">
+            <div class="auth-container">
+                <ul class="tab-group">
+                    <li class="tab active"><a href="#login">Log In</a></li>
+                    <li class="tab"><a href="#signup">Sign Up</a></li>
+                </ul>
 
-                    <div class="tab-content">
-                        <div id="login">
-                            <h1>Welcome Back!</h1>
-                            <form id="login-form">
-                                <div class="field-wrap">
-                                    <label>Email Address<span class="req">*</span></label>
-                                    <input type="email" name="email" required autocomplete="off"/>
-                                </div>
-                                <div class="field-wrap">
-                                    <label>Password<span class="req">*</span></label>
-                                    <input type="password" name="password" required autocomplete="off"/>
-                                </div>
-                                <button type="submit" class="button button-block">Log In</button>
-                            </form>
-                        </div>
+                <div class="tab-content">
+                    <div id="login">
+                        <h1>Welcome Back!</h1>
+                        <form id="login-form">
+                            <div class="field-wrap">
+                                <label>Email Address<span class="req">*</span></label>
+                                <input type="email" name="email" required autocomplete="off"/>
+                            </div>
+                            <div class="field-wrap">
+                                <label>Password<span class="req">*</span></label>
+                                <input type="password" name="password" required autocomplete="off"/>
+                            </div>
+                            <button type="submit" class="button button-block">Log In</button>
+                        </form>
+                    </div>
 
-                        <div id="signup" style="display: none;">
-                            <h1>Sign Up</h1>
-                            <form id="signup-form">
-                                <div class="field-wrap">
-                                    <label>First Name<span class="req">*</span></label>
-                                    <input type="text" name="firstname" required autocomplete="off" />
-                                </div>
-                                <div class="field-wrap">
-                                    <label>Last Name<span class="req">*</span></label>
-                                    <input type="text" name="lastname" required autocomplete="off"/>
-                                </div>
-                                <div class="field-wrap">
-                                    <label>Email Address<span class="req">*</span></label>
-                                    <input type="email" name="email" required autocomplete="off"/>
-                                </div>
-                                <div class="field-wrap">
-                                    <label>Set A Password<span class="req">*</span></label>
-                                    <input type="password" name="password" required autocomplete="off"/>
-                                </div>
-                                <button type="submit" class="button button-block">Get Started</button>
-                            </form>
-                        </div>
+                    <div id="signup" style="display: none;">
+                        <h1>Sign Up</h1>
+                        <form id="signup-form">
+                            <div class="field-wrap">
+                                <label>First Name<span class="req">*</span></label>
+                                <input type="text" name="firstname" required autocomplete="off" />
+                            </div>
+                            <div class="field-wrap">
+                                <label>Last Name<span class="req">*</span></label>
+                                <input type="text" name="lastname" required autocomplete="off"/>
+                            </div>
+                            <div class="field-wrap">
+                                <label>Email Address<span class="req">*</span></label>
+                                <input type="email" name="email" required autocomplete="off"/>
+                            </div>
+                            <div class="field-wrap">
+                                <label>Set A Password<span class="req">*</span></label>
+                                <input type="password" name="password" required autocomplete="off"/>
+                            </div>
+                            <button type="submit" class="button button-block">Get Started</button>
+                        </form>
                     </div>
                 </div>
             </div>
@@ -73,6 +71,26 @@ function showLoginForm(app: HTMLElement) {
     `;
 
     setupAuthListeners();
+
+    // Initialize form animations
+    const inputs = app.querySelectorAll('input');
+    inputs.forEach(input => {
+        // Check if input has a value
+        if (input.value) {
+            input.parentElement?.querySelector('label')?.classList.add('active');
+        }
+
+        // Add focus event listeners
+        input.addEventListener('focus', () => {
+            input.parentElement?.querySelector('label')?.classList.add('active');
+        });
+
+        input.addEventListener('blur', () => {
+            if (!input.value) {
+                input.parentElement?.querySelector('label')?.classList.remove('active');
+            }
+        });
+    });
 }
 
 async function loadProfile(token: string) {
