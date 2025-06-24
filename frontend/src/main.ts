@@ -194,17 +194,29 @@ function showLoginForm(container: HTMLElement) {
 
             <form id="loginForm" class="form active">
                 <h2>Welcome Back!</h2>
-                <input type="email" name="email" placeholder="Email Address" required />
-                <input type="password" name="password" placeholder="Password" required />
+                <div class="form-group">
+                    <input type="email" name="email" placeholder="Email Address" required />
+                </div>
+                <div class="form-group">
+                    <input type="password" name="password" placeholder="Password" required />
+                </div>
                 <button type="submit" class="btn">LOG IN</button>
             </form>
 
             <form id="signupForm" class="form">
                 <h2>Create Account</h2>
-                <input type="text" name="firstname" placeholder="First Name" required />
-                <input type="text" name="lastname" placeholder="Last Name" required />
-                <input type="email" name="email" placeholder="Email Address" required />
-                <input type="password" name="password" placeholder="Password" required />
+                <div class="form-group">
+                    <input type="text" name="firstname" placeholder="First Name" required />
+                </div>
+                <div class="form-group">
+                    <input type="text" name="lastname" placeholder="Last Name" required />
+                </div>
+                <div class="form-group">
+                    <input type="email" name="email" placeholder="Email Address" required />
+                </div>
+                <div class="form-group">
+                    <input type="password" name="password" placeholder="Password" required />
+                </div>
                 <button type="submit" class="btn">SIGN UP</button>
             </form>
         </div>
@@ -233,8 +245,13 @@ function showLoginForm(container: HTMLElement) {
     loginForm?.addEventListener('submit', async (e) => {
         e.preventDefault();
         const formData = new FormData(loginForm);
+        const submitButton = loginForm.querySelector('button[type="submit"]') as HTMLButtonElement;
         
         try {
+            // Show loading state
+            submitButton.classList.add('loading');
+            submitButton.disabled = true;
+            
             const response = await fetch(`${BACKEND_API}/auth/login`, {
                 method: 'POST',
                 headers: {
@@ -256,6 +273,10 @@ function showLoginForm(container: HTMLElement) {
         } catch (error) {
             console.error('Login failed:', error);
             showError('Login failed. Please check your credentials and try again.');
+        } finally {
+            // Remove loading state
+            submitButton.classList.remove('loading');
+            submitButton.disabled = false;
         }
     });
 
@@ -263,8 +284,13 @@ function showLoginForm(container: HTMLElement) {
     signupForm?.addEventListener('submit', async (e) => {
         e.preventDefault();
         const formData = new FormData(signupForm);
+        const submitButton = signupForm.querySelector('button[type="submit"]') as HTMLButtonElement;
         
         try {
+            // Show loading state
+            submitButton.classList.add('loading');
+            submitButton.disabled = true;
+            
             const response = await fetch(`${BACKEND_API}/auth/register`, {
                 method: 'POST',
                 headers: {
@@ -288,6 +314,10 @@ function showLoginForm(container: HTMLElement) {
         } catch (error) {
             console.error('Registration failed:', error);
             showError('Registration failed. Please try again.');
+        } finally {
+            // Remove loading state
+            submitButton.classList.remove('loading');
+            submitButton.disabled = false;
         }
     });
 }
