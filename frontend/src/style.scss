@@ -1,22 +1,22 @@
 @use "sass:color";
 
 // Variables
-$body-bg: #13232f;
-$form-bg: #13232f;
+$body-bg: #0b1a2d;
+$form-bg: rgba(15, 31, 40, 0.9);
 $white: #ffffff;
 $error: #ff4444;
 
-$main: #1ab188;
+$main: #00d6b2;
 $main-light: color.adjust($main, $lightness: 5%);
 $main-dark: color.adjust($main, $lightness: -5%);
 
-$gray-light: #a0b3b0;
-$gray: #ddd;
+$gray-light: #aaa;
+$gray: #ccc;
 
 $thin: 300;
 $normal: 400;
 $bold: 600;
-$br: 4px;
+$br: 16px;
 
 // Breakpoints
 $mobile: 480px;
@@ -31,8 +31,8 @@ html {
 }
 
 body {
-  background: $body-bg;
-  font-family: 'Titillium Web', sans-serif;
+  background: linear-gradient(135deg, #0b1a2d, #112f42);
+  font-family: 'Inter', sans-serif;
   min-height: 100vh;
   margin: 0;
   padding: 0;
@@ -68,32 +68,17 @@ a {
 }
 
 .card {
-  background: rgba($form-bg, 0.85);
+  background: $form-bg;
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
   border-radius: $br;
   padding: 2.5rem;
   width: 100%;
-  max-width: 500px;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
-  border: 1px solid rgba($white, 0.1);
+  max-width: 400px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
   position: relative;
   overflow: hidden;
-  
-  &::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 2px;
-    background: linear-gradient(
-      90deg,
-      transparent,
-      rgba($main, 0.5),
-      transparent
-    );
-  }
+  text-align: center;
 }
 
 .auth-container {
@@ -211,19 +196,16 @@ a {
 .button {
   border: 0;
   outline: none;
-  border-radius: $br;
-  padding: 1rem;
-  font-size: 1.1rem;
+  border-radius: 5px;
+  padding: 10px 20px;
+  font-size: 1rem;
   font-weight: $bold;
   text-transform: uppercase;
   letter-spacing: .1em;
-  background: $main;
-  color: $white;
   transition: all .3s ease;
   cursor: pointer;
   
   &:hover {
-    background: $main-dark;
     transform: translateY(-1px);
   }
   
@@ -307,32 +289,22 @@ a {
 
 .profile-header {
   display: flex;
+  flex-direction: column;
   align-items: center;
-  gap: 2rem;
+  gap: 1rem;
   margin-bottom: 2rem;
   padding-bottom: 2rem;
   border-bottom: 1px solid rgba($white, 0.1);
-
-  @media (max-width: $mobile) {
-    flex-direction: column;
-    text-align: center;
-    gap: 1rem;
-  }
 }
 
 .profile-picture-container {
-  flex-shrink: 0;
-  width: 120px;
-  height: 120px;
+  width: 100px;
+  height: 100px;
   border-radius: 50%;
   overflow: hidden;
   border: 3px solid $main;
   box-shadow: 0 0 20px rgba($main, 0.2);
-  
-  @media (max-width: $mobile) {
-    width: 100px;
-    height: 100px;
-  }
+  margin: 0 auto;
 }
 
 .profile-picture {
@@ -342,47 +314,30 @@ a {
 }
 
 .profile-title {
-  flex-grow: 1;
+  text-align: center;
 
   h2 {
     color: $white;
-    margin: 0 0 0.5rem;
-    font-size: 2rem;
+    margin: 0 0 0.2rem;
+    font-size: 1.5rem;
     font-weight: $bold;
-
-    @media (max-width: $mobile) {
-      font-size: 1.5rem;
-    }
   }
 }
 
 .role-badge {
   display: inline-block;
   padding: 0.3rem 0.8rem;
-  background: rgba($main, 0.2);
+  background: rgba($main, 0.1);
   color: $main;
   border-radius: 20px;
   font-size: 0.9rem;
   text-transform: capitalize;
 }
 
-.profile-info, .activity-overview {
-  background: rgba($white, 0.05);
-  border-radius: $br;
-  padding: 1.5rem;
-  margin-bottom: 2rem;
-
-  h3 {
-    color: $white;
-    margin: 0 0 1rem;
-    font-size: 1.2rem;
-    font-weight: $normal;
-  }
-}
-
 .info-group {
   margin-bottom: 1rem;
-  
+  text-align: left;
+
   &:last-child {
     margin-bottom: 0;
   }
@@ -391,7 +346,7 @@ a {
     display: block;
     color: $gray-light;
     margin-bottom: 0.3rem;
-    font-size: 0.9rem;
+    font-size: 0.8rem;
   }
 
   p {
@@ -401,9 +356,26 @@ a {
   }
 }
 
+.activity-overview {
+  background: #132a36;
+  border-radius: $br;
+  padding: 1.5rem;
+  margin: 1.5rem 0;
+  text-align: left;
+
+  h3 {
+    color: $main;
+    margin: 0 0 1rem;
+    font-size: 1.2rem;
+    font-weight: $normal;
+  }
+}
+
 .profile-actions {
   display: flex;
   gap: 1rem;
+  justify-content: center;
+  margin-top: 2rem;
 
   @media (max-width: $mobile) {
     flex-direction: column;
@@ -432,7 +404,7 @@ a {
   border-radius: $br;
   padding: 2rem;
   width: 100%;
-  max-width: 500px;
+  max-width: 400px;
   position: relative;
   box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
   border: 1px solid rgba($white, 0.1);
@@ -442,6 +414,7 @@ a {
     margin: 0 0 1.5rem;
     font-size: 1.5rem;
     font-weight: $normal;
+    text-align: center;
   }
 }
 
@@ -461,7 +434,7 @@ a {
       padding: 0.75rem 1rem;
       background: rgba($gray-light, 0.1);
       border: 1px solid rgba($gray-light, 0.3);
-      border-radius: $br;
+      border-radius: 5px;
       color: $white;
       font-size: 1rem;
       transition: all 0.3s ease;
@@ -489,7 +462,7 @@ a {
           display: inline-block;
           background: rgba($gray-light, 0.2);
           border: 1px solid rgba($gray-light, 0.3);
-          border-radius: $br;
+          border-radius: 5px;
           padding: 0.5rem 1rem;
           outline: none;
           white-space: nowrap;
@@ -521,13 +494,21 @@ a {
   }
 }
 
-.button-secondary {
-  background: transparent;
-  border: 1px solid $main;
-  color: $main;
+.button-primary {
+  background: $main;
+  color: $white;
 
   &:hover {
-    background: rgba($main, 0.1);
+    background: $main-dark;
+  }
+}
+
+.button-secondary {
+  background: #333;
+  color: $white;
+
+  &:hover {
+    background: #444;
   }
 }
 
@@ -537,7 +518,7 @@ a {
   top: 20px;
   right: 20px;
   padding: 1rem 1.5rem;
-  border-radius: $br;
+  border-radius: 5px;
   color: $white;
   font-size: 0.9rem;
   z-index: 1001;
@@ -667,12 +648,17 @@ a {
   width: 100%;
   height: 100%;
   z-index: 0;
-  background: linear-gradient(
-    135deg,
-    darken($body-bg, 5%) 0%,
-    $body-bg 100%
-  );
-  overflow: hidden;
+
+  &::before {
+    content: "";
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background: url('https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/master/2.0/Stars/glTF-Binary/starfield.png') repeat;
+    background-size: cover;
+    opacity: 0.1;
+    z-index: 0;
+  }
 }
 
 // Aurora effect
