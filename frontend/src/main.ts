@@ -63,39 +63,63 @@ async function initializeApp() {
                 </div>
             </div>
         `;
+
+        setupAuthListeners();
     } else {
-        // Show profile
-        try {
-            const response = await fetch(`${import.meta.env.VITE_BACKEND_API}/api/profile`, {
-                headers: {
-                    'Authorization': `Bearer ${token}`
-                }
-            });
-
-            if (!response.ok) {
-                throw new Error('Failed to fetch profile');
-            }
-
-            const userData = await response.json();
-            
-            // Create and render profile component
-            app.innerHTML = `
-                <div class="card">
-                    <user-profile></user-profile>
-                </div>
-            `;
-
-            // Initialize profile component with user data
-            const profileComponent = document.querySelector('user-profile') as ProfileComponent;
-            if (profileComponent) {
-                profileComponent.data = userData;
-            }
-        } catch (error) {
-            console.error('Failed to load profile:', error);
-            localStorage.removeItem('token');
-            window.location.reload();
-        }
+        await loadProfile(token);
     }
+}
+
+async function loadProfile(token: string) {
+    const app = document.getElementById('app');
+    if (!app) return;
+
+    try {
+        const response = await fetch(`${import.meta.env.VITE_BACKEND_API}/api/profile`, {
+            headers: {
+                'Authorization': `Bearer ${token}`
+            }
+        });
+
+        if (!response.ok) {
+            throw new Error('Failed to fetch profile');
+        }
+
+        const userData = await response.json();
+        
+        // First, create the profile element
+        const profileElement = document.createElement('user-profile') as ProfileComponent;
+        
+        // Create the card div
+        const cardDiv = document.createElement('div');
+        cardDiv.className = 'card';
+        
+        // Add the profile element to the card
+        cardDiv.appendChild(profileElement);
+        
+        // Clear and update the app container
+        app.innerHTML = '';
+        app.appendChild(cardDiv);
+        
+        // Wait for a microtask to ensure the element is mounted
+        await Promise.resolve();
+        
+        // Now set the data
+        if (profileElement) {
+            profileElement.data = userData;
+        } else {
+            console.error('Profile element not found');
+            throw new Error('Failed to initialize profile component');
+        }
+    } catch (error) {
+        console.error('Failed to load profile:', error);
+        localStorage.removeItem('token');
+        window.location.reload();
+    }
+}
+
+function setupAuthListeners() {
+    // Add your existing auth form listeners here
 }
 
 // Initialize particles
@@ -199,24 +223,16 @@ function showProfile() {
 function checkAuth() {
     const token = localStorage.getItem('token');
     if (token) {
-        loadProfile();
+        loadProfile(token);
     } else {
         showAuthForm();
     }
 }
 
 // Load profile data
-async function loadProfile() {
+async function loadProfile(token: string) {
     try {
         console.log('Loading profile data...');
-        const token = localStorage.getItem('token');
-        if (!token) {
-            console.log('No token found, showing auth form');
-            showAuthForm();
-            return;
-        }
-
-        console.log('Fetching profile data...');
         const response = await fetch(`${import.meta.env.VITE_BACKEND_API}/api/profile`, {
             headers: {
                 'Authorization': `Bearer ${token}`,
@@ -331,7 +347,7 @@ document.addEventListener('DOMContentLoaded', () => {
             console.log('Login successful, storing token...');
             localStorage.setItem('token', responseData.token);
             console.log('Loading profile...');
-            loadProfile();
+            await loadProfile(responseData.token);
             
         } catch (error) {
             console.error('Login failed:', error);
