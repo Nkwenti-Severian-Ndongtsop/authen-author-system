@@ -35,19 +35,22 @@ export class ProfileComponent extends HTMLElement {
             const token = localStorage.getItem('token');
             if (!token) throw new Error('No token found');
 
-            // Convert file to base64 if it exists
-            let cleanData = { ...data };
-            if (data.profile_picture instanceof File) {
+            // Create a clean data object without undefined or empty values
+            let cleanData: Partial<ProfileUpdateData> = {};
+            
+            // Only include non-empty string fields
+            if (data.firstname) cleanData.firstname = data.firstname;
+            if (data.lastname) cleanData.lastname = data.lastname;
+            if (data.email) cleanData.email = data.email;
+            if (data.password) cleanData.password = data.password;
+
+            // Handle profile picture only if it's a valid File object
+            if (data.profile_picture instanceof File && data.profile_picture.size > 0) {
                 const base64 = await this.fileToBase64(data.profile_picture);
                 cleanData.profile_picture = base64;
             }
 
-            // Remove undefined values and empty strings
-            cleanData = Object.fromEntries(
-                Object.entries(cleanData).filter(([_, value]) => 
-                    value !== undefined && value !== ''
-                )
-            );
+            console.log('Sending update with clean data:', cleanData);
 
             const response = await fetch(`${import.meta.env.VITE_BACKEND_API}/api/profile/update`, {
                 method: 'PUT',
@@ -65,11 +68,16 @@ export class ProfileComponent extends HTMLElement {
 
             const updatedUser = await response.json();
             console.log('Profile updated successfully:', updatedUser);
+            
+            // Update the component data and close the modal
             this.data = updatedUser;
             this.closeEditModal();
+            
+            // Show success message
+            this.showMessage('Profile updated successfully!', 'success');
         } catch (error) {
             console.error('Profile update failed:', error);
-            alert('Failed to update profile. Please try again.');
+            this.showMessage('Failed to update profile. Please try again.', 'error');
         }
     }
 
@@ -220,9 +228,9 @@ export class ProfileComponent extends HTMLElement {
                 e.preventDefault();
                 const formData = new FormData(e.target as HTMLFormElement);
                 const data: ProfileUpdateData = {
-                    firstname: formData.get('firstname')?.toString(),
-                    lastname: formData.get('lastname')?.toString(),
-                    email: formData.get('email')?.toString(),
+                    firstname: formData.get('firstname')?.toString() || '',
+                    lastname: formData.get('lastname')?.toString() || '',
+                    email: formData.get('email')?.toString() || '',
                     password: formData.get('password')?.toString() || undefined,
                     profile_picture: (formData.get('profile_picture') as File)?.size > 0 
                         ? formData.get('profile_picture') as File 
@@ -258,5 +266,20 @@ export class ProfileComponent extends HTMLElement {
                 window.location.href = '/login';
             });
         }
+    }
+
+    private showMessage(message: string, type: 'success' | 'error') {
+        const messageElement = document.createElement('div');
+        messageElement.className = `message message-${type}`;
+        messageElement.textContent = message;
+        
+        // Add the message to the page
+        this.appendChild(messageElement);
+        
+        // Remove the message after 3 seconds
+        setTimeout(() => {
+            messageElement.classList.add('fade-out');
+            setTimeout(() => messageElement.remove(), 300);
+        }, 3000);
     }
 } 
