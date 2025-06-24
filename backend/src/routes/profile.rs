@@ -1,7 +1,7 @@
 use axum::{
     extract::{State, Multipart, FromRequest},
     http::StatusCode,
-    Json,
+    Json, body::Bytes,
 };
 use axum_extra::{
     headers::{authorization::Bearer, Authorization},
@@ -126,14 +126,14 @@ pub async fn update_profile(
         profile_update
     } else {
         // Handle JSON request
-        let bytes = hyper::body::to_bytes(request.into_body())
+        let body = Bytes::from_request(request, &content_type)
             .await
             .map_err(|e| (
                 StatusCode::BAD_REQUEST,
                 Json(format!("Failed to read request body: {}", e)),
             ))?;
 
-        serde_json::from_slice(&bytes).map_err(|e| (
+        serde_json::from_slice(&body).map_err(|e| (
             StatusCode::BAD_REQUEST,
             Json(format!("Invalid JSON payload: {}", e)),
         ))?
