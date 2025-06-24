@@ -1,3 +1,6 @@
+// Get the backend API URL from environment variables
+const BACKEND_API = process.env.VITE_BACKEND_API || 'http://localhost:8000';
+
 interface ProfileData {
     firstname: string;
     lastname: string;
@@ -111,7 +114,7 @@ class UserProfile extends HTMLElement {
                 const photoFormData = new FormData();
                 photoFormData.append('photo', photoFile);
 
-                const photoResponse = await fetch(`${import.meta.env.VITE_BACKEND_API}/api/profile/photo`, {
+                const photoResponse = await fetch(`${BACKEND_API}/api/profile/photo`, {
                     method: 'POST',
                     headers: {
                         'Authorization': `Bearer ${token}`
@@ -128,7 +131,7 @@ class UserProfile extends HTMLElement {
             }
 
             // Update profile data
-            const response = await fetch(`${import.meta.env.VITE_BACKEND_API}/api/profile/update`, {
+            const response = await fetch(`${BACKEND_API}/api/profile/update`, {
                 method: 'PUT',
                 headers: {
                     'Authorization': `Bearer ${token}`,
