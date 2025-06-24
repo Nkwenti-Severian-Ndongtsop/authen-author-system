@@ -17,9 +17,10 @@ use axum::{
     routing::{get, post, put},
     Router,
 };
-use tower_http::cors::CorsLayer;
+use tower_http::{cors::CorsLayer, services::ServeDir};
 use utoipa::OpenApi;
 use utoipa_swagger_ui::SwaggerUi;
+use std::path::PathBuf;
 
 #[derive(OpenApi)]
 #[openapi(
@@ -81,6 +82,9 @@ async fn main() {
             axum::http::header::ACCEPT,
         ]);
 
+    // Create uploads directory if it doesn't exist
+    tokio::fs::create_dir_all("backend/uploads").await.unwrap_or_default();
+
     // Build router
     let app = Router::new()
         .route("/health", get(routes::health::health_check))
@@ -99,6 +103,7 @@ async fn main() {
             get(protected::user_route)
                 .layer(from_fn_with_state(pool.clone(), auth_middleware::<Role>)),
         )
+        .nest_service("/uploads", ServeDir::new(PathBuf::from("backend/uploads")))
         .with_state(pool)
         .merge(SwaggerUi::new("/swagger-ui").url("/api-docs/openapi.json", ApiDoc::openapi()))
         .layer(cors);
