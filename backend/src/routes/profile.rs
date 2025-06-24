@@ -8,6 +8,7 @@ use axum_extra::{
     TypedHeader,
 };
 use sqlx::{Pool, Postgres};
+use validator::Validate;
 
 use crate::{
     db::queries::{get_user_by_email, update_user_profile},
