@@ -79,14 +79,12 @@ body::before {
 .container {
   position: relative;
   background: rgba(15, 31, 40, 0.95);
-  padding: 2rem;
+  padding: 2.5rem;
   border-radius: 16px;
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
   backdrop-filter: blur(10px);
-  z-index: 1;
   width: 100%;
-  max-width: 420px;
-  animation: fadeUp 1s ease-out;
+  animation: fadeUp 0.5s ease-out;
 }
 
 @keyframes fadeUp {
@@ -102,63 +100,50 @@ body::before {
 
 .toggle {
   display: flex;
-  justify-content: center;
-  margin-bottom: 1.5rem;
-  gap: 4px;
-}
-
-.toggle button {
-  flex: 1;
-  padding: 12px;
-  border: none;
-  background: #1a2b38;
-  color: #ccc;
-  cursor: pointer;
-  font-weight: bold;
-  transition: all 0.3s ease;
-  border-radius: 8px;
+  gap: 8px;
+  margin-bottom: 2rem;
+  width: 100%;
   
-  &:hover {
-    background: #243442;
-    color: #fff;
-  }
-  
-  &.active {
-    background: #00d6b2;
-    color: #fff;
+  button {
+    flex: 1;
+    padding: 12px;
+    background: rgba(255, 255, 255, 0.1);
+    border: none;
+    border-radius: 8px;
+    color: rgba(255, 255, 255, 0.7);
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    
+    &.active {
+      background: #00d6b2;
+      color: white;
+    }
+    
+    &:hover:not(.active) {
+      background: rgba(255, 255, 255, 0.15);
+      color: white;
+    }
   }
 }
 
 .form {
-  background: rgba(19, 35, 47, 0.9);
-  padding: 40px;
-  max-width: 600px;
-  margin: 40px auto;
-  border-radius: 8px;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
-  backdrop-filter: blur(10px);
-  position: relative;
+  width: 100%;
   
-  &:before {
-    content: '';
-    position: absolute;
-    top: -2px;
-    left: -2px;
-    right: -2px;
-    bottom: -2px;
-    background: linear-gradient(45deg, #00d6b2, #0066ff);
-    border-radius: 10px;
-    z-index: -1;
-    filter: blur(10px);
-    opacity: 0.5;
+  &.active {
+    display: block;
+  }
+  
+  &:not(.active) {
+    display: none;
   }
 }
 
-h1 {
-  text-align: center;
+h2 {
   color: white;
+  text-align: center;
+  margin-bottom: 2rem;
   font-weight: 600;
-  margin: 0 0 40px;
 }
 
 .tab-group {
@@ -223,53 +208,44 @@ h1 {
 
   input {
     width: 100%;
-    background: rgba(255, 255, 255, 0.1);
-    border: none;
-    border-radius: 4px;
     padding: 12px;
-    margin-bottom: 5px;
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 8px;
     color: white;
-    font-size: 16px;
-    outline: none;
-    transition: 0.2s ease;
-
+    margin-bottom: 1rem;
+    transition: all 0.3s ease;
+    
     &:focus {
+      outline: none;
+      border-color: #00d6b2;
       background: rgba(255, 255, 255, 0.15);
-      box-shadow: 0 0 5px rgba(0, 214, 178, 0.2);
     }
-
-    &:focus ~ label,
-    &:valid ~ label {
-      top: -20px;
-      font-size: 14px;
-      color: #00d6b2;
+    
+    &::placeholder {
+      color: rgba(255, 255, 255, 0.5);
     }
   }
 }
 
-.button {
-  border: none;
-  outline: none;
-  border-radius: 4px;
-  padding: 15px;
-  font-size: 16px;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.1em;
+.btn {
+  width: 100%;
+  padding: 12px;
   background: #00d6b2;
   color: white;
-  transition: all 0.5s ease;
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
   cursor: pointer;
-
-  &:hover, &:focus {
-    background: darken(#00d6b2, 5%);
-    transform: translateY(-2px);
-    box-shadow: 0 4px 15px rgba(0, 214, 178, 0.2);
+  transition: all 0.3s ease;
+  
+  &:hover {
+    background: #00bfa5;
+    transform: translateY(-1px);
   }
-
-  &-block {
-    display: block;
-    width: 100%;
+  
+  &:active {
+    transform: translateY(0);
   }
 }
 
@@ -363,12 +339,12 @@ a {
 
 // Auth container
 .auth-container {
-  display: none;
   width: 100%;
-  
-  &.visible {
-    display: block;
-  }
+  max-width: 420px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 // Modal styles
@@ -838,116 +814,11 @@ a {
   position: relative;
   z-index: 2;
   min-height: 100vh;
+  width: 100%;
   display: flex;
   justify-content: center;
   align-items: center;
   padding: 2rem;
-}
-
-/* Form Styles */
-.form {
-  display: none;
-  opacity: 0;
-  transform: translateY(20px);
-  transition: all 0.3s ease;
-}
-
-.form.active {
-  display: block;
-  opacity: 1;
-  transform: translateY(0);
-}
-
-.toggle {
-  display: flex;
-  gap: 1rem;
-  margin-bottom: 2rem;
-  justify-content: center;
-}
-
-.toggle button {
-  background: transparent;
-  border: none;
-  color: var(--indigo);
-  font-size: 1rem;
-  cursor: pointer;
-  padding: 0.5rem 1rem;
-  border-radius: 4px;
-  transition: all 0.3s ease;
-}
-
-.toggle button.active {
-  color: var(--mint);
-  background: rgba(100, 255, 218, 0.1);
-}
-
-.toggle button:hover {
-  color: var(--mint);
-}
-
-input {
-  width: 100%;
-  padding: 12px;
-  margin-bottom: 1rem;
-  background: rgba(136, 146, 176, 0.1);
-  border: 1px solid rgba(136, 146, 176, 0.2);
-  border-radius: 4px;
-  color: white;
-  font-size: 1rem;
-  transition: all 0.3s ease;
-}
-
-input:focus {
-  outline: none;
-  border-color: var(--teal);
-  box-shadow: 0 0 0 2px rgba(0, 214, 178, 0.2);
-}
-
-.btn {
-  width: 100%;
-  padding: 12px;
-  background: var(--teal);
-  color: white;
-  border: none;
-  border-radius: 4px;
-  font-size: 1rem;
-  font-weight: bold;
-  cursor: pointer;
-  transition: all 0.3s ease;
-}
-
-.btn:hover {
-  background: var(--mint);
-  transform: translateY(-2px);
-}
-
-/* Message Styles */
-.error-message,
-.success-message {
-  position: fixed;
-  top: 20px;
-  right: 20px;
-  padding: 1rem 2rem;
-  border-radius: 4px;
-  color: white;
-  font-weight: 500;
-  opacity: 0;
-  transform: translateX(100%);
-  transition: all 0.3s ease;
-}
-
-.error-message {
-  background: #ff4d4d;
-}
-
-.success-message {
-  background: var(--teal);
-}
-
-.error-message.show,
-.success-message.show {
-  opacity: 1;
-  transform: translateX(0);
 }
 
 /* Light Theme */
