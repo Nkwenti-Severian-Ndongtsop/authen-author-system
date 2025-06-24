@@ -2,8 +2,11 @@
 import './style.scss';
 import './components/Profile';
 
+// Backend API URL from .env with fallback
+const BACKEND_API: string = `${import.meta.env.VITE_BACKEND_API || 'http://localhost:8000'}`;
+
 // Get the backend API URL from environment variables
-const BACKEND_API = process.env.VITE_BACKEND_API || 'http://localhost:8000';
+
 
 // State management
 function showAuthForm() {
