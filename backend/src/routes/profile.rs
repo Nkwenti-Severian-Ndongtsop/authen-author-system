@@ -234,10 +234,10 @@ pub async fn upload_photo(
 
             // Generate unique filename
             let unique_filename = format!("{}.{}", Uuid::new_v4(), extension);
-            let upload_path = Path::new("uploads").join(&unique_filename);
+            let upload_path = Path::new("backend/uploads").join(&unique_filename);
 
             // Create uploads directory if it doesn't exist
-            fs::create_dir_all("uploads").await.map_err(|e| (
+            fs::create_dir_all("backend/uploads").await.map_err(|e| (
                 StatusCode::INTERNAL_SERVER_ERROR,
                 Json(format!("Failed to create upload directory: {}", e)),
             ))?;
