@@ -43,8 +43,10 @@ class UserProfile extends HTMLElement {
         if (url.startsWith('data:')) return url;
         if (url.startsWith('http')) return url;
         
+        // Remove any leading slashes and ensure we don't duplicate 'uploads'
+        const cleanUrl = url.replace(/^\/+/, '').replace(/^uploads\//, '');
         // For uploaded files, construct the full URL to the uploads directory
-        return `https://backend-auth-system.onrender.com/uploads/${url}`;
+        return `https://backend-auth-system.onrender.com/uploads/${cleanUrl}`;
     }
 
     private formatDate(dateString: string): string {
