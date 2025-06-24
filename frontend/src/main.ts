@@ -219,7 +219,14 @@ function showLoginForm(container: HTMLElement) {
                     <input type="email" name="email" placeholder="Email Address" required />
                 </div>
                 <div class="form-group">
-                    <input type="password" name="password" placeholder="Password" required />
+                    <div class="password-field">
+                        <input type="password" name="password" placeholder="Password" required />
+                        <button type="button" class="password-toggle" aria-label="Toggle password visibility">
+                            <svg class="eye-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                                <path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/>
+                            </svg>
+                        </button>
+                    </div>
                 </div>
                 <button type="submit" class="btn">LOG IN</button>
             </form>
@@ -236,7 +243,14 @@ function showLoginForm(container: HTMLElement) {
                     <input type="email" name="email" placeholder="Email Address" required />
                 </div>
                 <div class="form-group">
-                    <input type="password" name="password" placeholder="Password" required />
+                    <div class="password-field">
+                        <input type="password" name="password" placeholder="Password" required />
+                        <button type="button" class="password-toggle" aria-label="Toggle password visibility">
+                            <svg class="eye-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                                <path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/>
+                            </svg>
+                        </button>
+                    </div>
                 </div>
                 <button type="submit" class="btn">SIGN UP</button>
             </form>
@@ -262,6 +276,25 @@ function showLoginForm(container: HTMLElement) {
         loginToggle?.classList.remove('active');
         signupForm?.classList.add('active');
         loginForm?.classList.remove('active');
+    });
+
+    // Add password toggle functionality
+    const passwordToggles = container.querySelectorAll('.password-toggle');
+    passwordToggles.forEach(toggle => {
+        toggle.addEventListener('click', (e) => {
+            const button = e.currentTarget as HTMLButtonElement;
+            const passwordField = button.closest('.password-field');
+            const passwordInput = passwordField?.querySelector('input') as HTMLInputElement;
+            const eyeIcon = button.querySelector('.eye-icon');
+
+            if (passwordInput.type === 'password') {
+                passwordInput.type = 'text';
+                eyeIcon?.setAttribute('d', 'M12 6.5c-3.79 0-7.17 2.13-8.82 5.5 1.65 3.37 5.03 5.5 8.82 5.5s7.17-2.13 8.82-5.5C19.17 8.63 15.79 6.5 12 6.5zm0 9c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5zm0-4c-.83 0-1.5.67-1.5 1.5s.67 1.5 1.5 1.5 1.5-.67 1.5-1.5-.67-1.5-1.5-1.5z');
+            } else {
+                passwordInput.type = 'password';
+                eyeIcon?.setAttribute('d', 'M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z');
+            }
+        });
     });
 
     // Handle login form submission
