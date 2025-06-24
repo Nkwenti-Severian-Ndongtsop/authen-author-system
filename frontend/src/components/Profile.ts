@@ -198,98 +198,65 @@ export class ProfileComponent extends HTMLElement {
 
             <div class="profile-actions animate-in">
                 <button id="edit-profile" class="button">Edit Profile</button>
-                <button id="logout-button" class="button button-danger">Logout</button>
+                <button id="logout" class="button button-secondary">Logout</button>
             </div>
         `;
 
-        // Combine the profile and modal HTML
-        this.innerHTML = `
-            <div>
-                ${profileHtml}
-                ${modalHtml}
-            </div>
-        `;
-
-        // Add event listeners after rendering
+        // Set the innerHTML and setup event listeners after a short delay
+        this.innerHTML = modalHtml + profileHtml;
+        
+        // Use requestAnimationFrame to ensure DOM is updated
         requestAnimationFrame(() => {
             this.setupEventListeners();
         });
     }
 
     private setupEventListeners() {
-        // Edit profile button
-        const editButton = this.querySelector('#edit-profile');
-        if (editButton) {
-            console.log('Found edit button, adding click listener');
-            editButton.addEventListener('click', (e) => {
-                e.preventDefault();
-                e.stopPropagation();
-                console.log('Edit button clicked');
-                this.openEditModal();
-            });
-        } else {
-            console.warn('Edit button not found');
-        }
-
-        // Cancel edit button
-        const cancelButton = this.querySelector('#cancel-edit');
-        if (cancelButton) {
-            console.log('Found cancel button, adding click listener');
-            cancelButton.addEventListener('click', (e) => {
-                e.preventDefault();
-                e.stopPropagation();
-                console.log('Cancel button clicked');
-                this.closeEditModal();
-            });
-        }
-
-        // Edit profile form
+        // Edit form handling
         const editForm = this.querySelector('#edit-profile-form');
         if (editForm) {
             console.log('Found edit form, adding submit listener');
             editForm.addEventListener('submit', async (e) => {
                 e.preventDefault();
-                e.stopPropagation();
-                console.log('Form submitted');
                 const formData = new FormData(e.target as HTMLFormElement);
-                const data: ProfileUpdateData = {};
-                
-                formData.forEach((value, key) => {
-                    if (value instanceof File) {
-                        if (value.size > 0) {
-                            data[key as 'profile_picture'] = value;
-                        }
-                    } else if (value && typeof value === 'string' && value.trim()) {
-                        data[key as Exclude<keyof ProfileUpdateData, 'profile_picture'>] = value.trim();
-                    }
-                });
-
+                const data: ProfileUpdateData = {
+                    firstname: formData.get('firstname')?.toString(),
+                    lastname: formData.get('lastname')?.toString(),
+                    email: formData.get('email')?.toString(),
+                    password: formData.get('password')?.toString() || undefined,
+                    profile_picture: (formData.get('profile_picture') as File)?.size > 0 
+                        ? formData.get('profile_picture') as File 
+                        : undefined
+                };
                 await this.handleProfileUpdate(data);
             });
-        } else {
-            console.warn('Edit form not found');
+
+            // Cancel button handling
+            const cancelButton = this.querySelector('#cancel-edit');
+            if (cancelButton) {
+                console.log('Found cancel button, adding click listener');
+                cancelButton.addEventListener('click', () => this.closeEditModal());
+            }
+        } else if (this.isEditModalOpen) {
+            console.log('Edit form not found but modal is open, will retry in next frame');
+            requestAnimationFrame(() => this.setupEventListeners());
+        }
+
+        // Edit profile button
+        const editButton = this.querySelector('#edit-profile');
+        if (editButton) {
+            console.log('Found edit button, adding click listener');
+            editButton.addEventListener('click', () => this.openEditModal());
         }
 
         // Logout button
-        const logoutButton = this.querySelector('#logout-button');
+        const logoutButton = this.querySelector('#logout');
         if (logoutButton) {
             console.log('Found logout button, adding click listener');
-            logoutButton.addEventListener('click', async () => {
-                try {
-                    logoutButton.setAttribute('disabled', 'true');
-                    logoutButton.innerHTML = '<span class="loading-spinner"></span> Logging out...';
-                    
-                    await new Promise(resolve => setTimeout(resolve, 500));
-                    localStorage.removeItem('token');
-                    window.location.reload();
-                } catch (error) {
-                    console.error('Logout failed:', error);
-                    logoutButton.removeAttribute('disabled');
-                    logoutButton.textContent = 'Logout';
-                }
+            logoutButton.addEventListener('click', () => {
+                localStorage.removeItem('token');
+                window.location.href = '/login';
             });
-        } else {
-            console.warn('Logout button not found');
         }
     }
 } 
