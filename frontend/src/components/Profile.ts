@@ -35,22 +35,47 @@ export class ProfileComponent extends HTMLElement {
             const token = localStorage.getItem('token');
             if (!token) throw new Error('No token found');
 
-            const formData = new FormData();
-            Object.entries(data).forEach(([key, value]) => {
-                if (value !== undefined) {
-                    formData.append(key, value);
-                }
-            });
+            // If there's a file, use FormData, otherwise use JSON
+            const hasFile = data.profile_picture instanceof File;
+            
+            let response;
+            if (hasFile) {
+                const formData = new FormData();
+                Object.entries(data).forEach(([key, value]) => {
+                    if (value !== undefined) {
+                        formData.append(key, value);
+                    }
+                });
 
-            const response = await fetch(`${import.meta.env.VITE_BACKEND_API}/api/profile/update`, {
-                method: 'PUT',
-                headers: {
-                    'Authorization': `Bearer ${token}`
-                },
-                body: formData
-            });
+                response = await fetch(`${import.meta.env.VITE_BACKEND_API}/api/profile/update`, {
+                    method: 'PUT',
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: formData
+                });
+            } else {
+                // Remove undefined values and empty strings
+                const cleanData = Object.fromEntries(
+                    Object.entries(data).filter(([_, value]) => 
+                        value !== undefined && value !== ''
+                    )
+                );
 
-            if (!response.ok) throw new Error('Failed to update profile');
+                response = await fetch(`${import.meta.env.VITE_BACKEND_API}/api/profile/update`, {
+                    method: 'PUT',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(cleanData)
+                });
+            }
+
+            if (!response.ok) {
+                const errorData = await response.json().catch(() => null);
+                throw new Error(errorData?.message || 'Failed to update profile');
+            }
 
             const updatedUser = await response.json();
             console.log('Profile updated successfully:', updatedUser);
