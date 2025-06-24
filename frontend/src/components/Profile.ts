@@ -171,7 +171,7 @@ export class ProfileComponent extends HTMLElement {
                         </div>
                         <div class="button-group">
                             <button type="button" class="button button-secondary" id="cancel-edit">Cancel</button>
-                            <button type="submit" class="button">Save Changes</button>
+                            <button type="submit" class="button button-primary">Save Changes</button>
                         </div>
                     </form>
                 </div>
@@ -191,19 +191,18 @@ export class ProfileComponent extends HTMLElement {
                 </div>
                 <div class="profile-title">
                     <h2>${this.user.firstname} ${this.user.lastname}</h2>
-                    <span class="role-badge">${this.user.role}</span>
+                    <div class="role-badge">${this.user.role}</div>
                 </div>
             </div>
 
-            <div class="profile-info animate-in">
-                <div class="info-group">
-                    <label>Email</label>
-                    <p>${this.user.email}</p>
-                </div>
-                <div class="info-group">
-                    <label>Member Since</label>
-                    <p>${this.formatDate(this.user.created_at)}</p>
-                </div>
+            <div class="info-group animate-in">
+                <label>Email</label>
+                <p>${this.user.email}</p>
+            </div>
+
+            <div class="info-group animate-in">
+                <label>Member Since</label>
+                <p>${this.formatDate(this.user.created_at)}</p>
             </div>
 
             <div class="activity-overview animate-in">
@@ -219,7 +218,7 @@ export class ProfileComponent extends HTMLElement {
             </div>
 
             <div class="profile-actions animate-in">
-                <button id="edit-profile" class="button">Edit Profile</button>
+                <button id="edit-profile" class="button button-primary">Edit Profile</button>
                 <button id="logout" class="button button-secondary">Logout</button>
             </div>
         `;
