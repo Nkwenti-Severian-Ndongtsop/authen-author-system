@@ -105,6 +105,21 @@ function checkAuth() {
     }
 }
 
+// Add function to get time-based greeting
+function getTimeBasedGreeting(): string {
+    const hour = new Date().getHours();
+    
+    if (hour >= 5 && hour < 12) {
+        return 'Good morning';
+    } else if (hour >= 12 && hour < 17) {
+        return 'Good afternoon';
+    } else if (hour >= 17 && hour < 22) {
+        return 'Good evening';
+    } else {
+        return 'Good night';
+    }
+}
+
 // Load profile data
 async function loadProfile() {
     try {
@@ -133,6 +148,27 @@ async function loadProfile() {
             profileContainer = document.createElement('div');
             profileContainer.className = 'profile-container';
             document.getElementById('app')?.appendChild(profileContainer);
+        }
+
+        // Add greeting section
+        const greetingSection = document.createElement('div');
+        greetingSection.className = 'greeting-section';
+        greetingSection.innerHTML = `
+            <h1 class="greeting-text">${getTimeBasedGreeting()}, ${profile.firstname}!</h1>
+            <p class="greeting-date">${new Date().toLocaleDateString('en-US', { 
+                weekday: 'long', 
+                year: 'numeric', 
+                month: 'long', 
+                day: 'numeric' 
+            })}</p>
+        `;
+
+        // Add or update greeting section
+        const existingGreeting = profileContainer.querySelector('.greeting-section');
+        if (existingGreeting) {
+            profileContainer.replaceChild(greetingSection, existingGreeting);
+        } else {
+            profileContainer.insertBefore(greetingSection, profileContainer.firstChild);
         }
         
         let profileElement = document.querySelector('user-profile');
