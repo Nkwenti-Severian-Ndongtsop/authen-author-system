@@ -292,190 +292,156 @@ a {
     }
 }
 
-// Profile Component Styles
+// Profile styles
 .profile-container {
   opacity: 0;
   transform: translateY(20px);
-  transition: opacity 0.3s ease, transform 0.3s ease;
-  
+  transition: all 0.5s ease;
+  width: 100%;
+
   &.visible {
     opacity: 1;
     transform: translateY(0);
   }
 }
 
-user-profile {
-  display: block;
-  width: 100%;
+.profile-header {
+  display: flex;
+  align-items: center;
+  gap: 2rem;
+  margin-bottom: 2rem;
+  padding-bottom: 2rem;
+  border-bottom: 1px solid rgba($white, 0.1);
 
-  .profile-header {
-    display: flex;
-    align-items: center;
-    gap: 2rem;
-    margin-bottom: 2rem;
-    padding-bottom: 1.5rem;
-    border-bottom: 1px solid rgba($gray-light, 0.2);
-
-    @media (max-width: $mobile) {
-      flex-direction: column;
-      text-align: center;
-      gap: 1rem;
-    }
-  }
-
-  .profile-picture-container {
-    flex-shrink: 0;
-    
-    .profile-picture {
-      width: 120px;
-      height: 120px;
-      border-radius: 50%;
-      object-fit: cover;
-      border: 3px solid $main;
-      box-shadow: 0 0 15px rgba($main, 0.3);
-      
-      @media (max-width: $mobile) {
-        width: 100px;
-        height: 100px;
-      }
-    }
-  }
-
-  .profile-title {
-    h2 {
-      color: $white;
-      margin: 0 0 0.5rem;
-      font-size: 2rem;
-      font-weight: $bold;
-      
-      @media (max-width: $mobile) {
-        font-size: 1.5rem;
-      }
-    }
-  }
-
-  .role-badge {
-    display: inline-block;
-    padding: 0.3rem 1rem;
-    background: rgba($main, 0.2);
-    color: $main;
-    border-radius: 20px;
-    font-size: 0.9rem;
-    text-transform: capitalize;
-  }
-
-  .profile-info, .activity-overview {
-    background: rgba($form-bg, 0.5);
-    border-radius: $br;
-    padding: 1.5rem;
-    margin-bottom: 1.5rem;
-
-    h3 {
-      color: $white;
-      margin: 0 0 1rem;
-      font-size: 1.3rem;
-      font-weight: $normal;
-    }
-
-    .info-group {
-      margin-bottom: 1rem;
-      
-      &:last-child {
-        margin-bottom: 0;
-      }
-
-      label {
-        display: block;
-        position: static;
-        transform: none;
-        color: $gray-light;
-        font-size: 0.9rem;
-        margin-bottom: 0.3rem;
-      }
-
-      p {
-        color: $white;
-        margin: 0;
-        font-size: 1.1rem;
-        line-height: 1.4;
-      }
-    }
-  }
-
-  .profile-actions {
-    display: flex;
+  @media (max-width: $mobile) {
+    flex-direction: column;
+    text-align: center;
     gap: 1rem;
-    
-    @media (max-width: $mobile) {
-      flex-direction: column;
-    }
+  }
+}
 
-    .button {
-      flex: 1;
-      font-size: 1rem;
-      padding: 0.8rem;
-      
-      &.button-secondary {
-        background: transparent;
-        border: 1px solid rgba($main, 0.3);
-        color: $white;
-        
-        &:hover {
-          background: rgba($main, 0.1);
-          border-color: $main;
-        }
-      }
+.profile-picture-container {
+  flex-shrink: 0;
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  overflow: hidden;
+  border: 3px solid $main;
+  box-shadow: 0 0 20px rgba($main, 0.2);
+  
+  @media (max-width: $mobile) {
+    width: 100px;
+    height: 100px;
+  }
+}
+
+.profile-picture {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.profile-title {
+  flex-grow: 1;
+
+  h2 {
+    color: $white;
+    margin: 0 0 0.5rem;
+    font-size: 2rem;
+    font-weight: $bold;
+
+    @media (max-width: $mobile) {
+      font-size: 1.5rem;
     }
   }
 }
 
-// Modal Styles
+.role-badge {
+  display: inline-block;
+  padding: 0.3rem 0.8rem;
+  background: rgba($main, 0.2);
+  color: $main;
+  border-radius: 20px;
+  font-size: 0.9rem;
+  text-transform: capitalize;
+}
+
+.profile-info, .activity-overview {
+  background: rgba($white, 0.05);
+  border-radius: $br;
+  padding: 1.5rem;
+  margin-bottom: 2rem;
+
+  h3 {
+    color: $white;
+    margin: 0 0 1rem;
+    font-size: 1.2rem;
+    font-weight: $normal;
+  }
+}
+
+.info-group {
+  margin-bottom: 1rem;
+  
+  &:last-child {
+    margin-bottom: 0;
+  }
+
+  label {
+    display: block;
+    color: $gray-light;
+    margin-bottom: 0.3rem;
+    font-size: 0.9rem;
+  }
+
+  p {
+    color: $white;
+    margin: 0;
+    font-size: 1rem;
+  }
+}
+
+.profile-actions {
+  display: flex;
+  gap: 1rem;
+
+  @media (max-width: $mobile) {
+    flex-direction: column;
+  }
+}
+
+// Modal styles
 .modal-overlay {
   position: fixed;
   top: 0;
   left: 0;
   right: 0;
   bottom: 0;
-  background: rgba($form-bg, 0.85);
+  background: rgba($body-bg, 0.8);
   backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 1rem;
   z-index: 1000;
+  padding: 20px;
 }
 
 .modal {
-  background: linear-gradient(
-    145deg,
-    rgba($form-bg, 0.95) 0%,
-    rgba(darken($form-bg, 5%), 0.98) 100%
-  );
-  padding: 2rem;
+  background: $form-bg;
   border-radius: $br;
+  padding: 2rem;
   width: 100%;
   max-width: 500px;
-  box-shadow: 0 8px 32px rgba(black, 0.4);
-  border: 1px solid rgba($main, 0.1);
-  animation: modalFadeIn 0.3s ease forwards;
+  position: relative;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba($white, 0.1);
 
   h3 {
     color: $white;
     margin: 0 0 1.5rem;
     font-size: 1.5rem;
     font-weight: $normal;
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    
-    &::before {
-      content: '';
-      display: block;
-      width: 4px;
-      height: 24px;
-      background: $main;
-      border-radius: $br;
-    }
   }
 }
 
@@ -485,93 +451,126 @@ user-profile {
 
     label {
       display: block;
-      position: static;
-      transform: none;
       color: $gray-light;
-      font-size: 0.9rem;
       margin-bottom: 0.5rem;
+      font-size: 0.9rem;
     }
 
     input {
-      font-size: 1rem;
-      padding: 0.8rem;
-      border-radius: $br;
-      background: rgba($gray-light, 0.1);
-      border: 1px solid rgba($gray-light, 0.2);
       width: 100%;
+      padding: 0.75rem 1rem;
+      background: rgba($gray-light, 0.1);
+      border: 1px solid rgba($gray-light, 0.3);
+      border-radius: $br;
       color: $white;
-      transition: all 0.2s ease;
+      font-size: 1rem;
+      transition: all 0.3s ease;
 
       &:focus {
         outline: none;
         border-color: $main;
-        background: rgba($gray-light, 0.15);
         box-shadow: 0 0 0 3px rgba($main, 0.1);
+        background: rgba($gray-light, 0.15);
       }
 
       &[type="file"] {
         padding: 0.5rem;
+        background: none;
+        border: none;
         font-size: 0.9rem;
-        background: transparent;
-        border: 2px dashed rgba($gray-light, 0.2);
-        cursor: pointer;
-        transition: all 0.2s ease;
-        
-        &:hover {
-          border-color: rgba($main, 0.3);
-          background: rgba($main, 0.05);
-        }
-        
+
         &::-webkit-file-upload-button {
-          background: $main;
-          border: none;
-          border-radius: $br;
-          color: $white;
-          padding: 0.5rem 1rem;
-          margin-right: 1rem;
-          cursor: pointer;
-          transition: all 0.2s ease;
-          
-          &:hover {
-            background: $main-dark;
-          }
+          visibility: hidden;
+          display: none;
         }
-      }
-    }
-  }
 
-  .button-group {
-    display: flex;
-    gap: 1rem;
-    margin-top: 2rem;
-    
-    @media (max-width: $mobile) {
-      flex-direction: column;
-    }
+        &::before {
+          content: 'Choose File';
+          display: inline-block;
+          background: rgba($gray-light, 0.2);
+          border: 1px solid rgba($gray-light, 0.3);
+          border-radius: $br;
+          padding: 0.5rem 1rem;
+          outline: none;
+          white-space: nowrap;
+          cursor: pointer;
+          font-size: 0.9rem;
+          color: $gray-light;
+          transition: all 0.3s ease;
+        }
 
-    .button {
-      flex: 1;
-      font-size: 1rem;
-      padding: 0.8rem;
-      
-      &.button-secondary {
-        background: transparent;
-        border: 1px solid rgba($main, 0.3);
-        color: $white;
-        
-        &:hover {
-          background: rgba($main, 0.1);
-          border-color: $main;
+        &:hover::before {
+          background: rgba($gray-light, 0.3);
         }
       }
     }
   }
 }
 
-@keyframes modalFadeIn {
+.button-group {
+  display: flex;
+  gap: 1rem;
+  margin-top: 2rem;
+
+  @media (max-width: $mobile) {
+    flex-direction: column;
+  }
+
+  .button {
+    flex: 1;
+  }
+}
+
+.button-secondary {
+  background: transparent;
+  border: 1px solid $main;
+  color: $main;
+
+  &:hover {
+    background: rgba($main, 0.1);
+  }
+}
+
+// Message styles
+.message {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  padding: 1rem 1.5rem;
+  border-radius: $br;
+  color: $white;
+  font-size: 0.9rem;
+  z-index: 1001;
+  animation: slideIn 0.3s ease forwards;
+  max-width: 300px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+
+  &.success {
+    background: rgba($main, 0.9);
+    backdrop-filter: blur(8px);
+  }
+
+  &.error {
+    background: rgba($error, 0.9);
+    backdrop-filter: blur(8px);
+  }
+}
+
+@keyframes slideIn {
+  from {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+@keyframes fadeInUp {
   from {
     opacity: 0;
-    transform: translateY(-10px);
+    transform: translateY(20px);
   }
   to {
     opacity: 1;
@@ -751,56 +750,5 @@ user-profile {
   }
   100% {
     transform: translate(var(--move-x), var(--move-y));
-  }
-}
-
-// Message Styles
-.message {
-  position: fixed;
-  top: 20px;
-  right: 20px;
-  padding: 1rem 1.5rem;
-  border-radius: $br;
-  color: $white;
-  font-size: 0.9rem;
-  font-weight: $bold;
-  z-index: 2000;
-  animation: slideIn 0.3s ease forwards;
-  box-shadow: 0 4px 12px rgba(black, 0.15);
-  
-  &.message-success {
-    background: linear-gradient(135deg, $main 0%, darken($main, 10%) 100%);
-    border-left: 4px solid lighten($main, 10%);
-  }
-  
-  &.message-error {
-    background: linear-gradient(135deg, $error 0%, darken($error, 10%) 100%);
-    border-left: 4px solid lighten($error, 10%);
-  }
-  
-  &.fade-out {
-    animation: slideOut 0.3s ease forwards;
-  }
-}
-
-@keyframes slideIn {
-  from {
-    opacity: 0;
-    transform: translateX(100%);
-  }
-  to {
-    opacity: 1;
-    transform: translateX(0);
-  }
-}
-
-@keyframes slideOut {
-  from {
-    opacity: 1;
-    transform: translateX(0);
-  }
-  to {
-    opacity: 0;
-    transform: translateX(100%);
   }
 } 
