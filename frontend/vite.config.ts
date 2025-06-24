@@ -1,6 +1,5 @@
 import { defineConfig } from 'vite';
 import { resolve } from 'path';
-import * as sass from 'sass-embedded';
 
 export default defineConfig({
     root: '.',
@@ -18,17 +17,6 @@ export default defineConfig({
     resolve: {
         alias: {
             '@auth/ts-client': resolve(__dirname, '../ts-client/dist')
-        }
-    },
-    css: {
-        preprocessorOptions: {
-            scss: {
-                implementation: sass,
-                sassOptions: {
-                    style: 'expanded',
-                    sourceMap: true
-                }
-            }
         }
     }
 }); 
