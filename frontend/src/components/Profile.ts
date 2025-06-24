@@ -14,6 +14,12 @@ export class ProfileComponent extends HTMLElement {
         this.user = user;
         this.render();
         this.animateIn();
+        
+        // Make sure the profile container is visible
+        const profileContainer = this.closest('.profile-container');
+        if (profileContainer) {
+            profileContainer.classList.add('visible');
+        }
     }
 
     private animateIn() {
