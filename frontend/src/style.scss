@@ -253,6 +253,24 @@ a {
   object-fit: cover;
 }
 
+.username {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: $white;
+  margin-bottom: 0.2rem;
+}
+
+.role {
+  color: $main;
+  margin-bottom: 1rem;
+  display: inline-block;
+  padding: 0.3rem 0.8rem;
+  background: rgba($main, 0.1);
+  border-radius: 20px;
+  font-size: 0.9rem;
+  text-transform: capitalize;
+}
+
 .profile-title {
   text-align: center;
 
@@ -579,12 +597,20 @@ a {
     background: rgba($main, 0.9);
     backdrop-filter: blur(8px);
     border: 1px solid rgba($main, 0.3);
+
+    &:hover {
+      background-color: color.adjust($main, $lightness: -10%);
+    }
   }
 
   &.error {
     background: rgba($error, 0.9);
     backdrop-filter: blur(8px);
     border: 1px solid rgba($error, 0.3);
+
+    &:hover {
+      background-color: color.adjust($error, $lightness: -10%);
+    }
   }
 }
 
