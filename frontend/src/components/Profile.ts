@@ -40,7 +40,14 @@ class UserProfile extends HTMLElement {
 
     private getProfilePictureUrl(url?: string): string {
         if (!url) return this.getDefaultProfilePicture();
-        return url.startsWith('data:') ? url : `${BACKEND_API}${url}`;
+        if (url.startsWith('data:')) return url;
+        
+        // If it's a relative path, construct the full URL
+        if (url.startsWith('/')) {
+            return `${BACKEND_API}${url}`;
+        } else {
+            return `${BACKEND_API}/uploads/${url}`;
+        }
     }
 
     private formatDate(dateString: string): string {
