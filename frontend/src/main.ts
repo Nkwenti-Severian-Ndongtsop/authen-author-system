@@ -160,12 +160,6 @@ async function initializeApp() {
     const app = document.getElementById('app');
     if (!app) return;
 
-    // Add theme toggle
-    const themeToggle = document.createElement('button');
-    themeToggle.className = 'theme-toggle';
-    themeToggle.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 2.25a.75.75 0 01.75.75v2.25a.75.75 0 01-1.5 0V3a.75.75 0 01.75-.75zM7.5 12a4.5 4.5 0 119 0 4.5 4.5 0 01-9 0zM18.894 6.166a.75.75 0 00-1.06-1.06l-1.591 1.59a.75.75 0 101.06 1.061l1.591-1.59zM21.75 12a.75.75 0 01-.75.75h-2.25a.75.75 0 010-1.5H21a.75.75 0 01.75.75zM17.834 18.894a.75.75 0 001.06-1.06l-1.59-1.591a.75.75 0 10-1.061 1.06l1.59 1.591zM12 18a.75.75 0 01.75.75V21a.75.75 0 01-1.5 0v-2.25A.75.75 0 0112 18zM7.758 17.303a.75.75 0 00-1.061-1.06l-1.591 1.59a.75.75 0 001.06 1.061l1.591-1.59zM6 12a.75.75 0 01-.75.75H3a.75.75 0 010-1.5h2.25A.75.75 0 016 12zM6.697 7.757a.75.75 0 001.06-1.06l-1.59-1.591a.75.75 0 00-1.061 1.06l1.59 1.591z"/></svg>`;
-    document.body.appendChild(themeToggle);
-
     // Check if user is logged in
     const token = localStorage.getItem('token');
     if (!token) {
@@ -173,15 +167,6 @@ async function initializeApp() {
     } else {
         await loadProfile();
     }
-
-    // Setup theme toggle listener
-    themeToggle.addEventListener('click', () => {
-        document.body.classList.toggle('light-theme');
-        const isDark = !document.body.classList.contains('light-theme');
-        themeToggle.innerHTML = isDark 
-            ? `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 2.25a.75.75 0 01.75.75v2.25a.75.75 0 01-1.5 0V3a.75.75 0 01.75-.75zM7.5 12a4.5 4.5 0 119 0 4.5 4.5 0 01-9 0zM18.894 6.166a.75.75 0 00-1.06-1.06l-1.591 1.59a.75.75 0 101.06 1.061l1.591-1.59zM21.75 12a.75.75 0 01-.75.75h-2.25a.75.75 0 010-1.5H21a.75.75 0 01.75.75zM17.834 18.894a.75.75 0 001.06-1.06l-1.59-1.591a.75.75 0 10-1.061 1.06l1.59 1.591zM12 18a.75.75 0 01.75.75V21a.75.75 0 01-1.5 0v-2.25A.75.75 0 0112 18zM7.758 17.303a.75.75 0 00-1.061-1.06l-1.591 1.59a.75.75 0 001.06 1.061l1.591-1.59zM6 12a.75.75 0 01-.75.75H3a.75.75 0 010-1.5h2.25A.75.75 0 016 12zM6.697 7.757a.75.75 0 001.06-1.06l-1.59-1.591a.75.75 0 00-1.061 1.06l1.59 1.591z"/></svg>`
-            : `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21.752 15.002A9.718 9.718 0 0118 15.75c-5.385 0-9.75-4.365-9.75-9.75 0-1.33.266-2.597.748-3.752A9.753 9.753 0 003 11.25C3 16.635 7.365 21 12.75 21a9.753 9.753 0 009.002-5.998z"/></svg>`;
-    });
 }
 
 function showLoginForm(container: HTMLElement) {
@@ -226,6 +211,8 @@ function showLoginForm(container: HTMLElement) {
     const signupToggle = container.querySelector('#signupToggle');
     const loginForm = container.querySelector('#loginForm') as HTMLFormElement;
     const signupForm = container.querySelector('#signupForm') as HTMLFormElement;
+    const loginButton = loginForm?.querySelector('button[type="submit"]') as HTMLButtonElement;
+    const signupButton = signupForm?.querySelector('button[type="submit"]') as HTMLButtonElement;
 
     loginToggle?.addEventListener('click', () => {
         loginToggle.classList.add('active');
@@ -245,12 +232,12 @@ function showLoginForm(container: HTMLElement) {
     loginForm?.addEventListener('submit', async (e) => {
         e.preventDefault();
         const formData = new FormData(loginForm);
-        const submitButton = loginForm.querySelector('button[type="submit"]') as HTMLButtonElement;
         
         try {
             // Show loading state
-            submitButton.classList.add('loading');
-            submitButton.disabled = true;
+            loginButton.classList.add('loading');
+            loginButton.disabled = true;
+            loginButton.textContent = 'Logging in...';
             
             const response = await fetch(`${BACKEND_API}/auth/login`, {
                 method: 'POST',
@@ -275,8 +262,9 @@ function showLoginForm(container: HTMLElement) {
             showError('Login failed. Please check your credentials and try again.');
         } finally {
             // Remove loading state
-            submitButton.classList.remove('loading');
-            submitButton.disabled = false;
+            loginButton.classList.remove('loading');
+            loginButton.disabled = false;
+            loginButton.textContent = 'LOG IN';
         }
     });
 
@@ -284,12 +272,12 @@ function showLoginForm(container: HTMLElement) {
     signupForm?.addEventListener('submit', async (e) => {
         e.preventDefault();
         const formData = new FormData(signupForm);
-        const submitButton = signupForm.querySelector('button[type="submit"]') as HTMLButtonElement;
         
         try {
             // Show loading state
-            submitButton.classList.add('loading');
-            submitButton.disabled = true;
+            signupButton.classList.add('loading');
+            signupButton.disabled = true;
+            signupButton.textContent = 'Creating Account...';
             
             const response = await fetch(`${BACKEND_API}/auth/register`, {
                 method: 'POST',
@@ -311,13 +299,17 @@ function showLoginForm(container: HTMLElement) {
             const data = await response.json();
             localStorage.setItem('token', data.token);
             await loadProfile();
+            
+            // Show success message
+            showSuccess('Account created successfully!');
         } catch (error) {
             console.error('Registration failed:', error);
             showError('Registration failed. Please try again.');
         } finally {
             // Remove loading state
-            submitButton.classList.remove('loading');
-            submitButton.disabled = false;
+            signupButton.classList.remove('loading');
+            signupButton.disabled = false;
+            signupButton.textContent = 'SIGN UP';
         }
     });
 }
@@ -379,6 +371,7 @@ function showEditModal(userData: any) {
     // Add event listeners
     const form = document.getElementById('edit-profile-form');
     const cancelButton = document.getElementById('cancel-edit');
+    const submitButton = form?.querySelector('button[type="submit"]') as HTMLButtonElement;
 
     cancelButton?.addEventListener('click', () => {
         const modalOverlay = document.querySelector('.modal-overlay');
@@ -392,6 +385,10 @@ function showEditModal(userData: any) {
         const formData = new FormData(e.target as HTMLFormElement);
         
         try {
+            // Show loading state
+            submitButton.classList.add('loading');
+            submitButton.disabled = true;
+            
             const token = localStorage.getItem('token');
             if (!token) throw new Error('No token found');
 
@@ -414,8 +411,6 @@ function showEditModal(userData: any) {
                 throw new Error('Failed to update profile');
             }
 
-            const updatedUserData = await response.json();
-            
             // Close modal
             const modalOverlay = document.querySelector('.modal-overlay');
             if (modalOverlay) {
@@ -430,6 +425,10 @@ function showEditModal(userData: any) {
         } catch (error) {
             console.error('Failed to update profile:', error);
             showError('Failed to update profile. Please try again.');
+        } finally {
+            // Remove loading state
+            submitButton.classList.remove('loading');
+            submitButton.disabled = false;
         }
     });
 }
