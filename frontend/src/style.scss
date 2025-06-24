@@ -31,13 +31,16 @@ html {
 }
 
 body {
-  background: linear-gradient(135deg, #0b1a2d, #112f42);
-  font-family: 'Inter', sans-serif;
-  min-height: 100vh;
   margin: 0;
   padding: 0;
+  font-family: 'Inter', sans-serif;
+  background: linear-gradient(135deg, #0b1a2d, #112f42);
+  height: 100vh;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   position: relative;
-  overflow-x: hidden;
   color: $white;
 }
 
@@ -58,8 +61,6 @@ a {
   width: 100%;
   height: 100%;
   z-index: 0;
-  overflow: hidden;
-  background: linear-gradient(135deg, #0b1a2d, #112f42);
 }
 
 .stars {
@@ -69,25 +70,12 @@ a {
   background: url('https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/master/2.0/Stars/glTF-Binary/starfield.png') repeat;
   background-size: cover;
   opacity: 0.1;
-  animation: twinkle 8s infinite linear;
-}
-
-@keyframes twinkle {
-  0% {
-    opacity: 0.1;
-  }
-  50% {
-    opacity: 0.15;
-  }
-  100% {
-    opacity: 0.1;
-  }
+  z-index: 0;
 }
 
 // Container styles
 .container {
   width: 100%;
-  min-height: 100vh;
   padding: 20px;
   position: relative;
   z-index: 1;
@@ -101,33 +89,19 @@ a {
   max-width: 400px;
   margin: 0 auto;
   position: relative;
-  z-index: 2;
+  z-index: 1;
 }
 
 // Card styles
 .card {
-  background: $form-bg;
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  border-radius: $br;
-  padding: 2.5rem;
-  width: 100%;
+  background: rgba(15, 31, 40, 0.9);
+  padding: 2rem;
+  border-radius: 16px;
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
-  position: relative;
-  overflow: hidden;
+  z-index: 1;
+  width: 100%;
   text-align: center;
-  border: 1px solid rgba($white, 0.1);
-  
-  &::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: linear-gradient(135deg, rgba($main, 0.1), transparent);
-    pointer-events: none;
-  }
+  backdrop-filter: blur(10px);
 }
 
 .auth-container {
@@ -247,7 +221,6 @@ a {
   opacity: 0;
   transform: translateY(20px);
   transition: all 0.5s ease;
-  width: 100%;
 
   &.visible {
     opacity: 1;
@@ -269,23 +242,9 @@ a {
   width: 100px;
   height: 100px;
   border-radius: 50%;
+  background: #ccc;
+  margin: 0 auto 1rem;
   overflow: hidden;
-  border: 3px solid $main;
-  box-shadow: 0 0 20px rgba($main, 0.2);
-  margin: 0 auto;
-  position: relative;
-  
-  &::after {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    border-radius: 50%;
-    box-shadow: inset 0 0 20px rgba($main, 0.2);
-    pointer-events: none;
-  }
 }
 
 .profile-picture {
@@ -298,75 +257,60 @@ a {
   text-align: center;
 
   h2 {
-    color: $white;
-    margin: 0 0 0.2rem;
     font-size: 1.5rem;
-    font-weight: $bold;
+    font-weight: 600;
+    color: $white;
+    margin-bottom: 0.2rem;
   }
 }
 
 .role-badge {
+  color: $main;
+  margin-bottom: 1rem;
   display: inline-block;
   padding: 0.3rem 0.8rem;
   background: rgba($main, 0.1);
-  color: $main;
   border-radius: 20px;
   font-size: 0.9rem;
   text-transform: capitalize;
-  border: 1px solid rgba($main, 0.2);
 }
 
-.info-group {
-  margin-bottom: 1rem;
-  text-align: left;
-  background: rgba($white, 0.03);
-  padding: 1rem;
-  border-radius: $br;
-  border: 1px solid rgba($white, 0.05);
-
-  &:last-child {
-    margin-bottom: 0;
-  }
-
-  label {
-    display: block;
-    color: $gray-light;
-    margin-bottom: 0.3rem;
-    font-size: 0.8rem;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-  }
-
-  p {
-    color: $white;
-    margin: 0;
-    font-size: 1rem;
-  }
+.info-label {
+  font-size: 0.8rem;
+  color: $gray-light;
+  margin-top: 1rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
 }
 
-.activity-overview {
-  background: rgba(19, 42, 54, 0.5);
-  border-radius: $br;
+.info-text {
+  font-size: 1rem;
+  color: $white;
+  margin: 0.2rem 0 1rem;
+}
+
+.activity-card {
+  background: #132a36;
   padding: 1.5rem;
+  border-radius: 10px;
   margin: 1.5rem 0;
   text-align: left;
-  border: 1px solid rgba($main, 0.1);
 
   h3 {
     color: $main;
-    margin: 0 0 1rem;
+    margin-bottom: 1rem;
     font-size: 1.2rem;
     font-weight: $normal;
   }
+}
 
-  .info-group {
-    background: rgba($white, 0.05);
-    margin-bottom: 0.5rem;
-    padding: 0.75rem;
+.activity-item {
+  margin: 0.3rem 0;
+  color: $gray;
 
-    &:last-child {
-      margin-bottom: 0;
-    }
+  strong {
+    color: $white;
+    margin-right: 0.5rem;
   }
 }
 
@@ -382,17 +326,16 @@ a {
 }
 
 // Button styles
-.button {
-  border: 0;
-  outline: none;
-  border-radius: 5px;
+.btn {
   padding: 10px 20px;
-  font-size: 1rem;
-  font-weight: $bold;
-  text-transform: uppercase;
-  letter-spacing: .1em;
-  transition: all .3s ease;
+  border: none;
+  border-radius: 5px;
   cursor: pointer;
+  font-weight: 600;
+  font-size: 1rem;
+  transition: all 0.3s ease;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
   
   &:hover {
     transform: translateY(-1px);
@@ -400,6 +343,26 @@ a {
   
   &:active {
     transform: translateY(1px);
+  }
+}
+
+.btn-edit {
+  background: $main;
+  color: $white;
+  box-shadow: 0 4px 15px rgba($main, 0.3);
+
+  &:hover {
+    background: $main-dark;
+    box-shadow: 0 6px 20px rgba($main, 0.4);
+  }
+}
+
+.btn-logout {
+  background: #333;
+  color: $white;
+
+  &:hover {
+    background: #444;
   }
 }
 
@@ -590,13 +553,11 @@ a {
 }
 
 .button-secondary {
-  background: rgba($white, 0.1);
+  background: #333;
   color: $white;
-  border: 1px solid rgba($white, 0.2);
 
   &:hover {
-    background: rgba($white, 0.15);
-    border-color: rgba($white, 0.3);
+    background: #444;
   }
 }
 
@@ -647,17 +608,6 @@ a {
   to {
     transform: translateX(100%);
     opacity: 0;
-  }
-}
-
-@keyframes fadeInUp {
-  from {
-    opacity: 0;
-    transform: translateY(20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
   }
 }
 
