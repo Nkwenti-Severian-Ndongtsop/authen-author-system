@@ -1,4 +1,5 @@
-import './style.scss' assert { type: 'css' };
+// Import styles
+import './style.scss';
 
 // Initialize app
 async function initializeApp() {
