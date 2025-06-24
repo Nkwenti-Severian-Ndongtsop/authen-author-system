@@ -283,27 +283,22 @@ export class ProfileComponent extends HTMLElement {
     }
 
     private showMessage(message: string, type: 'success' | 'error') {
-        // Remove any existing messages first
-        const existingMessage = this.querySelector('.message');
+        // Remove any existing message
+        const existingMessage = document.querySelector('.message');
         if (existingMessage) {
             existingMessage.remove();
         }
 
-        const messageElement = document.createElement('div');
-        messageElement.className = `message message-${type}`;
-        messageElement.textContent = message;
-        
-        // Add the message to the page
-        this.appendChild(messageElement);
-        
-        // Remove the message after 3 seconds
+        // Create and append new message
+        const messageEl = document.createElement('div');
+        messageEl.className = `message ${type}`;
+        messageEl.textContent = message;
+        document.body.appendChild(messageEl);
+
+        // Remove message after delay
         setTimeout(() => {
-            messageElement.classList.add('fade-out');
-            setTimeout(() => {
-                if (messageElement.parentNode === this) {
-                    messageElement.remove();
-                }
-            }, 300);
+            messageEl.style.animation = 'slideOut 0.3s ease forwards';
+            setTimeout(() => messageEl.remove(), 300);
         }, 3000);
     }
 } 
