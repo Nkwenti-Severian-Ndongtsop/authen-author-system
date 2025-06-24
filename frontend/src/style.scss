@@ -555,6 +555,13 @@ a {
   --color-mint: #64ffda;
   --color-indigo: #7f5af0;
   --color-background: var(--color-navy);
+  --navy: #0a192f;
+  --teal: #00d6b2;
+  --mint: #64ffda;
+  --indigo: #8892b0;
+  --aurora-1: rgba(0, 214, 178, 0.1);
+  --aurora-2: rgba(100, 255, 218, 0.1);
+  --aurora-3: rgba(136, 146, 176, 0.1);
 }
 
 // Additional button styles
@@ -760,4 +767,264 @@ a {
 .auth-container,
 .profile-container {
   display: none;
+}
+
+/* Aurora Background Effect */
+.aurora-background {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: -2;
+  overflow: hidden;
+}
+
+.aurora-container {
+  position: absolute;
+  width: 200%;
+  height: 200%;
+  top: -50%;
+  left: -50%;
+  animation: aurora-rotate 60s linear infinite;
+  background: 
+    radial-gradient(circle at 50% 50%, 
+      var(--aurora-1) 0%,
+      transparent 40%),
+    radial-gradient(circle at 70% 60%, 
+      var(--aurora-2) 0%,
+      transparent 50%),
+    radial-gradient(circle at 30% 40%, 
+      var(--aurora-3) 0%,
+      transparent 45%);
+  filter: blur(60px);
+}
+
+@keyframes aurora-rotate {
+  0% {
+    transform: rotate(0deg) scale(1);
+  }
+  50% {
+    transform: rotate(180deg) scale(1.2);
+  }
+  100% {
+    transform: rotate(360deg) scale(1);
+  }
+}
+
+/* Floating Particles */
+.particles-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: -1;
+  overflow: hidden;
+}
+
+.particle {
+  position: absolute;
+  width: 4px;
+  height: 4px;
+  background: var(--mint);
+  border-radius: 50%;
+  opacity: 0;
+  animation: float var(--duration, 15s) linear infinite;
+  filter: blur(1px);
+  transform-origin: center center;
+}
+
+@keyframes float {
+  0% {
+    transform: translate(var(--start-x, 0), var(--start-y, 0)) scale(0);
+    opacity: 0;
+  }
+  20% {
+    opacity: var(--particle-opacity, 0.3);
+  }
+  80% {
+    opacity: var(--particle-opacity, 0.3);
+  }
+  100% {
+    transform: translate(var(--end-x, 100px), var(--end-y, -100px)) scale(1);
+    opacity: 0;
+  }
+}
+
+/* Content Container */
+.container {
+  position: relative;
+  max-width: 600px;
+  margin: 0 auto;
+  padding: 2rem;
+  background: rgba(10, 25, 47, 0.8);
+  backdrop-filter: blur(10px);
+  border-radius: 12px;
+  box-shadow: 0 8px 32px rgba(0, 214, 178, 0.1);
+  border: 1px solid rgba(136, 146, 176, 0.1);
+}
+
+/* Form Styles */
+.form {
+  display: none;
+  opacity: 0;
+  transform: translateY(20px);
+  transition: all 0.3s ease;
+}
+
+.form.active {
+  display: block;
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.toggle {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 2rem;
+  justify-content: center;
+}
+
+.toggle button {
+  background: transparent;
+  border: none;
+  color: var(--indigo);
+  font-size: 1rem;
+  cursor: pointer;
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+  transition: all 0.3s ease;
+}
+
+.toggle button.active {
+  color: var(--mint);
+  background: rgba(100, 255, 218, 0.1);
+}
+
+.toggle button:hover {
+  color: var(--mint);
+}
+
+input {
+  width: 100%;
+  padding: 12px;
+  margin-bottom: 1rem;
+  background: rgba(136, 146, 176, 0.1);
+  border: 1px solid rgba(136, 146, 176, 0.2);
+  border-radius: 4px;
+  color: white;
+  font-size: 1rem;
+  transition: all 0.3s ease;
+}
+
+input:focus {
+  outline: none;
+  border-color: var(--teal);
+  box-shadow: 0 0 0 2px rgba(0, 214, 178, 0.2);
+}
+
+.btn {
+  width: 100%;
+  padding: 12px;
+  background: var(--teal);
+  color: white;
+  border: none;
+  border-radius: 4px;
+  font-size: 1rem;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.btn:hover {
+  background: var(--mint);
+  transform: translateY(-2px);
+}
+
+/* Message Styles */
+.error-message,
+.success-message {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  padding: 1rem 2rem;
+  border-radius: 4px;
+  color: white;
+  font-weight: 500;
+  opacity: 0;
+  transform: translateX(100%);
+  transition: all 0.3s ease;
+}
+
+.error-message {
+  background: #ff4d4d;
+}
+
+.success-message {
+  background: var(--teal);
+}
+
+.error-message.show,
+.success-message.show {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+/* Light Theme */
+body.light-theme {
+  background: #f5f5f5;
+  color: var(--navy);
+}
+
+body.light-theme .container {
+  background: rgba(255, 255, 255, 0.9);
+}
+
+body.light-theme input {
+  background: rgba(136, 146, 176, 0.05);
+  border-color: rgba(136, 146, 176, 0.2);
+  color: var(--navy);
+}
+
+body.light-theme .toggle button {
+  color: var(--navy);
+}
+
+body.light-theme .toggle button.active {
+  color: var(--teal);
+  background: rgba(0, 214, 178, 0.1);
+}
+
+/* Theme Toggle Button */
+.theme-toggle {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 8px;
+  border-radius: 50%;
+  transition: all 0.3s ease;
+}
+
+.theme-toggle svg {
+  width: 24px;
+  height: 24px;
+  fill: var(--mint);
+  transition: all 0.3s ease;
+}
+
+.theme-toggle:hover {
+  background: rgba(100, 255, 218, 0.1);
+  transform: scale(1.1);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .container {
+    margin: 1rem;
+    padding: 1.5rem;
+  }
 } 
