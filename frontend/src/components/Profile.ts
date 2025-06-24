@@ -232,6 +232,4 @@ export class ProfileComponent extends HTMLElement {
             });
         }
     }
-}
-
-customElements.define('user-profile', ProfileComponent); 
+} 
