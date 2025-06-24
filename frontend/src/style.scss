@@ -370,7 +370,7 @@ a {
   box-shadow: 0 4px 15px rgba($main, 0.3);
 
   &:hover {
-    background: $main-dark;
+    background: color.adjust($main, $lightness: -10%);
     box-shadow: 0 6px 20px rgba($main, 0.4);
   }
 }
@@ -380,7 +380,7 @@ a {
   color: $white;
 
   &:hover {
-    background: #444;
+    background: color.adjust(#333, $lightness: 10%);
   }
 }
 
