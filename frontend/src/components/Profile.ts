@@ -12,6 +12,8 @@ export class ProfileComponent extends HTMLElement {
     set data(user: User) {
         console.log('Profile component received data:', user);
         this.user = user;
+        // Ensure we maintain modal state during updates
+        const wasModalOpen = this.isEditModalOpen;
         this.render();
         this.animateIn();
         
@@ -19,6 +21,12 @@ export class ProfileComponent extends HTMLElement {
         const profileContainer = this.closest('.profile-container');
         if (profileContainer) {
             profileContainer.classList.add('visible');
+        }
+
+        // If we were showing a success message, make sure it stays on top
+        const message = this.querySelector('.message');
+        if (message) {
+            this.appendChild(message);
         }
     }
 
@@ -69,11 +77,11 @@ export class ProfileComponent extends HTMLElement {
             const updatedUser = await response.json();
             console.log('Profile updated successfully:', updatedUser);
             
-            // Update the component data and close the modal
-            this.data = updatedUser;
+            // Close the modal first
             this.closeEditModal();
             
-            // Show success message
+            // Then update the data and show success message
+            this.data = updatedUser;
             this.showMessage('Profile updated successfully!', 'success');
         } catch (error) {
             console.error('Profile update failed:', error);
@@ -100,6 +108,12 @@ export class ProfileComponent extends HTMLElement {
         console.log('Closing edit modal');
         this.isEditModalOpen = false;
         this.render();
+        
+        // Re-add any existing messages after render
+        const message = this.querySelector('.message');
+        if (message) {
+            this.appendChild(message);
+        }
     }
 
     private getDefaultProfilePicture(): string {
@@ -269,6 +283,12 @@ export class ProfileComponent extends HTMLElement {
     }
 
     private showMessage(message: string, type: 'success' | 'error') {
+        // Remove any existing messages first
+        const existingMessage = this.querySelector('.message');
+        if (existingMessage) {
+            existingMessage.remove();
+        }
+
         const messageElement = document.createElement('div');
         messageElement.className = `message message-${type}`;
         messageElement.textContent = message;
@@ -279,7 +299,11 @@ export class ProfileComponent extends HTMLElement {
         // Remove the message after 3 seconds
         setTimeout(() => {
             messageElement.classList.add('fade-out');
-            setTimeout(() => messageElement.remove(), 300);
+            setTimeout(() => {
+                if (messageElement.parentNode === this) {
+                    messageElement.remove();
+                }
+            }, 300);
         }, 3000);
     }
 } 
