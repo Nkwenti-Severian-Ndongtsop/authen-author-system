@@ -1,5 +1,5 @@
 // Get the backend API URL from environment variables
-const BACKEND_API: string = `${import.meta.env.VITE_BACKEND_API || 'http://localhost:8000'}`;
+const BACKEND_API: string = `${import.meta.env.VITE_BACKEND_API }`;
 
 interface ProfileData {
     firstname: string;
