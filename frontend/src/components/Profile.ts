@@ -45,8 +45,8 @@ class UserProfile extends HTMLElement {
         
         // Remove any leading slashes and ensure we don't duplicate 'uploads'
         const cleanUrl = url.replace(/^\/+/, '').replace(/^uploads\//, '');
-        // For uploaded files, construct the full URL to the uploads directory
-        return `https://backend-auth-system.onrender.com/uploads/${cleanUrl}`;
+        // Use the BACKEND_API constant for the URL
+        return `${BACKEND_API}/uploads/${cleanUrl}`;
     }
 
     private formatDate(dateString: string): string {
