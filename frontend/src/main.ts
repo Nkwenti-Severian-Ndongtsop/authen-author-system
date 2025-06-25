@@ -3,7 +3,7 @@ import './style.scss';
 import './components/Profile';
 
 // Backend API URL from .env with fallback
-const BACKEND_API: string = `${import.meta.env.VITE_BACKEND_API || 'http://localhost:8000'}`;
+const BACKEND_API = import.meta.env.VITE_BACKEND_API;
 
 // Initialize background elements
 function initializeBackground() {
