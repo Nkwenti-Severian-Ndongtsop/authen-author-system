@@ -9,22 +9,10 @@ RUN apt-get update && \
     apt-get install -y --no-install-recommends \
     pkg-config \
     libssl-dev \
-    curl \
-    ca-certificates && \
-    rm -rf /var/lib/apt/lists/*
+    && rm -rf /var/lib/apt/lists/*
 
-# Define build arguments
-ARG DATABASE_URL
-ARG FRONTEND_URL
-ARG PORT
-ARG JWT_SECRET
-ARG ADMIN_FIRSTNAME
-ARG ADMIN_LASTNAME
-ARG ADMIN_EMAIL
-ARG ADMIN_PASSWORD
-
-# Copy backend files
-COPY /backend/. .
+# Copy the entire backend directory
+COPY . .
 
 # Build the application
 RUN cargo build --release
@@ -36,16 +24,14 @@ FROM debian:bookworm-slim
 RUN apt-get update && \
     apt-get install -y --no-install-recommends \
     ca-certificates \
-    libssl3 && \
-    rm -rf /var/lib/apt/lists/*
+    libssl3 \
+    && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
 
 # Copy the binary from builder
-COPY --from=builder /usr/src/backend/target/release/auth_api /app/auth_api
-
-# Copy migrations directory for runtime
-COPY --from=builder /usr/src/backend/migrations /app/migrations
+COPY --from=builder /usr/src/backend/target/release/auth_api ./
+COPY --from=builder /usr/src/backend/migrations ./migrations
 
 # Define runtime arguments
 ARG DATABASE_URL
@@ -66,6 +52,9 @@ ENV ADMIN_FIRSTNAME=${ADMIN_FIRSTNAME}
 ENV ADMIN_LASTNAME=${ADMIN_LASTNAME}
 ENV ADMIN_EMAIL=${ADMIN_EMAIL}
 ENV ADMIN_PASSWORD=${ADMIN_PASSWORD}
+
+# Create uploads directory
+RUN mkdir -p uploads && chmod 755 uploads
 
 # Expose the port
 EXPOSE ${PORT}

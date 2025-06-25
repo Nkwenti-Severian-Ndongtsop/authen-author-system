@@ -20,6 +20,14 @@ pub struct User {
     pub password: String,
     /// User's role ("Admin" or "User")
     pub role: String,
+    /// Account creation date
+    pub created_at: Option<chrono::DateTime<chrono::Utc>>,
+    /// Last login date/time
+    pub last_login: Option<chrono::DateTime<chrono::Utc>>,
+    /// Total number of logins
+    pub login_count: Option<i32>,
+    /// Profile picture URL
+    pub profile_picture: Option<String>,
 }
 
 impl User {
@@ -94,4 +102,23 @@ pub struct LoginRequest {
 pub struct TokenResponse {
     /// JWT token for authentication
     pub token: String,
+}
+
+/// Request payload for profile update
+#[derive(Debug, Deserialize, Validate, ToSchema, Default)]
+pub struct ProfileUpdateRequest {
+    /// First name (2-50 characters)
+    #[validate(length(min = 2, max = 50))]
+    pub firstname: Option<String>,
+    /// Last name (2-50 characters)
+    #[validate(length(min = 2, max = 50))]
+    pub lastname: Option<String>,
+    /// Email address (must be valid format)
+    #[validate(email)]
+    pub email: Option<String>,
+    /// Password (minimum 6 characters)
+    #[validate(length(min = 6))]
+    pub password: Option<String>,
+    /// Profile picture file (base64 encoded)
+    pub profile_picture: Option<String>,
 }

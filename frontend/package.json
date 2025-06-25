@@ -12,9 +12,9 @@
     "@auth/ts-client": "file:../ts-client"
   },
   "devDependencies": {
-    "typescript": "^5.3.3",
-    "vite": "^5.0.0",
-    "sass": "^1.70.0",
-    "@types/node": "^20.11.16"
+    "@types/node": "^20.11.16",
+    "sass": "^1.63.6",
+    "typescript": "^5.2.2",
+    "vite": "^5.0.8"
   }
-} 
+}

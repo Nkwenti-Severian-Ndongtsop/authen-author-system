@@ -18,5 +18,12 @@ export default defineConfig({
         alias: {
             '@auth/ts-client': resolve(__dirname, '../ts-client/dist')
         }
+    },
+    css: {
+        preprocessorOptions: {
+            scss: {
+                quietDeps: true
+            }
+        }
     }
 }); 

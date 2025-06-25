@@ -4,17 +4,18 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
-axum = { version = "0.7", features = ["macros"] }
+axum = { version = "0.7", features = ["macros", "multipart"] }
 axum-extra = { version = "0.9", features = ["typed-header"] }
-tower-http = { version = "0.5", features = ["cors"] }
+tower-http = { version = "0.5", features = ["cors", "trace", "fs"] }
 tokio = { version = "1.0", features = ["full"] }
 serde = { version = "1.0", features = ["derive"] }
 serde_json = "1.0"
 jsonwebtoken = "9.2"
 bcrypt = "0.15"
-sqlx = { version = "0.7", features = ["runtime-tokio-rustls", "postgres", "time", "chrono"] }
+sqlx = { version = "0.7", features = ["runtime-tokio-rustls", "postgres", "time", "chrono", "uuid"] }
 dotenv = "0.15"
 validator = { version = "0.16", features = ["derive"] }
 utoipa = { version = "4.1", features = ["axum_extras"] }
 utoipa-swagger-ui = { version = "5.0", features = ["axum"] }
 chrono = { version = "0.4", features = ["serde"] }
+uuid = { version = "1.6.1", features = ["v4", "serde"] }

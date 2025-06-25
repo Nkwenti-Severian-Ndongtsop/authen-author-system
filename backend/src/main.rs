@@ -14,12 +14,13 @@ use crate::{
 use axum::{
     http::HeaderValue,
     middleware::from_fn_with_state,
-    routing::{get, post},
+    routing::{get, post, put},
     Router,
 };
-use tower_http::cors::CorsLayer;
+use tower_http::{cors::CorsLayer, services::ServeDir};
 use utoipa::OpenApi;
 use utoipa_swagger_ui::SwaggerUi;
+use std::path::PathBuf;
 
 #[derive(OpenApi)]
 #[openapi(
@@ -29,6 +30,8 @@ use utoipa_swagger_ui::SwaggerUi;
         routes::protected::admin_route,
         routes::protected::user_route,
         routes::profile::get_profile,
+        routes::profile::update_profile,
+        routes::profile::upload_photo,
         routes::health::health_check,
     ),
     components(
@@ -67,6 +70,7 @@ async fn main() {
         .allow_methods([
             axum::http::Method::GET,
             axum::http::Method::POST,
+            axum::http::Method::PUT,
             axum::http::Method::OPTIONS,
             axum::http::Method::HEAD,
         ])
@@ -78,12 +82,17 @@ async fn main() {
             axum::http::header::ACCEPT,
         ]);
 
+    // Create uploads directory if it doesn't exist
+    tokio::fs::create_dir_all("backend/uploads").await.unwrap_or_default();
+
     // Build router
     let app = Router::new()
         .route("/health", get(routes::health::health_check))
         .route("/auth/login", post(auth::login))
         .route("/auth/register", post(auth::register))
         .route("/api/profile", get(routes::profile::get_profile))
+        .route("/api/profile/update", put(routes::profile::update_profile))
+        .route("/api/profile/photo", post(routes::profile::upload_photo))
         .route(
             "/api/admin",
             get(protected::admin_route)
@@ -94,6 +103,7 @@ async fn main() {
             get(protected::user_route)
                 .layer(from_fn_with_state(pool.clone(), auth_middleware::<Role>)),
         )
+        .nest_service("/uploads", ServeDir::new(PathBuf::from("backend/uploads")))
         .with_state(pool)
         .merge(SwaggerUi::new("/swagger-ui").url("/api-docs/openapi.json", ApiDoc::openapi()))
         .layer(cors);

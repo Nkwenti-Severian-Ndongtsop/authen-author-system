@@ -1,29 +1,98 @@
+// Import styles
 import './style.scss';
 import './components/Profile';
 
+// Backend API URL from .env with fallback
+const BACKEND_API = import.meta.env.VITE_BACKEND_API;
+
+// Initialize background elements
+function initializeBackground() {
+    // Create aurora background
+    const auroraBackground = document.createElement('div');
+    auroraBackground.className = 'aurora-background';
+    auroraBackground.innerHTML = '<div class="aurora-container"></div>';
+    document.body.appendChild(auroraBackground);
+
+    // Create particles container
+    const particlesContainer = document.createElement('div');
+    particlesContainer.className = 'particles-container';
+    document.body.appendChild(particlesContainer);
+
+    // Initialize particles
+    for (let i = 0; i < 50; i++) {
+        createParticle(particlesContainer);
+    }
+
+    // Continuously replace particles
+    setInterval(() => {
+        const oldParticle = particlesContainer.firstChild;
+        if (oldParticle) {
+            const newParticle = createParticle(particlesContainer);
+            particlesContainer.replaceChild(newParticle, oldParticle);
+        }
+    }, 300);
+}
+
+function createParticle(container: HTMLElement): HTMLElement {
+    const particle = document.createElement('div');
+    particle.className = 'particle';
+    
+    // Random initial position
+    const startX = Math.random() * window.innerWidth;
+    const startY = Math.random() * window.innerHeight;
+    
+    // Random movement
+    const moveX = (Math.random() - 0.5) * 200;
+    const moveY = (Math.random() - 0.5) * 200;
+    
+    // Random duration
+    const duration = 15 + Math.random() * 20;
+    
+    // Random opacity
+    const opacity = 0.1 + Math.random() * 0.3;
+    
+    // Set CSS variables
+    particle.style.setProperty('--start-x', `${startX}px`);
+    particle.style.setProperty('--start-y', `${startY}px`);
+    particle.style.setProperty('--end-x', `${moveX}px`);
+    particle.style.setProperty('--end-y', `${moveY}px`);
+    particle.style.setProperty('--duration', `${duration}s`);
+    particle.style.setProperty('--particle-opacity', opacity.toString());
+    
+    container.appendChild(particle);
+    return particle;
+}
+
 // State management
 function showAuthForm() {
-    console.log('Showing auth form...');
-    const authContainer = document.querySelector('.auth-container') as HTMLElement;
+    let authContainer = document.querySelector('.auth-container') as HTMLElement;
     const profileContainer = document.querySelector('.profile-container') as HTMLElement;
-    console.log('Auth container:', authContainer);
-    console.log('Profile container:', profileContainer);
-    authContainer?.classList.add('visible');
-    profileContainer?.classList.remove('visible');
-    console.log('Auth container visibility:', authContainer?.classList.contains('visible'));
-    console.log('Profile container visibility:', profileContainer?.classList.contains('visible'));
+    
+    // Create auth container if it doesn't exist
+    if (!authContainer) {
+        authContainer = document.createElement('div');
+        authContainer.className = 'auth-container';
+        document.getElementById('app')?.appendChild(authContainer);
+        showLoginForm(authContainer);
+    }
+    
+    if (profileContainer) {
+        profileContainer.style.display = 'none';
+    }
+    authContainer.style.display = 'block';
 }
 
 function showProfile() {
-    console.log('Showing profile...');
     const authContainer = document.querySelector('.auth-container') as HTMLElement;
     const profileContainer = document.querySelector('.profile-container') as HTMLElement;
-    console.log('Auth container:', authContainer);
-    console.log('Profile container:', profileContainer);
-    authContainer?.classList.remove('visible');
-    profileContainer?.classList.add('visible');
-    console.log('Auth container visibility:', authContainer?.classList.contains('visible'));
-    console.log('Profile container visibility:', profileContainer?.classList.contains('visible'));
+    
+    if (authContainer) {
+        authContainer.style.display = 'none';
+    }
+    
+    if (profileContainer) {
+        profileContainer.style.display = 'block';
+    }
 }
 
 // Check authentication state
@@ -36,19 +105,31 @@ function checkAuth() {
     }
 }
 
+// Add function to get time-based greeting
+function getTimeBasedGreeting(): string {
+    const hour = new Date().getHours();
+    
+    if (hour >= 5 && hour < 12) {
+        return 'Good morning';
+    } else if (hour >= 12 && hour < 17) {
+        return 'Good afternoon';
+    } else if (hour >= 17 && hour < 22) {
+        return 'Good evening';
+    } else {
+        return 'Good night';
+    }
+}
+
 // Load profile data
 async function loadProfile() {
     try {
-        console.log('Loading profile data...');
         const token = localStorage.getItem('token');
         if (!token) {
-            console.log('No token found, showing auth form');
             showAuthForm();
             return;
         }
 
-        console.log('Fetching profile data...');
-        const response = await fetch(`${import.meta.env.VITE_BACKEND_API}/api/profile`, {
+        const response = await fetch(`${BACKEND_API}/api/profile`, {
             headers: {
                 'Authorization': `Bearer ${token}`,
                 'Content-Type': 'application/json'
@@ -60,27 +141,274 @@ async function loadProfile() {
         }
 
         const profile = await response.json();
-        console.log('Profile data received:', profile);
         
-        // Update profile component
-        const profileElement = document.querySelector('user-profile');
-        if (profileElement) {
-            console.log('Setting profile data to component');
-            (profileElement as any).data = profile;
+        // Create profile container and element if they don't exist
+        let profileContainer = document.querySelector('.profile-container');
+        if (!profileContainer) {
+            profileContainer = document.createElement('div');
+            profileContainer.className = 'profile-container';
+            document.getElementById('app')?.appendChild(profileContainer);
+        }
+
+        // Add greeting section
+        const greetingSection = document.createElement('div');
+        greetingSection.className = 'greeting-section';
+        greetingSection.innerHTML = `
+            <h1 class="greeting-text">${getTimeBasedGreeting()}, ${profile.firstname}!</h1>
+            <p class="greeting-date">${new Date().toLocaleDateString('en-US', { 
+                weekday: 'long', 
+                year: 'numeric', 
+                month: 'long', 
+                day: 'numeric' 
+            })}</p>
+        `;
+
+        // Add or update greeting section
+        const existingGreeting = profileContainer.querySelector('.greeting-section');
+        if (existingGreeting) {
+            profileContainer.replaceChild(greetingSection, existingGreeting);
         } else {
-            console.error('Profile element not found');
+            profileContainer.insertBefore(greetingSection, profileContainer.firstChild);
         }
         
-        console.log('Profile data updated, showing profile view');
+        let profileElement = document.querySelector('user-profile');
+        if (!profileElement) {
+            profileElement = document.createElement('user-profile');
+            profileContainer.appendChild(profileElement);
+        }
+        
+        // Update profile data
+        (profileElement as any).data = profile;
         showProfile();
     } catch (error) {
         console.error('Failed to load profile:', error);
         localStorage.removeItem('token');
         showAuthForm();
+        showError('Session expired. Please log in again.');
     }
 }
 
+// Initialize app
+async function initializeApp() {
+    // Initialize background first
+    initializeBackground();
+
+    const app = document.getElementById('app');
+    if (!app) return;
+
+    // Check if user is logged in
+    const token = localStorage.getItem('token');
+    if (!token) {
+        showAuthForm();
+    } else {
+        await loadProfile();
+    }
+}
+
+function showLoginForm(container: HTMLElement) {
+    container.innerHTML = `
+        <div class="container">
+            <div class="toggle">
+                <button id="loginToggle" class="active">Log In</button>
+                <button id="signupToggle">Sign Up</button>
+            </div>
+
+            <form id="loginForm" class="form active">
+                <h2>Welcome Back!</h2>
+                <div class="form-group">
+                    <input type="email" name="email" placeholder="Email Address" required />
+                </div>
+                <div class="form-group">
+                    <div class="password-field">
+                        <input type="password" name="password" placeholder="Password" required />
+                        <button type="button" class="password-toggle" aria-label="Toggle password visibility">
+                            <svg class="eye-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                                <path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+                <button type="submit" class="btn">LOG IN</button>
+            </form>
+
+            <form id="signupForm" class="form">
+                <h2>Create Account</h2>
+                <div class="form-group">
+                    <input type="text" name="firstname" placeholder="First Name" required />
+                </div>
+                <div class="form-group">
+                    <input type="text" name="lastname" placeholder="Last Name" required />
+                </div>
+                <div class="form-group">
+                    <input type="email" name="email" placeholder="Email Address" required />
+                </div>
+                <div class="form-group">
+                    <div class="password-field">
+                        <input type="password" name="password" placeholder="Password" required />
+                        <button type="button" class="password-toggle" aria-label="Toggle password visibility">
+                            <svg class="eye-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                                <path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+                <button type="submit" class="btn">SIGN UP</button>
+            </form>
+        </div>
+    `;
+
+    const loginToggle = container.querySelector('#loginToggle');
+    const signupToggle = container.querySelector('#signupToggle');
+    const loginForm = container.querySelector('#loginForm') as HTMLFormElement;
+    const signupForm = container.querySelector('#signupForm') as HTMLFormElement;
+    const loginButton = loginForm?.querySelector('button[type="submit"]') as HTMLButtonElement;
+    const signupButton = signupForm?.querySelector('button[type="submit"]') as HTMLButtonElement;
+
+    loginToggle?.addEventListener('click', () => {
+        loginToggle.classList.add('active');
+        signupToggle?.classList.remove('active');
+        loginForm?.classList.add('active');
+        signupForm?.classList.remove('active');
+    });
+
+    signupToggle?.addEventListener('click', () => {
+        signupToggle.classList.add('active');
+        loginToggle?.classList.remove('active');
+        signupForm?.classList.add('active');
+        loginForm?.classList.remove('active');
+    });
+
+    // Add password toggle functionality
+    const passwordToggles = container.querySelectorAll('.password-toggle');
+    passwordToggles.forEach(toggle => {
+        toggle.addEventListener('click', (e) => {
+            const button = e.currentTarget as HTMLButtonElement;
+            const passwordField = button.closest('.password-field');
+            const passwordInput = passwordField?.querySelector('input') as HTMLInputElement;
+            const eyeIcon = button.querySelector('.eye-icon');
+
+            if (passwordInput.type === 'password') {
+                passwordInput.type = 'text';
+                eyeIcon?.setAttribute('d', 'M12 6.5c-3.79 0-7.17 2.13-8.82 5.5 1.65 3.37 5.03 5.5 8.82 5.5s7.17-2.13 8.82-5.5C19.17 8.63 15.79 6.5 12 6.5zm0 9c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5zm0-4c-.83 0-1.5.67-1.5 1.5s.67 1.5 1.5 1.5 1.5-.67 1.5-1.5-.67-1.5-1.5-1.5z');
+            } else {
+                passwordInput.type = 'password';
+                eyeIcon?.setAttribute('d', 'M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z');
+            }
+        });
+    });
+
+    // Handle login form submission
+    loginForm?.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const formData = new FormData(loginForm);
+        
+        try {
+            // Show loading state
+            loginButton.classList.add('loading');
+            loginButton.disabled = true;
+            loginButton.textContent = 'Logging in...';
+            
+            const response = await fetch(`${BACKEND_API}/auth/login`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    email: formData.get('email'),
+                    password: formData.get('password'),
+                }),
+            });
+
+            if (!response.ok) {
+                throw new Error('Login failed');
+            }
+
+            const data = await response.json();
+            localStorage.setItem('token', data.token);
+            await loadProfile();
+        } catch (error) {
+            console.error('Login failed:', error);
+            showError('Login failed. Please check your credentials and try again.');
+        } finally {
+            // Remove loading state
+            loginButton.classList.remove('loading');
+            loginButton.disabled = false;
+            loginButton.textContent = 'LOG IN';
+        }
+    });
+
+    // Handle signup form submission
+    signupForm?.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const formData = new FormData(signupForm);
+        
+        try {
+            // Show loading state
+            signupButton.classList.add('loading');
+            signupButton.disabled = true;
+            signupButton.textContent = 'Creating Account...';
+            
+            const response = await fetch(`${BACKEND_API}/auth/register`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    firstname: formData.get('firstname'),
+                    lastname: formData.get('lastname'),
+                    email: formData.get('email'),
+                    password: formData.get('password'),
+                }),
+            });
+
+            if (!response.ok) {
+                throw new Error('Registration failed');
+            }
+
+            const data = await response.json();
+            localStorage.setItem('token', data.token);
+            await loadProfile();
+            
+            // Show success message
+            showSuccess('Account created successfully!');
+        } catch (error) {
+            console.error('Registration failed:', error);
+            showError('Registration failed. Please try again.');
+        } finally {
+            // Remove loading state
+            signupButton.classList.remove('loading');
+            signupButton.disabled = false;
+            signupButton.textContent = 'SIGN UP';
+        }
+    });
+}
+
+function showMessage(message: string, type: 'error' | 'success') {
+    const messageClass = type === 'error' ? 'error-message' : 'success-message';
+    
+    // Create message element if it doesn't exist
+    let messageElement = document.querySelector(`.${messageClass}`);
+    if (!messageElement) {
+        messageElement = document.createElement('div');
+        messageElement.className = messageClass;
+        document.body.appendChild(messageElement);
+    }
+    
+    // Show message
+    messageElement.textContent = message;
+    messageElement.classList.add('show');
+    
+    // Hide after 3 seconds
+    setTimeout(() => {
+        messageElement.classList.remove('show');
+    }, 3000);
+}
+
+// Initialize the application when DOM is loaded
 document.addEventListener('DOMContentLoaded', () => {
+    // Initialize app
+    initializeApp();
+
     // Check authentication state on load
     checkAuth();
 
@@ -97,14 +425,8 @@ document.addEventListener('DOMContentLoaded', () => {
             const target = (e.target as HTMLAnchorElement).getAttribute('href');
             
             // Update active tab
-            const activeTab = document.querySelector('.tab.active');
-            if (activeTab) {
-                activeTab.classList.remove('active');
-            }
-            const parentNode = (e.target as HTMLElement).parentNode as HTMLElement;
-            if (parentNode) {
-                parentNode.classList.add('active');
-            }
+            tabs.forEach(t => t.parentElement?.classList.remove('active'));
+            (e.target as HTMLElement).parentElement?.classList.add('active');
             
             // Show target content
             document.querySelectorAll('.tab-content > div').forEach(div => {
@@ -133,41 +455,30 @@ document.addEventListener('DOMContentLoaded', () => {
             submitButton.disabled = true;
             submitButton.innerHTML = '<span class="loading-spinner"></span> Logging in...';
             
-            console.log('Attempting login...');
-            const loginUrl = `${import.meta.env.VITE_BACKEND_API}/auth/login`;
-            console.log('Login URL:', loginUrl);
-            
-            const loginData = {
-                email: formData.get('email'),
-                password: formData.get('password')
-            };
-            console.log('Login data:', { email: loginData.email, password: '***' });
-            
-            const response = await fetch(loginUrl, {
+            const response = await fetch(`${BACKEND_API}/auth/login`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
                 },
-                body: JSON.stringify(loginData)
+                body: JSON.stringify({
+                    email: formData.get('email'),
+                    password: formData.get('password')
+                })
             });
 
-            console.log('Response status:', response.status);
-            const responseData = await response.json();
-            console.log('Response data:', responseData);
+            const data = await response.json();
 
             if (!response.ok) {
-                throw new Error(responseData.message || 'Login failed');
+                throw new Error(data.message || 'Login failed');
             }
 
-            console.log('Login successful, storing token...');
-            localStorage.setItem('token', responseData.token);
-            console.log('Loading profile...');
-            loadProfile();
+            localStorage.setItem('token', data.token);
+            await loadProfile();
             
         } catch (error) {
             console.error('Login failed:', error);
-            alert('Login failed. Please check your credentials and try again.');
-            
+            showError(error instanceof Error ? error.message : 'Login failed. Please try again.');
+        } finally {
             // Reset button state
             submitButton.disabled = false;
             submitButton.textContent = originalButtonText;
@@ -187,19 +498,19 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // Frontend validation
         if (firstname.length < 2 || firstname.length > 50) {
-            alert('First name must be between 2 and 50 characters');
+            showError('First name must be between 2 and 50 characters');
             return;
         }
         if (lastname.length < 2 || lastname.length > 50) {
-            alert('Last name must be between 2 and 50 characters');
+            showError('Last name must be between 2 and 50 characters');
             return;
         }
         if (password.length < 6) {
-            alert('Password must be at least 6 characters');
+            showError('Password must be at least 6 characters');
             return;
         }
         if (!email.match(/^[^\s@]+@[^\s@]+\.[^\s@]+$/)) {
-            alert('Please enter a valid email address');
+            showError('Please enter a valid email address');
             return;
         }
         
@@ -212,7 +523,7 @@ document.addEventListener('DOMContentLoaded', () => {
             submitButton.disabled = true;
             submitButton.innerHTML = '<span class="loading-spinner"></span> Creating Account...';
             
-            const response = await fetch(`${import.meta.env.VITE_BACKEND_API}/auth/register`, {
+            const response = await fetch(`${BACKEND_API}/auth/register`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
@@ -232,7 +543,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }
 
             // Registration successful
-            alert('Registration successful! Please log in.');
+            showSuccess('Registration successful! Please log in.');
             
             // Switch to login tab
             const loginTab = document.querySelector('.tab a[href="#login"]');
@@ -245,11 +556,7 @@ document.addEventListener('DOMContentLoaded', () => {
             
         } catch (error) {
             console.error('Registration failed:', error);
-            if (error instanceof Error) {
-                alert(error.message);
-            } else {
-                alert('Registration failed. Please try again.');
-            }
+            showError(error instanceof Error ? error.message : 'Registration failed. Please try again.');
         } finally {
             // Reset button state
             submitButton.disabled = false;
@@ -266,30 +573,39 @@ document.addEventListener('DOMContentLoaded', () => {
     // Handle input animations
     const formInputs = document.querySelectorAll<HTMLInputElement | HTMLTextAreaElement>('.field-wrap input, .field-wrap textarea');
     formInputs.forEach(input => {
-        const label = input.previousElementSibling as HTMLLabelElement;
+        const label = input.nextElementSibling as HTMLLabelElement;
         
-        ['keyup', 'blur', 'focus'].forEach(eventType => {
-            input.addEventListener(eventType, (e) => {
-                if (e.type === 'keyup') {
-                    if (input.value === '') {
-                        label.classList.remove('active', 'highlight');
-                    } else {
+        // Set initial state
+        if (input.value) {
+            label.classList.add('active');
+        }
+        
+        input.addEventListener('focus', () => {
                         label.classList.add('active', 'highlight');
+        });
+        
+        input.addEventListener('blur', () => {
+            if (!input.value) {
+                label.classList.remove('active');
                     }
-                } else if (e.type === 'blur') {
-                    if (input.value === '') {
-                        label.classList.remove('active', 'highlight');
-                    } else {
                         label.classList.remove('highlight');
-                    }
-                } else if (e.type === 'focus') {
-                    if (input.value === '') {
-                        label.classList.remove('highlight');
+        });
+        
+        input.addEventListener('input', () => {
+            if (input.value) {
+                label.classList.add('active');
                     } else {
-                        label.classList.add('highlight');
-                    }
+                label.classList.remove('active');
                 }
-            });
         });
     });
 });
+
+// Utility functions for showing messages
+function showError(message: string) {
+    showMessage(message, 'error');
+}
+
+function showSuccess(message: string) {
+    showMessage(message, 'success');
+}
