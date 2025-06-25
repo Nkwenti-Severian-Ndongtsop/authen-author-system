@@ -35,33 +35,34 @@ async fn create_admin_if_not_exists(pool: &Pool<Postgres>) {
         env::var("ADMIN_PASSWORD").expect("ADMIN_PASSWORD must be set"),
     );
 
-    let admin_exists = sqlx::query!(
-        "SELECT EXISTS(SELECT 1 FROM users WHERE email = $1) as exists",
-        email
+    let admin_exists = sqlx::query_as::<_, (bool,)>(
+        "SELECT EXISTS(SELECT 1 FROM users WHERE email = $1)"
     )
+    .bind(email.clone())
     .fetch_one(pool)
     .await
-    .map(|row| row.exists.unwrap_or(false))
+    .map(|(exists,)| exists)
     .unwrap_or(false);
 
     if !admin_exists {
         println!("👥 Creating default admin user...");
         let hashed_password = hash(password.as_bytes(), DEFAULT_COST).unwrap();
         
-        sqlx::query!(
+        sqlx::query_as::<_, User>(
             r#"
             INSERT INTO users (firstname, lastname, email, password, role)
             VALUES ($1, $2, $3, $4, $5)
-            "#,
-            firstname,
-            lastname,
-            email,
-            hashed_password,
-            "Admin"
+            RETURNING *
+            "#
         )
-        .execute(pool)
+        .bind(firstname)
+        .bind(lastname)
+        .bind(email)
+        .bind(hashed_password)
+        .bind("Admin")
+        .fetch_one(pool)
         .await
-        .map(|_| println!("✅ Default admin user created with email: {}", email))
+        .map(|user| println!("✅ Default admin user created with email: {}", user.email))
         .unwrap_or_else(|e| eprintln!("❌ Failed to create admin user: {}", e));
     } else {
         println!("✅ Admin user already exists!");
