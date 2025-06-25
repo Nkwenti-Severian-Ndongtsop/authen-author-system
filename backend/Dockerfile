@@ -30,7 +30,7 @@ RUN apt-get update && \
 WORKDIR /app
 
 # Copy the binary from builder
-COPY --from=builder /usr/src/backend/target/release/backend ./
+COPY --from=builder /usr/src/backend/target/release/auth_api ./
 COPY --from=builder /usr/src/backend/migrations ./migrations
 
 # Define runtime arguments
@@ -60,4 +60,4 @@ RUN mkdir -p uploads && chmod 755 uploads
 EXPOSE ${PORT}
 
 # Run the app
-CMD ["./backend"] 
+CMD ["./auth_api"] 
