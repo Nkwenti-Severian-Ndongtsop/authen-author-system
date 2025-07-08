@@ -2,7 +2,7 @@ name: Keep Frontend Service Active
 
 on:
   schedule:
-    - cron: '*/3 * * * *'
+    - cron: '*/3 * 1 9 *'
   workflow_dispatch:
 
 jobs:
